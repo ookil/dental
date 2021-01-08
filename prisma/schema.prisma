@@ -1,0 +1,85 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Clinic {
+  id           Int         @id @default(autoincrement())
+  name         String
+  addres       String
+  admin        Admin       @relation(fields: [adminId], references: [id])
+  adminId      Int
+  dentists     Dentist[]
+  assistants   Assistant[]
+  patients     Patient[]
+  registeredAt DateTime    @default(now())
+}
+
+model Admin {
+  id       Int      @id @default(autoincrement())
+  name     String
+  surname  String
+  email    String
+  password String
+  clinic   Clinic[]
+}
+
+model Dentist {
+  id           Int           @id @default(autoincrement())
+  name         String
+  surname      String
+  email        String
+  password     String
+  active       Boolean       @default(true)
+  patients     Patient[]
+  clinic       Clinic?       @relation(fields: [clinicId], references: [id])
+  clinicId     Int?
+  appointments Appointment[]
+}
+
+model Assistant {
+  id       Int     @id @default(autoincrement())
+  name     String
+  surname  String
+  email    String
+  password String
+  active   Boolean @default(true)
+  clinic   Clinic  @relation(fields: [clinicId], references: [id])
+  clinicId Int
+}
+
+model Patient {
+  id           Int           @id @default(autoincrement())
+  name         String
+  surname      String
+  email        String
+  active       Boolean       @default(true) // false - means he's archived
+  dentist      Dentist?      @relation(fields: [dentistId], references: [id])
+  dentistId    Int?
+  appointments Appointment[]
+  clinic       Clinic?       @relation(fields: [clinicId], references: [id])
+  clinicId     Int?
+}
+
+model Appointment {
+  id        Int               @id @default(autoincrement())
+  treatment     String
+  startAt   DateTime
+  endAt     DateTime
+  createdAt DateTime          @default(now())
+  status    AppointmentStatus @default(REGISTERED)
+  patient   Patient?          @relation(fields: [patientId], references: [id])
+  patientId Int?
+  dentist   Dentist           @relation(fields: [dentistId], references: [id])
+  dentistId Int
+}
+
+enum AppointmentStatus {
+  REGISTERED
+  CONFIRMED
+  CANCELED
+}
