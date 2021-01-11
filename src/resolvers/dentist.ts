@@ -126,7 +126,18 @@ export class DentistResolver {
     @Arg('dentistData') dentistData: UpdateDentistInput,
     @Ctx() { prisma }: Context
   ): Promise<Dentist> {
+    const dentist = await prisma.dentist.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!dentist) throw new Error('Dentist Not Found');
+
     const salt = await genSalt(10);
+
+    if (dentistData.password)
+      dentistData.password = await hash(dentistData.password, salt);
 
     return await prisma.dentist.update({
       where: {
@@ -134,7 +145,6 @@ export class DentistResolver {
       },
       data: {
         ...dentistData,
-        password: await hash(dentistData.password, salt),
       },
     });
   }

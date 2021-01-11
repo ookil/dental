@@ -39,17 +39,20 @@ model Dentist {
   clinic       Clinic?       @relation(fields: [clinicId], references: [id])
   clinicId     Int?
   appointments Appointment[]
+  Assistant    Assistant?    @relation(fields: [assistantId], references: [id])
+  assistantId  Int?
 }
 
 model Assistant {
-  id       Int     @id @default(autoincrement())
-  name     String
-  surname  String
-  email    String  @unique
-  password String
-  active   Boolean @default(true)
-  clinic   Clinic  @relation(fields: [clinicId], references: [id])
-  clinicId Int
+  id        Int       @id @default(autoincrement())
+  name      String
+  surname   String
+  email     String    @unique
+  password  String
+  active    Boolean   @default(true)
+  worksWith Dentist[]
+  clinic    Clinic    @relation(fields: [clinicId], references: [id])
+  clinicId  Int
 }
 
 model Patient {
