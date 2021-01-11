@@ -1,39 +1,38 @@
-import { Field, ID, ObjectType, registerEnumType } from "type-graphql";
-import { Dentist } from "./Dentist";
-import { Patient } from "./Patient";
+import { Field, ID, ObjectType, registerEnumType } from 'type-graphql';
+import { Dentist } from './Dentist';
+import { Patient } from './Patient';
 
-
-enum AppointmentStatus {
-    REGISTERED = 'REGISTERED',
-    CONFIRMED = 'CONFIRMED',
-    CANCELED = 'CANCELED'
+export enum AppointmentStatus {
+  REGISTERED = 'REGISTERED',
+  CONFIRMED = 'CONFIRMED',
+  CANCELED = 'CANCELED',
 }
 
-registerEnumType(AppointmentStatus, {name: "AppointmentStatus"})
+registerEnumType(AppointmentStatus, { name: 'AppointmentStatus' });
 
 @ObjectType()
 export class Appointment {
-    @Field(() => ID)
-    id: number
+  @Field(() => ID)
+  id: number;
 
-    @Field()
-    treatment: string
+  @Field()
+  treatment: string;
 
-    @Field()
-    startAt: Date
+  @Field()
+  startAt: Date;
 
-    @Field()
-    endAt: Date
+  @Field()
+  endAt: Date;
 
-    @Field()
-    createdAt: Date
+  @Field()
+  createdAt: Date;
 
-    @Field(() => AppointmentStatus)
-    status: AppointmentStatus
+  @Field(() => AppointmentStatus)
+  status: AppointmentStatus;
 
-    @Field(() => Patient)
-    patient: Patient
+  @Field(() => Patient)
+  patient: Patient;
 
-    @Field(() => Dentist)
-    dentist: Dentist
+  @Field(() => Dentist)
+  dentist: Dentist;
 }

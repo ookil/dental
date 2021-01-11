@@ -23,6 +23,6 @@
       "resolveJsonModule": true,
       "baseUrl": "."
     },
-    "exclude": ["node_modules", "prisma"],
+    "exclude": ["node_modules", "prisma", "src/tests"],
     "include": ["./src/**/*.tsx", "./src/**/*.ts"]
   }

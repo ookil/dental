@@ -2,6 +2,7 @@ import 'reflect-metadata';
 import { ObjectType, Field, ID } from 'type-graphql';
 import { IsEmail, Length } from 'class-validator';
 import { Patient } from './Patient';
+import { Appointment } from './Appointment';
 
 @ObjectType()
 export class Dentist {
@@ -29,4 +30,7 @@ export class Dentist {
 
   @Field(() => [Patient], { nullable: true })
   patients?: [Patient];
+
+  @Field(() => [Appointment], { nullable: true })
+  appointments?: [Appointment];
 }

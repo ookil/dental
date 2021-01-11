@@ -4,14 +4,13 @@ import express from 'express';
 import { buildSchema } from 'type-graphql';
 import { createContext } from './context';
 import { ClinicResolver } from './resolvers/clinic';
+import { DentistResolver } from './resolvers/dentist';
 
-const main = async () => {
+export const main = async () => {
   const app = express();
 
-  app.get('/', (_, res) => res.send('hello'));
-
   const schema = await buildSchema({
-    resolvers: [ClinicResolver],
+    resolvers: [ClinicResolver, DentistResolver],
   });
 
   const context = createContext();

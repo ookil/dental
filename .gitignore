@@ -1,7 +1,10 @@
 node_modules
 
 prisma/migrations
+prisma/*.js
 
 dist
 
 .env
+
+tests
