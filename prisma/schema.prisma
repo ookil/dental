@@ -56,17 +56,52 @@ model Assistant {
 }
 
 model Patient {
-  id           Int           @id @default(autoincrement())
+  id           Int            @id @default(autoincrement())
   name         String
   surname      String
-  email        String?       @unique
-  nationalId   String?
-  active       Boolean       @default(true) // false - means he's archived
-  dentist      Dentist?      @relation(fields: [dentistId], references: [id])
+  email        String?        @unique
+  nationalId   String?        @unique
+  active       Boolean        @default(true) // false - means he's archived
+  dentist      Dentist?       @relation(fields: [dentistId], references: [id])
   dentistId    Int?
   appointments Appointment[]
-  clinic       Clinic?       @relation(fields: [clinicId], references: [id])
+  clinic       Clinic?        @relation(fields: [clinicId], references: [id])
   clinicId     Int?
+  patientChart PatientChart[]
+  patientTeeth PatientTeeth[]
+}
+
+model PatientTeeth {
+  patient     Patient      @relation(fields: [patientId], references: [id])
+  patientId   Int
+  id          String
+  surface     ToothSurface
+  description Treatment    @relation(fields: [treatmentId], references: [id])
+  treatmentId Int
+  createdAt   DateTime
+
+  @@id([id, surface])
+}
+
+model ChartRecord {
+  id           Int             @id @default(autoincrement())
+  createdAt    DateTime
+  type         String
+  description  String
+  tooth        String
+  surface      ToothSurface
+  doctor       String
+  status       TreatmentStatus
+  patientChart PatientChart[]
+}
+
+model PatientChart {
+  patient       Patient     @relation(fields: [patientId], references: [id])
+  patientId     Int
+  chartRecord   ChartRecord @relation(fields: [chartRecordId], references: [id])
+  chartRecordId Int
+
+  @@id([patientId, chartRecordId])
 }
 
 model Appointment {
@@ -86,4 +121,36 @@ enum AppointmentStatus {
   REGISTERED
   CONFIRMED
   CANCELED
+}
+
+model Treatment {
+  id           Int               @id @default(autoincrement())
+  name         String
+  description  String
+  category     TreatmentCategory
+  PatientTeeth PatientTeeth[]
+}
+
+enum TreatmentCategory {
+  PREVENTIVE
+  DIAGNOSTIC
+  ENDODONTICS
+  PERIODONTICS
+  PROSTHETICS
+  OTHER
+}
+
+enum TreatmentStatus {
+  EXISTING
+  COMPLETED
+  PLANNED
+}
+
+enum ToothSurface {
+  BUCCAL
+  LINGUAL
+  DISTAL
+  MESIAL
+  ROOT
+  CROWN
 }

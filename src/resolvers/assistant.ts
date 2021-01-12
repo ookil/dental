@@ -56,7 +56,7 @@ class DentistList {
   id: number;
 }
 
-@InputType({ description: 'New assistnat data' })
+@InputType({ description: 'Update assistant data' })
 export class UpdateAssistantInput implements Partial<Assistant> {
   @Field({ nullable: true })
   @Length(3, 10)
@@ -76,6 +76,9 @@ export class UpdateAssistantInput implements Partial<Assistant> {
 
   @Field(() => [DentistList], { nullable: true })
   worksWithDentists?: DentistList[];
+
+  @Field({ nullable: true })
+  active?: boolean;
 }
 
 @Resolver(Assistant)
@@ -94,7 +97,7 @@ export class AssistantResolver {
 
   @Mutation(() => Assistant)
   async createAssistant(
-    @Arg('assistanttData') assistantData: CreateAssistantInput,
+    @Arg('assistantData') assistantData: CreateAssistantInput,
     @Ctx() { prisma }: Context
   ): Promise<Assistant> {
     const assistant = await prisma.assistant.findMany({
@@ -155,14 +158,14 @@ export class AssistantResolver {
 
     if (!assistant) throw new Error('Assistant Not Found');
 
-    const salt = await genSalt(10);
-
     let newData: UpdateAssistant = {};
     if (assistantData.name) newData.name = assistantData.name;
     if (assistantData.surname) newData.surname = assistantData.surname;
     if (assistantData.email) newData.email = assistantData.email;
-    if (assistantData.password)
+    if (assistantData.password) {
+      const salt = await genSalt(10);
       newData.password = await hash(assistantData.password, salt);
+    }
 
     return await prisma.assistant.update({
       where: {

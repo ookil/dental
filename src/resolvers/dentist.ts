@@ -39,7 +39,7 @@ export class CreateDentistInput implements Partial<Dentist> {
   clinicId: number;
 }
 
-@InputType({ description: 'New dentist data' })
+@InputType({ description: 'Update dentist data' })
 export class UpdateDentistInput implements Partial<Dentist> {
   @Field({ nullable: true })
   @Length(3, 10)
@@ -56,6 +56,9 @@ export class UpdateDentistInput implements Partial<Dentist> {
   @Field({ nullable: true })
   @Length(6, 20)
   password?: string;
+
+  @Field({ nullable: true })
+  active?: boolean;
 }
 
 @Resolver(Dentist)
@@ -134,10 +137,10 @@ export class DentistResolver {
 
     if (!dentist) throw new Error('Dentist Not Found');
 
-    const salt = await genSalt(10);
-
-    if (dentistData.password)
+    if (dentistData.password) {
+      const salt = await genSalt(10);
       dentistData.password = await hash(dentistData.password, salt);
+    }
 
     return await prisma.dentist.update({
       where: {

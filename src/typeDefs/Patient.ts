@@ -1,8 +1,9 @@
 import 'reflect-metadata';
-import { ObjectType, Field, ID } from 'type-graphql';
+import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
 import { IsEmail, Length } from 'class-validator';
 import { Dentist } from './Dentist';
 import { Appointment } from './Appointment';
+import { TreatmentStatus } from './Treatment';
 
 @ObjectType()
 export class Patient {
@@ -22,6 +23,7 @@ export class Patient {
   email?: string | null;
 
   @Field(() => String, { nullable: true })
+  @Length(3, 30)
   nationalId?: string | null;
 
   @Field()
@@ -32,4 +34,45 @@ export class Patient {
 
   @Field(() => [Appointment], { nullable: true })
   appointments?: [Appointment];
+
+  @Field(() => [ChartRecord], { nullable: true })
+  patientChart?: ChartRecord[];
 }
+
+@ObjectType()
+export class ChartRecord {
+  @Field(() => ID)
+  id: number;
+
+  @Field()
+  createdAt: Date;
+
+  @Field()
+  type: string;
+
+  @Field()
+  description: string;
+
+  @Field()
+  tooth: string;
+
+  @Field(() => ToothSurface)
+  surface: ToothSurface;
+
+  @Field()
+  doctor: String;
+
+  @Field(() => TreatmentStatus)
+  status: TreatmentStatus;
+}
+
+export enum ToothSurface {
+  BUCCAL,
+  LINGUAL,
+  DISTAL,
+  MESIAL,
+  ROOT,
+  CROWN,
+}
+
+registerEnumType(ToothSurface, { name: 'ToothSurface' });

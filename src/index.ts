@@ -6,12 +6,20 @@ import { createContext } from './context';
 import { ClinicResolver } from './resolvers/clinic';
 import { DentistResolver } from './resolvers/dentist';
 import { AssistantResolver } from './resolvers/assistant';
+import { PatientResolver } from './resolvers/patient';
+import { AppointmentResolver } from './resolvers/appointment';
 
 export const main = async () => {
   const app = express();
 
   const schema = await buildSchema({
-    resolvers: [ClinicResolver, DentistResolver, AssistantResolver],
+    resolvers: [
+      ClinicResolver,
+      DentistResolver,
+      AssistantResolver,
+      PatientResolver,
+      AppointmentResolver,
+    ],
   });
 
   const context = createContext();
