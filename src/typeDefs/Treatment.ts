@@ -1,3 +1,4 @@
+import { Length } from 'class-validator';
 import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
 
 export enum TreatmentStatus {
@@ -24,11 +25,13 @@ export class Treatment {
   id: number;
 
   @Field()
+  @Length(1, 50)
   name: string;
 
   @Field()
+  @Length(1, 100)
   description: string;
 
-  @Field()
+  @Field(() => TreatmentCategory)
   category: TreatmentCategory;
 }

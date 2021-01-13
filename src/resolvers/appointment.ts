@@ -16,7 +16,7 @@ import { Dentist } from '../typeDefs/Dentist';
 import { Patient } from '../typeDefs/Patient';
 import { Appointment, AppointmentStatus } from '../typeDefs/Appointment';
 import { Length } from 'class-validator';
-
+import { CreatePatientInput } from './patient';
 
 @InputType({ description: 'New appointment data' })
 export class CreateAppointmentInput implements Partial<Appointment> {
@@ -74,9 +74,23 @@ export class AppointmentResolver {
     });
   }
 
+  @Query(() => [Appointment], { nullable: true })
+  async patientAppointments(
+    @Arg('patientId', () => Int) patientId: number,
+    @Ctx() { prisma }: Context
+  ) {
+    return await prisma.appointment.findMany({
+      where: {
+        patientId,
+      },
+    });
+  }
+
   @Mutation(() => Appointment)
   async createAppointment(
     @Arg('appointmentData') appointmentData: CreateAppointmentInput,
+    @Arg('newPatientData', { nullable: true })
+    newPatientData: CreatePatientInput,
     @Ctx() { prisma }: Context
   ) {
     const appointment = await prisma.appointment.findMany({
@@ -109,8 +123,21 @@ export class AppointmentResolver {
           connect: { id: appointmentData.dentistId },
         },
         patient: {
-          connect: {
-            id: appointmentData.patientId,
+          connectOrCreate: {
+            where: {
+              id: appointmentData.patientId,
+            },
+            create: {
+              name: newPatientData.name,
+              surname: newPatientData.surname,
+              email: newPatientData.email,
+              nationalId: newPatientData.nationalId,
+              clinic: {
+                connect: {
+                  id: newPatientData.clinicId,
+                },
+              },
+            },
           },
         },
         status: 'REGISTERED',
@@ -181,5 +208,4 @@ export class AppointmentResolver {
       })
       .patient();
   }
-
 }

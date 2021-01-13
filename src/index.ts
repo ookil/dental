@@ -8,6 +8,9 @@ import { DentistResolver } from './resolvers/dentist';
 import { AssistantResolver } from './resolvers/assistant';
 import { PatientResolver } from './resolvers/patient';
 import { AppointmentResolver } from './resolvers/appointment';
+import { ChartRecordResolver } from './resolvers/chart';
+import { TeethResolver } from './resolvers/teeth';
+import { TreatmentResolver } from './resolvers/treatment';
 
 export const main = async () => {
   const app = express();
@@ -19,6 +22,9 @@ export const main = async () => {
       AssistantResolver,
       PatientResolver,
       AppointmentResolver,
+      ChartRecordResolver,
+      TeethResolver,
+      TreatmentResolver,
     ],
   });
 

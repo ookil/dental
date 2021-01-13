@@ -186,4 +186,15 @@ export class PatientResolver {
       })
       .appointments();
   }
+
+  @FieldResolver()
+  async patientChart(@Root() patient: Patient, @Ctx() { prisma }: Context) {
+    return await prisma.patient
+      .findUnique({
+        where: {
+          id: patient.id,
+        },
+      })
+      .patientChart();
+  }
 }

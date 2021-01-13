@@ -56,53 +56,54 @@ model Assistant {
 }
 
 model Patient {
-  id           Int            @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   name         String
   surname      String
-  email        String?        @unique
-  nationalId   String?        @unique
-  active       Boolean        @default(true) // false - means he's archived
-  dentist      Dentist?       @relation(fields: [dentistId], references: [id])
+  email        String?       @unique
+  nationalId   String?       @unique
+  active       Boolean       @default(true) // false - means he's archived
+  dentist      Dentist?      @relation(fields: [dentistId], references: [id])
   dentistId    Int?
   appointments Appointment[]
-  clinic       Clinic?        @relation(fields: [clinicId], references: [id])
+  clinic       Clinic?       @relation(fields: [clinicId], references: [id])
   clinicId     Int?
-  patientChart PatientChart[]
-  patientTeeth PatientTeeth[]
+  patientChart ChartRecord[]
+  patientTeeth Teeth[]
 }
 
-model PatientTeeth {
+model Teeth {
   patient     Patient      @relation(fields: [patientId], references: [id])
   patientId   Int
   id          String
   surface     ToothSurface
-  description Treatment    @relation(fields: [treatmentId], references: [id])
+  treatment   Treatment    @relation(fields: [treatmentId], references: [id])
   treatmentId Int
   createdAt   DateTime
 
-  @@id([id, surface])
+  @@id([id, surface, patientId])
 }
 
 model ChartRecord {
-  id           Int             @id @default(autoincrement())
-  createdAt    DateTime
-  type         String
-  description  String
-  tooth        String
-  surface      ToothSurface
-  doctor       String
-  status       TreatmentStatus
-  patientChart PatientChart[]
+  id          Int             @id @default(autoincrement())
+  createdAt   DateTime
+  type        String
+  description String
+  tooth       String
+  surface     ToothSurface
+  doctor      String
+  status      TreatmentStatus
+  patient     Patient?        @relation(fields: [patientId], references: [id])
+  patientId   Int?
 }
 
-model PatientChart {
-  patient       Patient     @relation(fields: [patientId], references: [id])
-  patientId     Int
-  chartRecord   ChartRecord @relation(fields: [chartRecordId], references: [id])
-  chartRecordId Int
+// model PatientChart {
+//   patient       Patient     @relation(fields: [patientId], references: [id])
+//   patientId     Int
+//   chartRecord   ChartRecord @relation(fields: [chartRecordId], references: [id])
+//   chartRecordId Int
 
-  @@id([patientId, chartRecordId])
-}
+//   @@id([patientId, chartRecordId])
+// }
 
 model Appointment {
   id        Int               @id @default(autoincrement())
@@ -128,7 +129,7 @@ model Treatment {
   name         String
   description  String
   category     TreatmentCategory
-  PatientTeeth PatientTeeth[]
+  patientTeeth Teeth[]
 }
 
 enum TreatmentCategory {
