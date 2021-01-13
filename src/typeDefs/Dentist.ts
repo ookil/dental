@@ -1,30 +1,11 @@
 import 'reflect-metadata';
-import { ObjectType, Field, ID } from 'type-graphql';
-import { IsEmail, Length } from 'class-validator';
+import { ObjectType, Field} from 'type-graphql';
 import { Patient } from './Patient';
 import { Appointment } from './Appointment';
+import { User } from './User';
 
 @ObjectType()
-export class Dentist {
-  @Field(() => ID)
-  id: number;
-
-  @Field()
-  @Length(3, 10)
-  name: string;
-
-  @Field()
-  @Length(3, 10)
-  surname: string;
-
-  @Field()
-  @IsEmail()
-  email: string;
-
-  @Field()
-  @Length(6, 20)
-  password: string;
-
+export class Dentist extends User {
   @Field()
   active: boolean;
 

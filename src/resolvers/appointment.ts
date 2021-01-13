@@ -182,10 +182,7 @@ export class AppointmentResolver {
   }
 
   @FieldResolver()
-  async dentist(
-    @Root() appointment: Appointment,
-    @Ctx() { prisma }: Context
-  ): Promise<Dentist | null> {
+  async dentist(@Root() appointment: Appointment, @Ctx() { prisma }: Context) {
     return await prisma.appointment
       .findUnique({
         where: {

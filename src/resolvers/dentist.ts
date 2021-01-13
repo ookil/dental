@@ -76,7 +76,7 @@ export class DentistResolver {
   async createDentist(
     @Arg('dentistData') dentistData: CreateDentistInput,
     @Ctx() { prisma }: Context
-  ): Promise<Dentist> {
+  ) {
     const dentist = await prisma.dentist.findMany({
       where: {
         AND: [
@@ -102,6 +102,7 @@ export class DentistResolver {
         surname: dentistData.surname,
         email: dentistData.email,
         password: await hash(dentistData.password, salt),
+        roles: 'DENTIST',
         clinic: {
           connect: {
             id: dentistData.clinicId,
@@ -115,7 +116,7 @@ export class DentistResolver {
   async deleteDentist(
     @Arg('id', () => Int) id: number,
     @Ctx() { prisma }: Context
-  ): Promise<Dentist> {
+  ) {
     return await prisma.dentist.delete({
       where: {
         id,
@@ -128,7 +129,7 @@ export class DentistResolver {
     @Arg('id', () => Int) id: number,
     @Arg('dentistData') dentistData: UpdateDentistInput,
     @Ctx() { prisma }: Context
-  ): Promise<Dentist> {
+  ) {
     const dentist = await prisma.dentist.findUnique({
       where: {
         id,

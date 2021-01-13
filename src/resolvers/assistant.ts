@@ -99,7 +99,7 @@ export class AssistantResolver {
   async createAssistant(
     @Arg('assistantData') assistantData: CreateAssistantInput,
     @Ctx() { prisma }: Context
-  ): Promise<Assistant> {
+  ) {
     const assistant = await prisma.assistant.findMany({
       where: {
         AND: [
@@ -123,6 +123,7 @@ export class AssistantResolver {
         surname: assistantData.surname,
         email: assistantData.email,
         password: await hash(assistantData.password, salt),
+        roles: 'ASSISTANT',
         clinic: {
           connect: {
             id: assistantData.clinicId,
@@ -136,7 +137,7 @@ export class AssistantResolver {
   async deleteAssistant(
     @Arg('id', () => Int) id: number,
     @Ctx() { prisma }: Context
-  ): Promise<Assistant> {
+  ) {
     return await prisma.assistant.delete({
       where: {
         id,
@@ -149,7 +150,7 @@ export class AssistantResolver {
     @Arg('id', () => Int) id: number,
     @Arg('assistantData') assistantData: UpdateAssistantInput,
     @Ctx() { prisma }: Context
-  ): Promise<Assistant> {
+  ) {
     const assistant = await prisma.assistant.findUnique({
       where: {
         id,
@@ -181,10 +182,7 @@ export class AssistantResolver {
   }
 
   @FieldResolver()
-  async worksWith(
-    @Root() assistant: Assistant,
-    @Ctx() { prisma }: Context
-  ): Promise<Dentist[]> {
+  async worksWith(@Root() assistant: Assistant, @Ctx() { prisma }: Context) {
     return await prisma.assistant
       .findUnique({
         where: {

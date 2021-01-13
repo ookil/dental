@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ObjectType, Field, ID } from 'type-graphql';
+import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
 import { Admin } from './Admin';
 import { Assistant } from './Assistant';
 import { Dentist } from './Dentist';
@@ -31,3 +31,12 @@ export class Clinic {
   @Field()
   registeredAt: Date;
 }
+
+export enum Role {
+  ADMIN = 'ADMIN',
+  DENTIST = 'DENTIST',
+  ASSISTANT = 'ASSISTANT',
+  REGULAR = 'REGULAR',
+}
+
+registerEnumType(Role, { name: 'Role' });

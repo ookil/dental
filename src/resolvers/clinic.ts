@@ -86,6 +86,7 @@ export class ClinicResolver {
             surname: adminData.surname,
             email: adminData.email,
             password: await bcrypt.hash(adminData.password, salt),
+            roles: 'ADMIN',
           },
         },
       },
@@ -97,10 +98,7 @@ export class ClinicResolver {
   }
 
   @FieldResolver()
-  async admin(
-    @Root() clinic: Clinic,
-    @Ctx() { prisma }: Context
-  ): Promise<Admin | null> {
+  async admin(@Root() clinic: Clinic, @Ctx() { prisma }: Context) {
     return await prisma.clinic
       .findUnique({
         where: {
@@ -111,10 +109,7 @@ export class ClinicResolver {
   }
 
   @FieldResolver()
-  async dentists(
-    @Root() clinic: Clinic,
-    @Ctx() { prisma }: Context
-  ): Promise<Dentist[]> {
+  async dentists(@Root() clinic: Clinic, @Ctx() { prisma }: Context) {
     return await prisma.clinic
       .findUnique({
         where: {
@@ -125,10 +120,7 @@ export class ClinicResolver {
   }
 
   @FieldResolver()
-  async assistants(
-    @Root() clinic: Clinic,
-    @Ctx() { prisma }: Context
-  ): Promise<Assistant[]> {
+  async assistants(@Root() clinic: Clinic, @Ctx() { prisma }: Context) {
     return await prisma.clinic
       .findUnique({
         where: {

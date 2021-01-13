@@ -163,10 +163,7 @@ export class PatientResolver {
   }
 
   @FieldResolver()
-  async dentist(
-    @Root() patient: Patient,
-    @Ctx() { prisma }: Context
-  ): Promise<Dentist | null> {
+  async dentist(@Root() patient: Patient, @Ctx() { prisma }: Context) {
     return await prisma.patient
       .findUnique({
         where: {

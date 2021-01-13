@@ -2,10 +2,9 @@ import 'reflect-metadata';
 import { ObjectType, Field, ID } from 'type-graphql';
 import { IsEmail, Length } from 'class-validator';
 import { Role } from './Clinic';
-import { User } from './User';
 
 @ObjectType()
-export class Admin extends User {
+export class User {
   @Field(() => ID)
   id: number;
 
