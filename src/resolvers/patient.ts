@@ -13,7 +13,6 @@ import {
 } from 'type-graphql';
 
 import { Length, IsEmail } from 'class-validator';
-import { Dentist } from '../typeDefs/Dentist';
 import { Patient } from '../typeDefs/Patient';
 
 @InputType({ description: 'New patient data' })

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ObjectType, Field, ID } from 'type-graphql';
+import { ObjectType, Field } from 'type-graphql';
 import { Dentist } from './Dentist';
 import { User } from './User';
 

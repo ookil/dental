@@ -1,7 +1,13 @@
 import 'reflect-metadata';
 import { ObjectType, Field, ID } from 'type-graphql';
 import { IsEmail, Length } from 'class-validator';
-import { Role } from './Clinic';
+import { Clinic, Role } from './Clinic';
+
+@ObjectType()
+export class AuthToken {
+  @Field()
+  token: string;
+}
 
 @ObjectType()
 export class User {
@@ -24,6 +30,9 @@ export class User {
   @Length(6, 20)
   password: string;
 
-  @Field(() => [Role])
-  roles: [Role];
+  @Field(() => [Role], { nullable: true })
+  roles?: [Role];
+
+  @Field(() => [Clinic])
+  clinics: [Clinic];
 }

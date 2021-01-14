@@ -1,4 +1,4 @@
-import { Context } from '../context';
+/* import { Context } from '../index';
 import {
   Arg,
   Ctx,
@@ -15,7 +15,6 @@ import {
 import { Length, IsEmail } from 'class-validator';
 import { genSalt, hash } from 'bcrypt';
 import { Assistant } from '../typeDefs/Assistant';
-import { Dentist } from 'src/typeDefs/Dentist';
 
 type UpdateAssistant = {
   name?: string;
@@ -192,3 +191,4 @@ export class AssistantResolver {
       .worksWith();
   }
 }
+ */

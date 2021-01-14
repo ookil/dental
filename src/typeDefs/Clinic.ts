@@ -1,9 +1,9 @@
 import 'reflect-metadata';
 import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
-import { Admin } from './Admin';
 import { Assistant } from './Assistant';
 import { Dentist } from './Dentist';
 import { Patient } from './Patient';
+import { User } from './User';
 
 @ObjectType()
 export class Clinic {
@@ -16,8 +16,8 @@ export class Clinic {
   @Field()
   address: string;
 
-  @Field(() => Admin)
-  admin: Admin;
+  @Field(() => User)
+  admin: User;
 
   @Field(() => [Dentist], { nullable: true })
   dentists?: [Dentist] | null;
@@ -30,6 +30,9 @@ export class Clinic {
 
   @Field()
   registeredAt: Date;
+
+  @Field(() => [User])
+  users: [User];
 }
 
 export enum Role {

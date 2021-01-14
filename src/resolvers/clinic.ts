@@ -1,6 +1,6 @@
 import 'reflect-metadata';
 import bcrypt from 'bcrypt';
-import { Context } from '../context';
+import { Context } from '../index';
 import {
   Arg,
   Ctx,
@@ -12,13 +12,11 @@ import {
   InputType,
   Field,
   Mutation,
+  Authorized,
 } from 'type-graphql';
-import { Admin } from '../typeDefs/Admin';
-import { Dentist } from '../typeDefs/Dentist';
 import { Clinic } from '../typeDefs/Clinic';
-import { Patient } from 'src/typeDefs/Patient';
-import { Assistant } from 'src/typeDefs/Assistant';
-import { IsEmail, Length } from 'class-validator';
+import { Patient } from '../typeDefs/Patient';
+import { CreateUserInput } from './user';
 
 @InputType({ description: 'New clinic data' })
 export class CreateClinicInput implements Partial<Clinic> {
@@ -30,27 +28,9 @@ export class CreateClinicInput implements Partial<Clinic> {
   address: string;
 }
 
-@InputType({ description: 'New admin data' })
-export class CreateAdminInput implements Partial<Admin> {
-  @Field()
-  @Length(3, 10)
-  name: string;
-
-  @Field()
-  @Length(3, 10)
-  surname: string;
-
-  @Field()
-  @IsEmail()
-  email: string;
-
-  @Field()
-  @Length(6, 20)
-  password: string;
-}
-
 @Resolver(Clinic)
 export class ClinicResolver {
+  @Authorized()
   @Query(() => Clinic, { nullable: true })
   async clinic(@Arg('id', () => Int) id: number, @Ctx() { prisma }: Context) {
     return await prisma.clinic.findUnique({
@@ -63,16 +43,16 @@ export class ClinicResolver {
   @Mutation(() => Clinic)
   async createClinic(
     @Arg('clinicData') clinicData: CreateClinicInput,
-    @Arg('adminData') adminData: CreateAdminInput,
+    @Arg('adminData') adminData: CreateUserInput,
     @Ctx() { prisma }: Context
   ) {
-    const admin = await prisma.admin.findUnique({
+    const user = await prisma.user.findUnique({
       where: {
         email: adminData.email,
       },
     });
 
-    if (admin) throw new Error('User already exists!');
+    if (user) throw new Error('User already exists!');
 
     const salt = await bcrypt.genSalt(10);
 
@@ -82,11 +62,9 @@ export class ClinicResolver {
         address: clinicData.address,
         admin: {
           create: {
-            name: adminData.name,
-            surname: adminData.surname,
             email: adminData.email,
             password: await bcrypt.hash(adminData.password, salt),
-            roles: 'ADMIN',
+            roles: ['ADMIN'],
           },
         },
       },
@@ -142,5 +120,21 @@ export class ClinicResolver {
         },
       })
       .patients();
+  }
+
+  @FieldResolver()
+  async users(@Root() clinic: Clinic, @Ctx() { prisma }: Context) {
+    const usersOnClinic = await prisma.userInClinic.findMany({
+      where: {
+        clinicId: clinic.id,
+      },
+      select: {
+        user: true,
+      },
+    });
+
+    const users = usersOnClinic.map((item) => item.user);
+
+    return users;
   }
 }

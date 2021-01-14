@@ -1,4 +1,4 @@
-import { Context } from '../context';
+import { Context } from '../index';
 import {
   Arg,
   Ctx,
@@ -12,7 +12,6 @@ import {
   Root,
 } from 'type-graphql';
 
-import { Dentist } from '../typeDefs/Dentist';
 import { Patient } from '../typeDefs/Patient';
 import { Appointment, AppointmentStatus } from '../typeDefs/Appointment';
 import { Length } from 'class-validator';

@@ -1,4 +1,4 @@
-import { Context } from '../context';
+/* import { Context } from '../index';
 import { Dentist } from '../typeDefs/Dentist';
 import { Patient } from '../typeDefs/Patient';
 import {
@@ -180,3 +180,4 @@ export class DentistResolver {
     return appointments;
   }
 }
+ */
