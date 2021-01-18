@@ -39,14 +39,6 @@ model UserInClinic {
   @@id([userId, clinicId])
 }
 
-// model Admin {
-//   id       Int      @id @default(autoincrement())
-//   name     String
-//   surname  String
-//   email    String   @unique
-//   password String
-//   clinic   Clinic[]
-// }
 
 model Dentist {
   id           Int           @id
@@ -59,7 +51,6 @@ model Dentist {
   appointments Appointment[]
   Assistant    Assistant?    @relation(fields: [assistantId], references: [id])
   assistantId  Int?
-  email        String        @unique
 }
 
 model Assistant {
@@ -70,7 +61,6 @@ model Assistant {
   worksWith Dentist[]
   clinic    Clinic    @relation(fields: [clinicId], references: [id])
   clinicId  Int
-  email     String    @unique
 }
 
 model Patient {

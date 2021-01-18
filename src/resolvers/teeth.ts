@@ -1,6 +1,7 @@
 import { Context } from '../context';
 import {
   Arg,
+  Authorized,
   Ctx,
   Field,
   FieldResolver,
@@ -23,7 +24,7 @@ export class CreateTeethInput implements Partial<Teeth> {
 
   @Field()
   @Length(2, 3)
-  id: string;
+  toothId: string;
 
   @Field(() => ToothSurface)
   surface: ToothSurface;
@@ -67,6 +68,7 @@ export class UpdateTeethInput implements Partial<Teeth> {
 
 @Resolver(Teeth)
 export class TeethResolver {
+  @Authorized()
   @Query(() => Teeth, { nullable: true })
   async tooth(
     @Arg('patientId', () => Int) patientId: number,
@@ -85,6 +87,7 @@ export class TeethResolver {
     });
   }
 
+  @Authorized()
   @Query(() => [Teeth], { nullable: true })
   async patientTeeth(
     @Arg('patientId', () => Int) patientId: number,
@@ -97,6 +100,7 @@ export class TeethResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => Teeth)
   async createToothTreatment(
     @Arg('createToothTreatmentData') createToothTreatmentData: CreateTeethInput,
@@ -106,16 +110,35 @@ export class TeethResolver {
     // for displaying teeth treatment, so when the same tooth+surface were to be created
     // instead it's gonna update it
 
+    // logic for action on crown or root
+    if (
+      createToothTreatmentData.surface === ToothSurface.CROWN ||
+      createToothTreatmentData.surface === ToothSurface.ROOT
+    ) {
+      await prisma.teeth.deleteMany({
+        where: {
+          AND: [
+            {
+              patientId: createToothTreatmentData.patientId,
+            },
+            {
+              id: createToothTreatmentData.toothId,
+            },
+          ],
+        },
+      });
+    }
+
     return await prisma.teeth.upsert({
       where: {
         id_surface_patientId: {
-          id: createToothTreatmentData.id,
+          id: createToothTreatmentData.toothId,
           surface: createToothTreatmentData.surface,
           patientId: createToothTreatmentData.patientId,
         },
       },
       create: {
-        id: createToothTreatmentData.id,
+        id: createToothTreatmentData.toothId,
         surface: createToothTreatmentData.surface,
         patient: { connect: { id: createToothTreatmentData.patientId } },
         treatment: { connect: { id: createToothTreatmentData.treatmentId } },
@@ -128,6 +151,7 @@ export class TeethResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => Teeth)
   async deleteToothTreatment(
     @Arg('toothData', () => DeleteTeethInput) toothData: DeleteTeethInput,

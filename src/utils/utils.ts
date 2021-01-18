@@ -1,12 +1,13 @@
+import { Role } from '../typeDefs/Clinic';
+
 const jwt = require('jsonwebtoken');
 
 export type User = {
-  userId: number;
-  role: string;
+  id: number;
+  roles: Role[];
 };
 
 export const getUser = (req: any) => {
-
   const auth = req.headers.authorization || '';
 
   if (!auth) return null;

@@ -1,5 +1,5 @@
 import 'reflect-metadata';
-import { ObjectType, Field, ID } from 'type-graphql';
+import { ObjectType, Field, ID, Authorized } from 'type-graphql';
 import { IsEmail, Length } from 'class-validator';
 import { Clinic, Role } from './Clinic';
 
@@ -15,14 +15,6 @@ export class User {
   id: number;
 
   @Field()
-  @Length(3, 10)
-  name: string;
-
-  @Field()
-  @Length(3, 10)
-  surname: string;
-
-  @Field()
   @IsEmail()
   email: string;
 
@@ -30,6 +22,7 @@ export class User {
   @Length(6, 20)
   password: string;
 
+  @Authorized('ADMIN')
   @Field(() => [Role], { nullable: true })
   roles?: [Role];
 

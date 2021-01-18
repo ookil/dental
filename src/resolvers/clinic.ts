@@ -72,6 +72,14 @@ export class ClinicResolver {
         admin: true,
       },
     });
+
+    await prisma.userInClinic.create({
+      data: {
+        clinic: { connect: { id: clinic.id } },
+        user: { connect: { id: clinic.admin.id } },
+      },
+    });
+
     return clinic;
   }
 

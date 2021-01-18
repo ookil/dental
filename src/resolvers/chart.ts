@@ -1,6 +1,7 @@
 import { Context } from '../context';
 import {
   Arg,
+  Authorized,
   Ctx,
   Field,
   FieldResolver,
@@ -73,6 +74,7 @@ export class UpdateChartRecordInput implements Partial<ChartRecord> {
 
 @Resolver(ChartRecord)
 export class ChartRecordResolver {
+  @Authorized()
   @Query(() => ChartRecord, { nullable: true })
   async chartRecord(
     @Arg('id', () => Int) id: number,
@@ -85,6 +87,7 @@ export class ChartRecordResolver {
     });
   }
 
+  @Authorized()
   @Query(() => [ChartRecord], { nullable: true })
   async patientChart(
     @Arg('patientId', () => Int) patientId: number,
@@ -97,6 +100,7 @@ export class ChartRecordResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => ChartRecord)
   async createChartRecord(
     @Arg('chartRecordData') chartRecordData: CreateChartRecordInput,
@@ -122,6 +126,7 @@ export class ChartRecordResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => ChartRecord)
   async deleteChartRecord(
     @Arg('id', () => Int) id: number,
@@ -134,6 +139,7 @@ export class ChartRecordResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => ChartRecord)
   async updateChartRecord(
     @Arg('id', () => Int) id: number,

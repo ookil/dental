@@ -1,6 +1,7 @@
 import { Context } from '../index';
 import {
   Arg,
+  Authorized,
   Ctx,
   Field,
   FieldResolver,
@@ -61,6 +62,7 @@ export class UpdateAppointmentInput implements Partial<Appointment> {
 
 @Resolver(Appointment)
 export class AppointmentResolver {
+  @Authorized()
   @Query(() => Appointment, { nullable: true })
   async appointment(
     @Arg('id', () => Int) id: number,
@@ -73,6 +75,7 @@ export class AppointmentResolver {
     });
   }
 
+  @Authorized()
   @Query(() => [Appointment], { nullable: true })
   async patientAppointments(
     @Arg('patientId', () => Int) patientId: number,
@@ -85,6 +88,7 @@ export class AppointmentResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => Appointment)
   async createAppointment(
     @Arg('appointmentData') appointmentData: CreateAppointmentInput,
@@ -112,20 +116,17 @@ export class AppointmentResolver {
     if (appointment.length)
       throw new Error('Something went wrong, appointment alredy exists!');
 
-    return await prisma.appointment.create({
-      data: {
-        treatment: appointmentData.treatment,
-        startAt: appointmentData.startAt,
-        endAt: appointmentData.endAt,
-        createdAt: new Date(),
-        dentist: {
-          connect: { id: appointmentData.dentistId },
-        },
-        patient: {
-          connectOrCreate: {
-            where: {
-              id: appointmentData.patientId,
-            },
+    if (newPatientData)
+      return await prisma.appointment.create({
+        data: {
+          treatment: appointmentData.treatment,
+          startAt: appointmentData.startAt,
+          endAt: appointmentData.endAt,
+          createdAt: new Date(),
+          dentist: {
+            connect: { id: appointmentData.dentistId },
+          },
+          patient: {
             create: {
               name: newPatientData.name,
               surname: newPatientData.surname,
@@ -136,14 +137,45 @@ export class AppointmentResolver {
                   id: newPatientData.clinicId,
                 },
               },
+              dentist: {
+                connect: {
+                  id: newPatientData.dentistId,
+                },
+              },
             },
+          },
+          status: 'REGISTERED',
+        },
+        include: {
+          patient: true,
+          dentist: true,
+        },
+      });
+
+    return await prisma.appointment.create({
+      data: {
+        treatment: appointmentData.treatment,
+        startAt: appointmentData.startAt,
+        endAt: appointmentData.endAt,
+        createdAt: new Date(),
+        dentist: {
+          connect: { id: appointmentData.dentistId },
+        },
+        patient: {
+          connect: {
+            id: appointmentData.patientId,
           },
         },
         status: 'REGISTERED',
       },
+      include: {
+        patient: true,
+        dentist: true,
+      },
     });
   }
 
+  @Authorized()
   @Mutation(() => Appointment)
   async deleteAppointment(
     @Arg('id', () => Int) id: number,
@@ -156,6 +188,7 @@ export class AppointmentResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => Appointment)
   async updateAppointment(
     @Arg('id', () => Int) id: number,
@@ -169,6 +202,26 @@ export class AppointmentResolver {
     });
 
     if (!appointment) throw new Error('Appointment Not Found');
+
+    const appointments = await prisma.appointment.findMany({
+      where: {
+        AND: [
+          {
+            startAt: appointmentData.startAt,
+          },
+          {
+            endAt: appointmentData.endAt,
+          },
+          {
+            dentistId: appointmentData.dentistId,
+          },
+        ],
+      },
+    });
+
+    // don't allow to create multiple appointments for dentist at the same time
+    if (appointments.length)
+      throw new Error('Something went wrong, appointment alredy exists!');
 
     return await prisma.appointment.update({
       where: {

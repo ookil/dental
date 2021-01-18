@@ -1,6 +1,7 @@
-/* import { Context } from '../index';
+import { Context } from '../index';
 import {
   Arg,
+  Authorized,
   Ctx,
   Field,
   FieldResolver,
@@ -12,42 +13,14 @@ import {
   Root,
 } from 'type-graphql';
 
-import { Length, IsEmail } from 'class-validator';
-import { genSalt, hash } from 'bcrypt';
+import { Length } from 'class-validator';
 import { Assistant } from '../typeDefs/Assistant';
 
 type UpdateAssistant = {
   name?: string;
   surname?: string;
-  email?: string;
-  password?: string;
   worksWithDentists?: Array<{ id: number }>;
 };
-
-@InputType({ description: 'New assistant data' })
-export class CreateAssistantInput implements Partial<Assistant> {
-  @Field()
-  @Length(3, 10)
-  name: string;
-
-  @Field()
-  @Length(3, 10)
-  surname: string;
-
-  @Field()
-  @IsEmail()
-  email: string;
-
-  @Field()
-  @Length(6, 20)
-  password: string;
-
-  @Field(() => Int)
-  clinicId: number;
-
-  @Field(() => [Int])
-  worksWithDentist: [number];
-}
 
 @InputType({ description: 'List of dentists' })
 class DentistList {
@@ -65,14 +38,6 @@ export class UpdateAssistantInput implements Partial<Assistant> {
   @Length(3, 10)
   surname?: string;
 
-  @Field({ nullable: true })
-  @IsEmail()
-  email?: string;
-
-  @Field({ nullable: true })
-  @Length(6, 20)
-  password?: string;
-
   @Field(() => [DentistList], { nullable: true })
   worksWithDentists?: DentistList[];
 
@@ -82,6 +47,7 @@ export class UpdateAssistantInput implements Partial<Assistant> {
 
 @Resolver(Assistant)
 export class AssistantResolver {
+  @Authorized()
   @Query(() => Assistant, { nullable: true })
   async assistant(
     @Arg('id', () => Int) id: number,
@@ -94,56 +60,7 @@ export class AssistantResolver {
     });
   }
 
-  @Mutation(() => Assistant)
-  async createAssistant(
-    @Arg('assistantData') assistantData: CreateAssistantInput,
-    @Ctx() { prisma }: Context
-  ) {
-    const assistant = await prisma.assistant.findMany({
-      where: {
-        AND: [
-          {
-            email: assistantData.email,
-          },
-          {
-            clinicId: assistantData.clinicId,
-          },
-        ],
-      },
-    });
-
-    if (assistant.length) throw new Error('Assistant already exists!');
-
-    const salt = await genSalt(10);
-
-    return await prisma.assistant.create({
-      data: {
-        name: assistantData.name,
-        surname: assistantData.surname,
-        email: assistantData.email,
-        password: await hash(assistantData.password, salt),
-        roles: 'ASSISTANT',
-        clinic: {
-          connect: {
-            id: assistantData.clinicId,
-          },
-        },
-      },
-    });
-  }
-
-  @Mutation(() => Assistant)
-  async deleteAssistant(
-    @Arg('id', () => Int) id: number,
-    @Ctx() { prisma }: Context
-  ) {
-    return await prisma.assistant.delete({
-      where: {
-        id,
-      },
-    });
-  }
-
+  @Authorized(['ADMIN', 'DENTIST', 'ASSISTANT'])
   @Mutation(() => Assistant)
   async updateAssistant(
     @Arg('id', () => Int) id: number,
@@ -154,6 +71,11 @@ export class AssistantResolver {
       where: {
         id,
       },
+      include: {
+        worksWith: {
+          select: { id: true },
+        },
+      },
     });
 
     if (!assistant) throw new Error('Assistant Not Found');
@@ -161,10 +83,16 @@ export class AssistantResolver {
     let newData: UpdateAssistant = {};
     if (assistantData.name) newData.name = assistantData.name;
     if (assistantData.surname) newData.surname = assistantData.surname;
-    if (assistantData.email) newData.email = assistantData.email;
-    if (assistantData.password) {
-      const salt = await genSalt(10);
-      newData.password = await hash(assistantData.password, salt);
+
+    let disconnectIds = undefined;
+    if (assistantData.worksWithDentists) {
+      const diff = assistant.worksWith.filter(
+        ({ id: id1 }) =>
+          !assistantData.worksWithDentists?.some(({ id: id2 }) => id2 === id1)
+      );
+
+      if (diff.length) disconnectIds = diff;
+      console.log(disconnectIds);
     }
 
     return await prisma.assistant.update({
@@ -175,6 +103,7 @@ export class AssistantResolver {
         ...newData,
         worksWith: {
           connect: assistantData.worksWithDentists,
+          disconnect: disconnectIds,
         },
       },
     });
@@ -191,4 +120,3 @@ export class AssistantResolver {
       .worksWith();
   }
 }
- */

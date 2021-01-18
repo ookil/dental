@@ -1,19 +1,18 @@
 import 'reflect-metadata';
-import { ApolloServer, Request } from 'apollo-server-express';
+import { ApolloServer } from 'apollo-server-express';
 import express from 'express';
 import { buildSchema } from 'type-graphql';
 import { PrismaClient } from '@prisma/client';
 import { ClinicResolver } from './resolvers/clinic';
-/* import { DentistResolver } from './resolvers/dentist';
+import { DentistResolver } from './resolvers/dentist';
 import { AssistantResolver } from './resolvers/assistant';
 import { PatientResolver } from './resolvers/patient';
 import { AppointmentResolver } from './resolvers/appointment';
 import { ChartRecordResolver } from './resolvers/chart';
 import { TeethResolver } from './resolvers/teeth';
-import { TreatmentResolver } from './resolvers/treatment'; */
+import { TreatmentResolver } from './resolvers/treatment';
 import { getUser, User } from './utils/utils';
 import { UserResolver } from './resolvers/user';
-import { createContext } from './context';
 
 export type Context = {
   prisma: PrismaClient;
@@ -27,16 +26,15 @@ const main = async () => {
     resolvers: [
       ClinicResolver,
       UserResolver,
-      /* DentistResolver,
+      DentistResolver,
       AssistantResolver,
       PatientResolver,
       AppointmentResolver,
       ChartRecordResolver,
       TeethResolver,
-      TreatmentResolver, */
+      TreatmentResolver,
     ],
-    authChecker: ({ context: { user } }, roles) => {
-      console.log(user);
+    authChecker: ({ context: { user } }: { context: Context }, roles) => {
       // if `@Authorized()`, check only if user exists
       if (roles.length === 0) return user !== null;
 
@@ -45,7 +43,7 @@ const main = async () => {
       // and if no user, restrict access
       if (!user) return false;
 
-      if (roles.includes(user.role)) return true;
+      if (user.roles.some((role) => roles.includes(role))) return true;
 
       // no roles matched, restrict access
       return false;

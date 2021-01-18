@@ -1,6 +1,7 @@
 import { Context } from '../context';
 import {
   Arg,
+  Authorized,
   Ctx,
   Field,
   FieldResolver,
@@ -35,6 +36,9 @@ export class CreatePatientInput implements Partial<Patient> {
 
   @Field(() => Int)
   clinicId: number;
+
+  @Field(() => Int, { nullable: true })
+  dentistId?: number;
 }
 
 @InputType({ description: 'Update patient data' })
@@ -61,6 +65,7 @@ export class UpdatePatientInput implements Partial<Patient> {
 
 @Resolver(Patient)
 export class PatientResolver {
+  @Authorized()
   @Query(() => Patient, { nullable: true })
   async patient(@Arg('id', () => Int) id: number, @Ctx() { prisma }: Context) {
     return await prisma.patient.findUnique({
@@ -70,6 +75,7 @@ export class PatientResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => Patient)
   async createPatient(
     @Arg('patientData') patientData: CreatePatientInput,
@@ -116,6 +122,11 @@ export class PatientResolver {
         surname: patientData.surname,
         email: patientData.email,
         nationalId: patientData.nationalId,
+        dentist: {
+          connect: {
+            id: patientData.dentistId,
+          },
+        },
         clinic: {
           connect: {
             id: patientData.clinicId,
@@ -125,6 +136,7 @@ export class PatientResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => Patient)
   async deletePatient(
     @Arg('id', () => Int) id: number,
@@ -137,11 +149,14 @@ export class PatientResolver {
     });
   }
 
+  @Authorized()
   @Mutation(() => Patient)
   async updatePatient(
     @Arg('id', () => Int) id: number,
-    @Arg('patientData') patientData: UpdatePatientInput,
-    @Ctx() { prisma }: Context
+    @Arg('patientData', { nullable: true }) patientData: UpdatePatientInput,
+    @Arg('dentistId', () => Int, { nullable: true }) dentistId: number,
+    @Ctx()
+    { prisma }: Context
   ): Promise<Patient> {
     const patient = await prisma.patient.findUnique({
       where: {
@@ -157,6 +172,11 @@ export class PatientResolver {
       },
       data: {
         ...patientData,
+        dentist: {
+          connect: {
+            id: dentistId,
+          },
+        },
       },
     });
   }
