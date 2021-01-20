@@ -7,23 +7,28 @@ import {
   LinkTitle,
   CalendarIcon,
   LinkIconWrapper,
+  UserBox,
+  CollapseButton,
+  CollapseIcon,
+  SettingsIcon,
 } from './Toolbar.elements';
 
 const Toolbar: React.FC = () => {
-  const [dashboard, setDashboard] = useState(true);
-  const [calendar, setCalendar] = useState(false);
-  const [patients, setPatients] = useState(false);
-
   const [button, setButton] = useState('dashboard');
+  const [isCollapsed, setCollapse] = useState(false);
+
+  const hanldeButton = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
+    setButton(e.currentTarget.id);
+  const handleCollapse = () => setCollapse(!isCollapsed);
 
   return (
-    <ToolbarMenu>
+    <ToolbarMenu isCollapsed={isCollapsed}>
       <ToolbarWrapper>
         <ToolbarLink
           to='/dashboard'
           id='dashboard'
           selected={button}
-          onClick={(e) => setButton(e.currentTarget.id)}
+          onClick={(e) => hanldeButton(e)}
         >
           <LinkIconWrapper>
             <DashboardIcon />
@@ -34,7 +39,7 @@ const Toolbar: React.FC = () => {
           to='/calendar'
           id='calendar'
           selected={button}
-          onClick={(e) => setButton(e.currentTarget.id)}
+          onClick={(e) => hanldeButton(e)}
         >
           <LinkIconWrapper>
             <CalendarIcon />
@@ -45,13 +50,30 @@ const Toolbar: React.FC = () => {
           to='/patients'
           id='patients'
           selected={button}
-          onClick={(e) => setButton(e.currentTarget.id)}
+          onClick={(e) => hanldeButton(e)}
         >
           <LinkIconWrapper>
             <DashboardIcon />
           </LinkIconWrapper>
           <LinkTitle>Patients List</LinkTitle>
         </ToolbarLink>
+        <ToolbarLink
+          to='/settings'
+          id='settings'
+          selected={button}
+          onClick={(e) => hanldeButton(e)}
+        >
+          <LinkIconWrapper>
+            <SettingsIcon />
+          </LinkIconWrapper>
+          <LinkTitle>Settings</LinkTitle>
+        </ToolbarLink>
+
+        <CollapseButton onClick={handleCollapse} isCollapsed={isCollapsed}>
+          <CollapseIcon />
+        </CollapseButton>
+
+        <UserBox>Dr. Ząbek</UserBox>
       </ToolbarWrapper>
     </ToolbarMenu>
   );

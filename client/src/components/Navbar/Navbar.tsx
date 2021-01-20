@@ -23,14 +23,14 @@ import {
   CalendarIcon,
   DashboardIcon,
   PatientsIcon,
+  SettingsIcon,
 } from '../Toolbar/Toolbar.elements';
 import { useRouteMatch } from 'react-router-dom';
+import MobileNavbar from './MobileNavbar';
 
 type MatchTypes = {
   params?: any;
 };
-
-
 
 const Navbar: React.FC = () => {
   const match = useRouteMatch('/:page');
@@ -41,54 +41,59 @@ const Navbar: React.FC = () => {
   } = match as MatchTypes;
 
   return (
-    <Nav>
-      <NavbarContainer>
-        <NavLogo to='/'>
-          <NavIcon src={ClinicIcon} />
-          <NavLogoTitle>DENTAL</NavLogoTitle>
-        </NavLogo>
+    <>
+      <Nav>
+        <NavbarContainer>
+          <NavLogo to='/'>
+            <NavIcon src={ClinicIcon} />
+            <NavLogoTitle>DENTAL</NavLogoTitle>
+          </NavLogo>
 
-        <CurrentPage>
-          <CurrentPageIcon>
-            {page === 'dashboard' ? (
-              <DashboardIcon />
-            ) : page === 'calendar' ? (
-              <CalendarIcon />
-            ) : (
-              <PatientsIcon />
-            )}
-          </CurrentPageIcon>
-          <CurrentPageTitle>
-            {page === 'dashboard'
-              ? 'Clinic Overwiev'
-              : page === 'calendar'
-              ? 'Calendar'
-              : 'Patients List'}
-          </CurrentPageTitle>
-        </CurrentPage>
+          <CurrentPage>
+            <CurrentPageIcon>
+              {page === 'dashboard' ? (
+                <DashboardIcon />
+              ) : page === 'calendar' ? (
+                <CalendarIcon />
+              ) : page === 'patients' ? (
+                <PatientsIcon />
+              ) : (
+                <SettingsIcon />
+              )}
+            </CurrentPageIcon>
+            <CurrentPageTitle>
+              {page === 'dashboard'
+                ? 'Clinic Overview'
+                : page === 'calendar'
+                ? 'Calendar'
+                : page === 'patients'
+                ? 'Patients List'
+                : 'Settings'}
+            </CurrentPageTitle>
+          </CurrentPage>
 
-        <MobileIcon onClick={() => setOpen(!isOpen)}>
-          {isOpen ? <CloseIcon /> : <HamburgerIcon />}
-        </MobileIcon>
+          <MobileIcon onClick={() => setOpen(!isOpen)}>
+            {isOpen ? <CloseIcon /> : <HamburgerIcon />}
+          </MobileIcon>
 
-        <QuickMenu>
-          <QuickMenuItem>
-            <QuickMenuIcon src={AppointmentIcon} />
-            New Appointment
-          </QuickMenuItem>
-          <QuickMenuItem>
-            <QuickMenuIcon src={AddPatient} />
-            Add Patient
-          </QuickMenuItem>
-          <QuickMenuItem>
-            <QuickMenuIcon src={Search} />
-            Find Patient
-          </QuickMenuItem>
-        </QuickMenu>
-
-
-      </NavbarContainer>
-    </Nav>
+          <QuickMenu>
+            <QuickMenuItem>
+              <QuickMenuIcon src={AppointmentIcon} />
+              New Appointment
+            </QuickMenuItem>
+            <QuickMenuItem>
+              <QuickMenuIcon src={AddPatient} />
+              Add Patient
+            </QuickMenuItem>
+            <QuickMenuItem>
+              <QuickMenuIcon src={Search} />
+              Find Patient
+            </QuickMenuItem>
+          </QuickMenu>
+        </NavbarContainer>
+      </Nav>
+      <MobileNavbar isOpen={isOpen} />
+    </>
   );
 };
 

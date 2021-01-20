@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { color, device } from '../../globalStyles';
+import { MobileNavProps } from './MobileNavbar';
 
 const { bgPrimary, bluePrimary, blueTetriary } = color;
 
@@ -53,7 +54,7 @@ export const NavLogoTitle = styled.p`
 export const MobileIcon = styled.div`
   display: none;
 
-  @media screen and (max-width: 940px) {
+  @media ${device.maxMobile} {
     display: block;
     position: absolute;
     top: 0;
@@ -78,7 +79,7 @@ export const QuickMenu = styled.div`
     margin-right: 0;
   }
 
-  @media screen and (max-width: 940px) {
+  @media ${device.maxMobile} {
     display: none;
   }
 `;
@@ -131,15 +132,8 @@ export const CurrentPageTitle = styled.h3`
   margin-left: 10px;
 `;
 
-export const MobileNav = styled.div`
-  position: absolute;
-  top: 60px;
-  left: 0;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  height: 90vh;
-`;
+
+
 
 export const CloseIcon = () => (
   <svg
