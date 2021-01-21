@@ -129,9 +129,9 @@ export const CollapseIcon = () => (
     <path
       d='M13.5 9L10 12L13.5 15.5'
       stroke='currentColor'
-      stroke-width='2'
-      stroke-linecap='round'
-      stroke-linejoin='round'
+      strokeWidth='2'
+      strokeLinecap='round'
+      strokeLinejoin='round'
     />
   </svg>
 );

@@ -1,9 +1,8 @@
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { color, device } from '../../globalStyles';
-import { MobileNavProps } from './MobileNavbar';
 
-const { bgPrimary, bluePrimary, blueTetriary } = color;
+const { bgPrimary, bluePrimary, blueTetriary, textPrimary } = color;
 
 export const Nav = styled.nav`
   background-color: ${bgPrimary};
@@ -12,7 +11,7 @@ export const Nav = styled.nav`
   align-items: center;
   box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   border-bottom: 3px solid ${bluePrimary};
-  color: ${color.textPrimary};
+  color: ${textPrimary};
   position: relative;
   z-index: 999;
 `;

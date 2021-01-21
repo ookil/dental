@@ -27,18 +27,20 @@ import {
 } from '../Toolbar/Toolbar.elements';
 import { useRouteMatch } from 'react-router-dom';
 import MobileNavbar from './MobileNavbar';
+import { useAppDispatch } from '../../store/store';
+import { openModal } from '../../store/slices/modalsSlice';
 
 type MatchTypes = {
-  params?: any;
+  page?: any;
 };
 
 const Navbar: React.FC = () => {
-  const match = useRouteMatch('/:page');
+  const match = useRouteMatch<MatchTypes>('/:page');
   const [isOpen, setOpen] = useState(false);
 
-  const {
-    params: { page },
-  } = match as MatchTypes;
+  const page = match?.params.page || '/';
+
+  const dispatch = useAppDispatch();
 
   return (
     <>
@@ -77,11 +79,13 @@ const Navbar: React.FC = () => {
           </MobileIcon>
 
           <QuickMenu>
-            <QuickMenuItem>
+            <QuickMenuItem
+              onClick={() => dispatch(openModal('NEW_APPOINTMENT'))}
+            >
               <QuickMenuIcon src={AppointmentIcon} />
               New Appointment
             </QuickMenuItem>
-            <QuickMenuItem>
+            <QuickMenuItem onClick={() => dispatch(openModal('ADD_PATIENT'))}>
               <QuickMenuIcon src={AddPatient} />
               Add Patient
             </QuickMenuItem>

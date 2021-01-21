@@ -11,16 +11,23 @@ import { QuickMenuIcon } from './Navbar.elements';
 import Appointment from '../../images/appointment.svg';
 import AddPatient from '../../images/new_patient.svg';
 import Search from '../../images/search.svg';
+import { useAppDispatch } from '../../store/store';
+import { openModal } from '../../store/slices/modalsSlice';
 
 export type MobileNavProps = {
   isOpen: boolean;
 };
 
 const MobileNavbar: React.FC<MobileNavProps> = ({ isOpen }) => {
+  const dispatch = useAppDispatch();
+
+  
+
+
   return (
     <MobileNav isOpen={isOpen}>
       <QuickMenu>
-        <QuickMenuItem>
+        <QuickMenuItem onClick={() => dispatch(openModal('NEW_APPOINTMENT'))}>
           <QuickMenuIcon src={Appointment} />
           <QuickMenuTitle>New Appointment</QuickMenuTitle>
         </QuickMenuItem>
@@ -37,7 +44,7 @@ const MobileNavbar: React.FC<MobileNavProps> = ({ isOpen }) => {
       <NavLink to='/calendar'>Calendar</NavLink>
       <NavLink to='/patients'>Patients</NavLink>
       <NavLink to='/settings'>Settings</NavLink>
-      <LogoutButton >Logut</LogoutButton>
+      <LogoutButton>Logut</LogoutButton>
     </MobileNav>
   );
 };
