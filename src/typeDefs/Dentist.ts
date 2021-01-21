@@ -10,11 +10,11 @@ export class Dentist {
   id: number;
 
   @Field()
-  @Length(3, 10)
+  @Length(3, 30)
   name: string;
 
   @Field()
-  @Length(3, 10)
+  @Length(3, 30)
   surname: string;
 
   @Field()

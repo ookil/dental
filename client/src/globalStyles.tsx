@@ -5,7 +5,10 @@ export const color = {
   bgSecondary: '#ebecf0',
   bluePrimary: '#337AE3',
   blueTetriary: '#BCCEE8',
+  greenConfirm: '#63b448',
+  pinkCancel: '#e3339d',
   textPrimary: '#333333',
+  textSecondary: '#8D8D97',
 };
 
 const size = {

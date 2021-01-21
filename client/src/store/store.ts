@@ -4,12 +4,12 @@ import modalsReducer from './slices/modalsSlice';
 
 const store = configureStore({
   reducer: {
-    modals: modalsReducer,
+    modal: modalsReducer,
   },
 });
 
 export default store;
 
-export type RootStore = ReturnType<typeof store.getState>;
+export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 export const useAppDispatch = () => useDispatch<AppDispatch>();

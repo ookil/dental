@@ -13,7 +13,7 @@ export const Nav = styled.nav`
   border-bottom: 3px solid ${bluePrimary};
   color: ${textPrimary};
   position: relative;
-  z-index: 999;
+  z-index: 29;
 `;
 
 export const NavbarContainer = styled.div`

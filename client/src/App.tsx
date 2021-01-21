@@ -6,7 +6,8 @@ import {
   Route,
   Redirect,
 } from 'react-router-dom';
-import { Navbar, Toolbar } from './components';
+import { ModalProvider } from 'styled-react-modal';
+import { MainModal, Navbar, Toolbar } from './components';
 import GlobalStyle from './globalStyles';
 import { Dashboard } from './pages';
 import store from './store/store';
@@ -14,15 +15,18 @@ import store from './store/store';
 function App() {
   return (
     <Provider store={store}>
-      <Router>
-        <GlobalStyle />
-        <Redirect from='/' to='/dashboard' />
-        <Navbar />
-        <Toolbar />
-        <Switch>
-          <Route path='/:page' component={Dashboard} />
-        </Switch>
-      </Router>
+      <GlobalStyle />
+      <ModalProvider>
+        <MainModal />
+        <Router>
+          <Redirect from='/' to='/dashboard' />
+          <Navbar />
+          <Toolbar />
+          <Switch>
+            <Route path='/:page' component={Dashboard} />
+          </Switch>
+        </Router>
+      </ModalProvider>
     </Provider>
   );
 }

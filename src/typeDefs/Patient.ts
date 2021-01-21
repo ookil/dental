@@ -11,15 +11,16 @@ export class Patient {
   id: number;
 
   @Field()
-  @Length(3, 10)
+  @Length(3, 30)
   name: string;
 
   @Field()
-  @Length(3, 10)
+  @Length(3, 30)
   surname: string;
 
   @Field(() => String, { nullable: true })
   @IsEmail()
+  @Length(3, 30)
   email?: string | null;
 
   @Field(() => String, { nullable: true })
@@ -38,4 +39,3 @@ export class Patient {
   @Field(() => [ChartRecord], { nullable: true })
   patientChart?: ChartRecord[];
 }
-
