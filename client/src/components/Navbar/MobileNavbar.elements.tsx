@@ -46,6 +46,7 @@ export const QuickMenu = styled.div`
 export const QuickMenuItem = styled.div`
   ${NavItem}
   margin-bottom: 3px;
+  user-select: none;
 
   &:hover {
     background-color: white;

@@ -16,17 +16,17 @@ function App() {
   return (
     <Provider store={store}>
       <GlobalStyle />
-      <ModalProvider>
-        <MainModal />
-        <Router>
+      <Router>
+        <ModalProvider>
+          <MainModal />
           <Redirect from='/' to='/dashboard' />
           <Navbar />
           <Toolbar />
           <Switch>
             <Route path='/:page' component={Dashboard} />
           </Switch>
-        </Router>
-      </ModalProvider>
+        </ModalProvider>
+      </Router>
     </Provider>
   );
 }

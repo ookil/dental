@@ -1,15 +1,21 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { useSelector } from 'react-redux';
+import {
+  clearFilteredPatients,
+  filterPatients,
+} from '../../store/slices/modalsSlice';
+import { useAppDispatch, RootState } from '../../store/store';
 import { CollapseIcon } from '../Toolbar/Toolbar.elements';
 import {
   DropdownButton,
   DropdownList,
   DropdownListContainer,
+  InputWrapper,
   Label,
   ListItem,
   SelectContainer,
-  SelectPlaceholder,
-  StyledSelect,
 } from './Elements';
+import Input from './Input';
 
 interface Props
   extends React.DetailedHTMLProps<
@@ -17,12 +23,12 @@ interface Props
     HTMLSelectElement
   > {
   label: string;
-  dentist?: Array<{}>;
+  patients?: Array<{}>;
   marginBottom?: number;
   marginTop?: number;
 }
 
-const dentists = [
+const patients = [
   { id: 1, name: 'Miłosz', surname: 'Fretek' },
   { id: 2, name: 'Super', surname: 'Star' },
   { id: 3, name: 'Barabasz', surname: 'Wielki' },
@@ -31,10 +37,12 @@ const dentists = [
   { id: 6, name: 'Barabasz', surname: 'Wielki' },
   { id: 7, name: 'Barabasz', surname: 'Wielki' },
   { id: 8, name: 'Barabasz', surname: 'Wielki' },
+  { id: 11, name: 'Miłosz', surname: 'Bernardo' },
+  { id: 12, name: 'Miłosz', surname: 'Gozik' },
   { id: 9, name: 'Add', surname: 'Later' },
 ];
 
-const Select: React.FC<Props> = ({
+const SelectWithInput: React.FC<Props> = ({
   label,
   placeholder,
   marginBottom,
@@ -47,6 +55,20 @@ const Select: React.FC<Props> = ({
   const handleSelect = (dentist: any) => {
     setSelected(dentist.name + ' ' + dentist.surname);
     setIsOpen(false);
+  };
+
+  const dispatch = useAppDispatch();
+  const filteredPatients = useSelector(
+    (state: RootState) => state.modal.filteredPatients
+  );
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSelected(e.target.value);
+    if (e.target.value !== '') {
+      dispatch(filterPatients(e.target.value));
+    } else {
+      dispatch(clearFilteredPatients());
+    }
   };
 
   const dropdownRef = useRef<HTMLDivElement>();
@@ -78,25 +100,40 @@ const Select: React.FC<Props> = ({
     <>
       <SelectContainer marginBottom={marginBottom} marginTop={marginTop}>
         <Label>{label}</Label>
-        <StyledSelect onClick={handleDropdown}>
+        <InputWrapper>
           <DropdownButton>
             <CollapseIcon />
           </DropdownButton>
-          <SelectPlaceholder>
-            {isSelected ? <span>{isSelected}</span> : placeholder}
-          </SelectPlaceholder>
-        </StyledSelect>
-        {isOpen && (
+          <Input
+            marginBottom={marginBottom}
+            onClick={handleDropdown}
+            type='text'
+            placeholder='Select patient'
+            onChange={handleChange}
+            value={isSelected}
+          />
+        </InputWrapper>
+
+        {isOpen && filteredPatients?.length !== 0 && (
           <DropdownListContainer>
             <DropdownList ref={dropdownRef}>
-              {dentists.map((dentist) => (
-                <ListItem
-                  key={dentist.id}
-                  onClick={() => handleSelect(dentist)}
-                >
-                  {dentist.name + ' ' + dentist.surname}
-                </ListItem>
-              ))}
+              {filteredPatients !== null
+                ? filteredPatients.map((patient) => (
+                    <ListItem
+                      key={patient.id}
+                      onClick={() => handleSelect(patient)}
+                    >
+                      {patient.name + ' ' + patient.surname}
+                    </ListItem>
+                  ))
+                : patients.map((patient) => (
+                    <ListItem
+                      key={patient.id}
+                      onClick={() => handleSelect(patient)}
+                    >
+                      {patient.name + ' ' + patient.surname}
+                    </ListItem>
+                  ))}
             </DropdownList>
           </DropdownListContainer>
         )}
@@ -105,4 +142,4 @@ const Select: React.FC<Props> = ({
   );
 };
 
-export default Select;
+export default SelectWithInput;

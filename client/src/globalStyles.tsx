@@ -1,4 +1,4 @@
-import { createGlobalStyle } from 'styled-components';
+import { createGlobalStyle, css } from 'styled-components';
 
 export const color = {
   bgPrimary: '#FAFBFC',
@@ -34,12 +34,40 @@ export const device = {
   desktopL: `(max-width: ${size.desktop})`,
 };
 
+export const StyledScrollbar = css`
+  scrollbar-color: transparent transparent;
+  scrollbar-width: thin;
+`;
+
+export const WebkitScrollbar = css``;
+
+export const WebkitScrollbarTrack = css`
+  background: transparent;
+  border-radius: 10px;
+`;
+
+export const WebkitScrollbarThumb = css`
+  border-radius: 10px;
+  background-color: #202225;
+`;
+
 const GlobalStyle = createGlobalStyle`
     * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
         font-family: 'Montserrat', sans-serif;
+        scrollbar-color: ${color.textSecondary} transparent;
+        scrollbar-width: thin;
+
+        &::-webkit-scrollbar {
+          width: 5px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          border-radius: 10px;
+          background-color: ${color.textSecondary};
+        }
     }
 `;
 

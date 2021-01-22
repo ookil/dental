@@ -4,6 +4,7 @@ import { ModalContainer, StyledModal } from './Modals.elements';
 import { RootState, useAppDispatch } from '../../store/store';
 import { openModal } from '../../store/slices/modalsSlice';
 import AddPatientContent from './AddPatientContent';
+import NewAppointmentContent from './NewAppointmentContent';
 
 const MainModal: React.FC = () => {
   const [opacity, setOpacity] = useState(0);
@@ -47,9 +48,16 @@ const MainModal: React.FC = () => {
       opacity={opacity}
       scale={scale}
       onEscapeKeydown={handleClose}
+      onBackgroundClick={() =>
+        window.screen.width < 940 ? dispatch(openModal(false)) : null
+      }
     >
       <ModalContainer>
-        {isOpenModal === 'ADD_PATIENT' ? <AddPatientContent /> : null}
+        {isOpenModal === 'NEW_APPOINTMENT' ? (
+          <NewAppointmentContent />
+        ) : isOpenModal === 'ADD_PATIENT' ? ( 
+          <AddPatientContent />
+        ) : null}
       </ModalContainer>
     </StyledModal>
   );

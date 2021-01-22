@@ -10,6 +10,19 @@ const {
   pinkCancel,
 } = color;
 
+export const InputContainer = styled.div<{
+  marginBottom?: number;
+  marginTop?: number;
+}>`
+  margin-top: ${(props) => (props.marginTop ? `${props.marginTop}px` : 0)};
+  margin-bottom: ${(props) =>
+    props.marginBottom
+      ? props.marginBottom === 0
+        ? props.marginBottom
+        : `${props.marginBottom}px`
+      : '25px'};
+`;
+
 export const Label = styled.div`
   text-transform: uppercase;
   color: black;
@@ -42,12 +55,16 @@ const InputBox = css`
 
 export const StyledInput = styled.input`
   ${InputBox}
-  margin-bottom: 25px;
 `;
 
-export const SelectContainer = styled.div`
+export const SelectContainer = styled.div<{
+  marginBottom?: number;
+  marginTop?: number;
+}>`
   width: 100%;
-  margin-bottom: 25px;
+  margin-top: ${(props) => (props.marginTop ? `${props.marginTop}px` : 0)};
+  margin-bottom: ${(props) =>
+    props.marginBottom ? `${props.marginBottom}px` : '25px'};
 `;
 
 export const StyledSelect = styled.div`
@@ -56,9 +73,18 @@ export const StyledSelect = styled.div`
   position: relative;
 `;
 
+export const InputWrapper = styled.div`
+  cursor: pointer;
+  position: relative;
+`;
+
 export const SelectPlaceholder = styled.p`
   color: ${textSecondary};
   line-height: 40px;
+
+  span {
+    color: ${textPrimary};
+  }
 `;
 
 export const DropdownButton = styled.div`
@@ -69,18 +95,27 @@ export const DropdownButton = styled.div`
   color: ${bluePrimary};
 `;
 
-export const DropdownListContainer = styled.div`
+export const DropdownListContainer = styled.div<{ ref?: any }>`
   width: 100%;
   position: relative;
 `;
 
-export const DropdownList = styled.ul`
+export const DropdownList = styled.ul<{ ref?: any }>`
   ${InputBox}
   background-color: #e0e0e0;
   padding: 0;
   height: auto;
+  max-height: 160px;
+  overflow: auto;
   position: absolute;
   z-index: 30;
+  box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25), -3px 3px 5px rgba(0, 0, 0, 0.25);
+
+  @media (max-height: 740px) {
+    top: -200px;
+    box-shadow: -3px 0px 4px -1px rgba(0, 0, 0, 0.25),
+      3px -2px 4px -1px rgba(0, 0, 0, 0.25);
+  }
 `;
 
 export const ListItem = styled.li`

@@ -23,7 +23,7 @@ export const CollapseButton = styled.div<{ isCollapsed: boolean }>`
   height: 25px;
   background-color: white;
   border: 1px solid rgba(33, 33, 34, 0.19);
-  box-shadow: 3px 2px 0px 2px rgba(9, 30, 66, 0.08),
+  box-shadow: 2px 2px 3px 1px rgba(9, 30, 66, 0.08),
     1px -3px 4px 1px rgba(9, 30, 66, 0.08);
   border-radius: 50%;
   cursor: pointer;

@@ -21,9 +21,6 @@ export type MobileNavProps = {
 const MobileNavbar: React.FC<MobileNavProps> = ({ isOpen }) => {
   const dispatch = useAppDispatch();
 
-  
-
-
   return (
     <MobileNav isOpen={isOpen}>
       <QuickMenu>
@@ -31,7 +28,7 @@ const MobileNavbar: React.FC<MobileNavProps> = ({ isOpen }) => {
           <QuickMenuIcon src={Appointment} />
           <QuickMenuTitle>New Appointment</QuickMenuTitle>
         </QuickMenuItem>
-        <QuickMenuItem>
+        <QuickMenuItem onClick={() => dispatch(openModal('ADD_PATIENT'))}>
           <QuickMenuIcon src={AddPatient} />
           <QuickMenuTitle>Add Patient</QuickMenuTitle>
         </QuickMenuItem>
