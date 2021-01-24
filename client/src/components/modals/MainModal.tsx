@@ -22,11 +22,6 @@ const MainModal: React.FC = () => {
   function beforeOpen() {
     setTimeout(() => {
       setScale(1);
-    }, 10);
-  }
-
-  function afterOpen() {
-    setTimeout(() => {
       setOpacity(1);
     }, 10);
   }
@@ -43,7 +38,6 @@ const MainModal: React.FC = () => {
     <StyledModal
       isOpen={isOpenModal ? true : false}
       beforeOpen={beforeOpen}
-      afterOpen={afterOpen}
       beforeClose={beforeClose}
       opacity={opacity}
       scale={scale}
@@ -55,7 +49,7 @@ const MainModal: React.FC = () => {
       <ModalContainer>
         {isOpenModal === 'NEW_APPOINTMENT' ? (
           <NewAppointmentContent />
-        ) : isOpenModal === 'ADD_PATIENT' ? ( 
+        ) : isOpenModal === 'ADD_PATIENT' ? (
           <AddPatientContent />
         ) : null}
       </ModalContainer>

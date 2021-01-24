@@ -12,7 +12,7 @@ export const StyledModal: StyledComponent<
   never
 > = Modal.styled`
   height: auto;
- /*  max-height: 95vh; */
+  max-height: 96%;
   width: 400px;
   max-width: 90%;
   border-radius: 15px;
@@ -23,7 +23,7 @@ export const StyledModal: StyledComponent<
   transform: translate(0,0) scale(${(props: { scale: number }) => props.scale});
   transition: all ease-in-out 300ms ;
   z-index: 999;
- /*  overflow: auto; */
+/*   overflow-y: scroll; */
 `;
 
 export const ModalContainer = styled.div`
