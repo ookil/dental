@@ -17,12 +17,14 @@ interface Props
     HTMLSelectElement
   > {
   label: string;
-  dentist?: Array<{}>;
+  options?: Array<{}>;
+  readFrom?: string;
   marginBottom?: number;
   marginTop?: number;
+  handleSelectChange: (key: string, value: number) => void;
 }
 
-const dentists = [
+const options = [
   { id: 1, name: 'Miłosz', surname: 'Fretek' },
   { id: 2, name: 'Super', surname: 'Star' },
   { id: 3, name: 'Barabasz', surname: 'Wielki' },
@@ -39,13 +41,19 @@ const Select: React.FC<Props> = ({
   placeholder,
   marginBottom,
   marginTop,
+  name,
+  readFrom,
+  handleSelectChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSelected, setSelected] = useState('');
 
   const handleDropdown = () => setIsOpen(!isOpen);
-  const handleSelect = (dentist: any) => {
-    setSelected(dentist.name + ' ' + dentist.surname);
+  const handleSelect = (option: any) => {
+    setSelected(option.name + ' ' + option.surname);
+    if (name && readFrom) {
+      handleSelectChange(name, option[readFrom]);
+    }
     setIsOpen(false);
   };
 
@@ -89,12 +97,9 @@ const Select: React.FC<Props> = ({
         {isOpen && (
           <DropdownListContainer>
             <DropdownList ref={dropdownRef}>
-              {dentists.map((dentist) => (
-                <ListItem
-                  key={dentist.id}
-                  onClick={() => handleSelect(dentist)}
-                >
-                  {dentist.name + ' ' + dentist.surname}
+              {options.map((option) => (
+                <ListItem key={option.id} onClick={() => handleSelect(option)}>
+                  {option.name + ' ' + option.surname}
                 </ListItem>
               ))}
             </DropdownList>

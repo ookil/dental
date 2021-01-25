@@ -23,12 +23,14 @@ interface Props
     HTMLSelectElement
   > {
   label: string;
-  patients?: Array<{}>;
+  options?: Array<{}>;
   marginBottom?: number;
   marginTop?: number;
+  readFrom?: string;
+  handleSelectChange: (key: string, value: number) => void;
 }
 
-const patients = [
+const options = [
   { id: 1, name: 'Miłosz', surname: 'Fretek' },
   { id: 2, name: 'Super', surname: 'Star' },
   { id: 3, name: 'Barabasz', surname: 'Wielki' },
@@ -44,16 +46,22 @@ const patients = [
 
 const SelectWithInput: React.FC<Props> = ({
   label,
-  placeholder,
+  name,
+  readFrom,
   marginBottom,
   marginTop,
+  handleSelectChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSelected, setSelected] = useState('');
 
   const handleDropdown = () => setIsOpen(!isOpen);
-  const handleSelect = (dentist: any) => {
-    setSelected(dentist.name + ' ' + dentist.surname);
+
+  const handleSelect = (option: any) => {
+    setSelected(option.name + ' ' + option.surname);
+    if (name && readFrom) {
+      handleSelectChange(name, option[readFrom]);
+    }
     setIsOpen(false);
   };
 
@@ -118,20 +126,20 @@ const SelectWithInput: React.FC<Props> = ({
           <DropdownListContainer>
             <DropdownList ref={dropdownRef}>
               {filteredPatients !== null
-                ? filteredPatients.map((patient) => (
+                ? filteredPatients.map((option) => (
                     <ListItem
-                      key={patient.id}
-                      onClick={() => handleSelect(patient)}
+                      key={option.id}
+                      onClick={() => handleSelect(option)}
                     >
-                      {patient.name + ' ' + patient.surname}
+                      {option.name + ' ' + option.surname}
                     </ListItem>
                   ))
-                : patients.map((patient) => (
+                : options.map((option) => (
                     <ListItem
-                      key={patient.id}
-                      onClick={() => handleSelect(patient)}
+                      key={option.id}
+                      onClick={() => handleSelect(option)}
                     >
-                      {patient.name + ' ' + patient.surname}
+                      {option.name + ' ' + option.surname}
                     </ListItem>
                   ))}
             </DropdownList>

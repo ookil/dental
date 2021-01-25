@@ -5,12 +5,7 @@ import { color } from '../../globalStyles';
 
 const { bluePrimary } = color;
 
-export const StyledModal: StyledComponent<
-  React.ComponentClass<ModalProps, any>,
-  any,
-  { opacity: number; scale: number },
-  never
-> = Modal.styled`
+export const StyledModal: any = Modal.styled`
   height: auto;
   max-height: 96%;
   width: 400px;

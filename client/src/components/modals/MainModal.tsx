@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ModalContainer, StyledModal } from './Modals.elements';
 import { RootState, useAppDispatch } from '../../store/store';
@@ -34,6 +34,7 @@ const MainModal: React.FC = () => {
     });
   }
 
+
   return (
     <StyledModal
       isOpen={isOpenModal ? true : false}
@@ -46,7 +47,7 @@ const MainModal: React.FC = () => {
         window.screen.width < 940 ? dispatch(openModal(false)) : null
       }
     >
-      <ModalContainer>
+      <ModalContainer >
         {isOpenModal === 'NEW_APPOINTMENT' ? (
           <NewAppointmentContent />
         ) : isOpenModal === 'ADD_PATIENT' ? (
