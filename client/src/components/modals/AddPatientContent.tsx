@@ -1,10 +1,20 @@
+import { useMutation, useQuery } from '@apollo/client';
 import React, { useState } from 'react';
+import {
+  ClinicDentistsData,
+  ClinicDentistVar,
+  GET_CLINIC_DENTISTS,
+} from '../../graphql/queries/dentist';
+import {
+  ADD_PATIENT,
+  ClinicPatient,
+  NewPatientDetails,
+} from '../../graphql/queries/patient';
 import { openModal } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
 import { Button } from '../elements/Elements';
-import Input from '../elements/Input';
-import Select from '../elements/Select';
 import { ButtonsWrapper, ModalTitle } from './Modals.elements';
+import { PatientFormContent } from './PatientFormContent';
 
 export type Patient = {
   [key: string]: string | number | null;
@@ -15,61 +25,6 @@ export type Patient = {
   dentistId: number | null;
 };
 
-export type PatientFormProps = {
-  handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSelectChange: (name: string, id: number) => void;
-};
-
-export const PatientFormContent = ({
-  handleChange,
-  handleSelectChange,
-}: PatientFormProps) => (
-  <>
-    <Input
-      label='name'
-      name='name'
-      type='text'
-      required
-      minLength={3}
-      maxLength={30}
-      onChange={(e) => handleChange(e)}
-    />
-    <Input
-      label='surname'
-      name='surname'
-      type='text'
-      required
-      minLength={3}
-      maxLength={30}
-      onChange={(e) => handleChange(e)}
-    />
-    <Input
-      label='id number'
-      name='nationalId'
-      type='text'
-      required
-      minLength={3}
-      maxLength={30}
-      onChange={(e) => handleChange(e)}
-    />
-    <Input
-      label='email'
-      name='email'
-      type='email'
-      minLength={3}
-      maxLength={30}
-      onChange={(e) => handleChange(e)}
-    />
-    <Select
-      label='dentist'
-      name='dentistId'
-      readFrom='id'
-      placeholder='Please select dentist'
-      handleSelectChange={handleSelectChange}
-    />
-  </>
-);
-
 const AddPatientContent: React.FC = () => {
   const [patientData, setPatientData] = useState<Patient>({
     name: '',
@@ -78,6 +33,46 @@ const AddPatientContent: React.FC = () => {
     email: null,
     dentistId: null,
   });
+
+  const { loading, data } = useQuery<ClinicDentistsData, ClinicDentistVar>(
+    GET_CLINIC_DENTISTS,
+    {
+      variables: {
+        clinicId: 7,
+      },
+    }
+  );
+
+  const dentists = data && data.clinicDentists;
+
+  const [addPatient, { error, loading: mutationLoading }] = useMutation<
+    { createPatient: ClinicPatient },
+    { patientData: NewPatientDetails }
+  >(ADD_PATIENT, {
+    variables: {
+      patientData: {
+        ...patientData,
+        clinicId: 7,
+      },
+    },
+  });
+
+  console.log(error?.graphQLErrors);
+
+  const handleAddPatient = (e: any) => {
+    e.preventDefault();
+    if (
+      patientData.name &&
+      patientData.surname &&
+      patientData.nationalId &&
+      patientData.dentistId
+    ) {
+      addPatient();
+      if (!loading && !error?.message) {
+        dispatch(openModal(false));
+      }
+    }
+  };
 
   const dispatch = useAppDispatch();
 
@@ -95,18 +90,24 @@ const AddPatientContent: React.FC = () => {
     });
   };
 
+  if (loading) return <p>Loading...</p>;
+
   return (
     <>
       <ModalTitle>Add Patient</ModalTitle>
-      <form>
+      <form id='patientForm' onSubmit={handleAddPatient}>
         <PatientFormContent
           handleChange={handleChange}
           handleSelectChange={handleSelectChange}
+          options={dentists}
         />
       </form>
+      <p>{error && error.message}</p>
       <ButtonsWrapper>
         <Button onClick={() => dispatch(openModal(false))}>Cancel</Button>
-        <Button primary>Confirm</Button>
+        <Button primary type='submit' form='patientForm'>
+          Confirm
+        </Button>
       </ButtonsWrapper>
     </>
   );

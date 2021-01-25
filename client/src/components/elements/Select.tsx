@@ -17,24 +17,12 @@ interface Props
     HTMLSelectElement
   > {
   label: string;
-  options?: Array<{}>;
   readFrom?: string;
   marginBottom?: number;
   marginTop?: number;
+  options?: any[];
   handleSelectChange: (key: string, value: number) => void;
 }
-
-const options = [
-  { id: 1, name: 'Miłosz', surname: 'Fretek' },
-  { id: 2, name: 'Super', surname: 'Star' },
-  { id: 3, name: 'Barabasz', surname: 'Wielki' },
-  { id: 4, name: 'Barabasz', surname: 'Wielki' },
-  { id: 5, name: 'Barabasz', surname: 'Wielki' },
-  { id: 6, name: 'Barabasz', surname: 'Wielki' },
-  { id: 7, name: 'Barabasz', surname: 'Wielki' },
-  { id: 8, name: 'Barabasz', surname: 'Wielki' },
-  { id: 9, name: 'Add', surname: 'Later' },
-];
 
 const Select: React.FC<Props> = ({
   label,
@@ -43,6 +31,7 @@ const Select: React.FC<Props> = ({
   marginTop,
   name,
   readFrom,
+  options,
   handleSelectChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,7 +39,11 @@ const Select: React.FC<Props> = ({
 
   const handleDropdown = () => setIsOpen(!isOpen);
   const handleSelect = (option: any) => {
-    setSelected(option.name + ' ' + option.surname);
+    if (option.surname !== undefined) {
+      setSelected(option.name + ' ' + option.surname);
+    } else {
+      setSelected(option.name);
+    }
     if (name && readFrom) {
       handleSelectChange(name, option[readFrom]);
     }
@@ -97,11 +90,17 @@ const Select: React.FC<Props> = ({
         {isOpen && (
           <DropdownListContainer>
             <DropdownList ref={dropdownRef}>
-              {options.map((option) => (
-                <ListItem key={option.id} onClick={() => handleSelect(option)}>
-                  {option.name + ' ' + option.surname}
-                </ListItem>
-              ))}
+              {options &&
+                options.map((option) => (
+                  <ListItem
+                    key={option.id}
+                    onClick={() => handleSelect(option)}
+                  >
+                    {option.surname
+                      ? option.name + ' ' + option.surname
+                      : option.name}
+                  </ListItem>
+                ))}
             </DropdownList>
           </DropdownListContainer>
         )}

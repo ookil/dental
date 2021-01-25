@@ -101,18 +101,28 @@ export class UserResolver {
     });
   }
 
+  @Authorized()
+  @Query(() => User)
+  async loggedUser(@Ctx() { prisma, user: loggedUser }: Context) {
+    return await prisma.user.findUnique({
+      where: {
+        id: loggedUser?.id,
+      },
+    });
+  }
+
   @Authorized('ADMIN')
   @Mutation(() => User)
   async createUser(
     @Arg('userData') userData: CreateUserInput,
-    @Ctx() { prisma, user: logedUser }: Context
+    @Ctx() { prisma, user: loggedUser }: Context
   ) {
     // check if admin of clinic
     const admin = await prisma.userInClinic.findUnique({
       where: {
         userId_clinicId: {
           clinicId: userData.clinicId,
-          userId: logedUser?.id!,
+          userId: loggedUser?.id!,
         },
       },
     });

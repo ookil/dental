@@ -23,31 +23,18 @@ interface Props
     HTMLSelectElement
   > {
   label: string;
-  options?: Array<{}>;
+  options?: any[];
   marginBottom?: number;
   marginTop?: number;
   readFrom?: string;
   handleSelectChange: (key: string, value: number) => void;
 }
 
-const options = [
-  { id: 1, name: 'Miłosz', surname: 'Fretek' },
-  { id: 2, name: 'Super', surname: 'Star' },
-  { id: 3, name: 'Barabasz', surname: 'Wielki' },
-  { id: 4, name: 'Barabasz', surname: 'Wielki' },
-  { id: 5, name: 'Barabasz', surname: 'Wielki' },
-  { id: 6, name: 'Barabasz', surname: 'Wielki' },
-  { id: 7, name: 'Barabasz', surname: 'Wielki' },
-  { id: 8, name: 'Barabasz', surname: 'Wielki' },
-  { id: 11, name: 'Miłosz', surname: 'Bernardo' },
-  { id: 12, name: 'Miłosz', surname: 'Gozik' },
-  { id: 9, name: 'Add', surname: 'Later' },
-];
-
 const SelectWithInput: React.FC<Props> = ({
   label,
   name,
   readFrom,
+  options,
   marginBottom,
   marginTop,
   handleSelectChange,
@@ -125,23 +112,27 @@ const SelectWithInput: React.FC<Props> = ({
         {isOpen && filteredPatients?.length !== 0 && (
           <DropdownListContainer>
             <DropdownList ref={dropdownRef}>
-              {filteredPatients !== null
-                ? filteredPatients.map((option) => (
-                    <ListItem
-                      key={option.id}
-                      onClick={() => handleSelect(option)}
-                    >
-                      {option.name + ' ' + option.surname}
-                    </ListItem>
-                  ))
-                : options.map((option) => (
-                    <ListItem
-                      key={option.id}
-                      onClick={() => handleSelect(option)}
-                    >
-                      {option.name + ' ' + option.surname}
-                    </ListItem>
-                  ))}
+              {filteredPatients !== null ? (
+                filteredPatients.map((option) => (
+                  <ListItem
+                    key={option.id}
+                    onClick={() => handleSelect(option)}
+                  >
+                    {option.name + ' ' + option.surname}
+                  </ListItem>
+                ))
+              ) : options && options.length > 0 ? (
+                options.map((option) => (
+                  <ListItem
+                    key={option.id}
+                    onClick={() => handleSelect(option)}
+                  >
+                    {option.name + ' ' + option.surname}
+                  </ListItem>
+                ))
+              ) : (
+                <ListItem>No patients</ListItem>
+              )}
             </DropdownList>
           </DropdownListContainer>
         )}

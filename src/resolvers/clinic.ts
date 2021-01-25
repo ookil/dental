@@ -17,6 +17,7 @@ import {
 import { Clinic } from '../typeDefs/Clinic';
 import { Patient } from '../typeDefs/Patient';
 import { CreateUserInput } from './user';
+import { Dentist } from '../typeDefs/Dentist';
 
 @InputType({ description: 'New clinic data' })
 export class CreateClinicInput implements Partial<Clinic> {
@@ -36,6 +37,32 @@ export class ClinicResolver {
     return await prisma.clinic.findUnique({
       where: {
         id,
+      },
+    });
+  }
+
+  @Authorized()
+  @Query(() => [Dentist], { nullable: true })
+  async clinicDentists(
+    @Arg('id', () => Int) id: number,
+    @Ctx() { prisma }: Context
+  ) {
+    return await prisma.dentist.findMany({
+      where: {
+        clinicId: id,
+      },
+    });
+  }
+
+  @Authorized()
+  @Query(() => [Patient], { nullable: true })
+  async clinicPatients(
+    @Arg('id', () => Int) id: number,
+    @Ctx() { prisma }: Context
+  ) {
+    return await prisma.patient.findMany({
+      where: {
+        clinicId: id,
       },
     });
   }

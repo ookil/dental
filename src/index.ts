@@ -68,7 +68,9 @@ const main = async () => {
 
   const PORT = process.env.PORT || 4000;
 
-  app.listen(PORT, () => console.log(`🚀 Server ready on port ${PORT} `));
+  
+
+  app.listen(PORT, () => console.log(`🚀 Server ready on port ${PORT} and ${apolloServer.graphqlPath} `));
 };
 
 main();

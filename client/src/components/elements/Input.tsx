@@ -13,7 +13,6 @@ interface Props
 
 const Input: React.FC<Props> = ({
   label,
-  required,
   marginBottom,
   marginTop,
   ...inputProps
@@ -22,7 +21,7 @@ const Input: React.FC<Props> = ({
     <InputContainer marginBottom={marginBottom} marginTop={marginTop}>
       <Label>
         {label}
-        {required && <span> *</span>}
+        {inputProps.required && <span> *</span>}
       </Label>
       <StyledInput {...(inputProps as any)} />
     </InputContainer>

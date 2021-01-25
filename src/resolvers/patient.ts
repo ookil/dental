@@ -37,8 +37,8 @@ export class CreatePatientInput implements Partial<Patient> {
   @Field(() => Int)
   clinicId: number;
 
-  @Field(() => Int, { nullable: true })
-  dentistId?: number;
+  @Field({ nullable: true })
+  dentistId?: string;
 }
 
 @InputType({ description: 'Update patient data' })
@@ -124,7 +124,7 @@ export class PatientResolver {
         nationalId: patientData.nationalId,
         dentist: {
           connect: {
-            id: patientData.dentistId,
+            id: parseInt(patientData.dentistId!),
           },
         },
         clinic: {
