@@ -36,6 +36,13 @@ export const Label = styled.div`
   }
 `;
 
+export const ErrorMessage = styled.small`
+  margin-left: 3px;
+  text-transform: none;
+  font-style: italic;
+  color: ${pinkCancel};
+`;
+
 const InputBox = css`
   border-radius: 5px;
   width: 100%;
@@ -53,8 +60,9 @@ const InputBox = css`
   }
 `;
 
-export const StyledInput = styled.input`
+export const StyledInput = styled.input<{ isError: boolean }>`
   ${InputBox}
+  border: 1px solid ${({ isError }) => (isError ? pinkCancel : textSecondary)};
 `;
 
 export const SelectContainer = styled.div<{
@@ -67,7 +75,7 @@ export const SelectContainer = styled.div<{
     props.marginBottom ? `${props.marginBottom}px` : '25px'};
 `;
 
-export const StyledSelect = styled.div`
+export const StyledSelect = styled.div.attrs((props) => ({ tabIndex: 0 }))`
   ${InputBox}
   cursor: pointer;
   position: relative;
@@ -112,18 +120,20 @@ export const DropdownList = styled.ul<{ ref?: any }>`
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25), -3px 3px 5px rgba(0, 0, 0, 0.25);
 
   @media (max-height: 740px) {
-    top: -200px;
+    /* top: -200px; */
     box-shadow: -3px 0px 4px -1px rgba(0, 0, 0, 0.25),
       3px -2px 4px -1px rgba(0, 0, 0, 0.25);
   }
 `;
 
-export const ListItem = styled.li`
+export const ListItem = styled.li<{ isActive?: boolean }>`
   list-style: none;
   padding-left: 8px;
   width: 100%;
   line-height: 40px;
   cursor: pointer;
+  background-color: ${(props) => (props.isActive ? bluePrimary : 'inherit')};
+  color: ${(props) => (props.isActive ? 'white' : 'inherit')};
 
   &:hover {
     background-color: ${bluePrimary};

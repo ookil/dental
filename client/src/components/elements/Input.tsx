@@ -1,5 +1,5 @@
 import React from 'react';
-import { InputContainer, Label, StyledInput } from './Elements';
+import { ErrorMessage, InputContainer, Label, StyledInput } from './Elements';
 
 interface Props
   extends React.DetailedHTMLProps<
@@ -9,12 +9,16 @@ interface Props
   label?: string;
   marginBottom?: number;
   marginTop?: number;
+  isError?: boolean;
+  errorMsg?: string;
 }
 
 const Input: React.FC<Props> = ({
   label,
   marginBottom,
   marginTop,
+  isError,
+  errorMsg,
   ...inputProps
 }) => {
   return (
@@ -22,8 +26,9 @@ const Input: React.FC<Props> = ({
       <Label>
         {label}
         {inputProps.required && <span> *</span>}
+        {isError && <ErrorMessage>{errorMsg}</ErrorMessage>}
       </Label>
-      <StyledInput {...(inputProps as any)} />
+      <StyledInput {...(inputProps as any)} isError={isError} />
     </InputContainer>
   );
 };

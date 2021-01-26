@@ -4,6 +4,7 @@ import {
   DropdownButton,
   DropdownList,
   DropdownListContainer,
+  ErrorMessage,
   Label,
   ListItem,
   SelectContainer,
@@ -21,6 +22,8 @@ interface Props
   marginBottom?: number;
   marginTop?: number;
   options?: any[];
+  isError?: boolean;
+  errorMsg?: string;
   handleSelectChange: (key: string, value: number) => void;
 }
 
@@ -32,10 +35,13 @@ const Select: React.FC<Props> = ({
   name,
   readFrom,
   options,
+  isError,
+  errorMsg,
   handleSelectChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSelected, setSelected] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleDropdown = () => setIsOpen(!isOpen);
   const handleSelect = (option: any) => {
@@ -50,7 +56,34 @@ const Select: React.FC<Props> = ({
     setIsOpen(false);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (options) {
+      const indexes = Object.keys(options);
+      const maxIndex = indexes.length - 1;
+
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        setSelectedIndex((index) =>
+          e.key === 'ArrowDown' ? index + 1 : index - 1
+        );
+      }
+
+      if (selectedIndex > maxIndex) {
+        setSelectedIndex(0);
+      } else if (selectedIndex < 0) {
+        setSelectedIndex(maxIndex);
+      }
+
+      if (e.key === 'Enter') {
+        if (selectedIndex !== -1 || selectedIndex <= options?.length) {
+          handleSelect(options[selectedIndex]);
+          setSelectedIndex(0);
+        }
+      }
+    }
+  };
+
   const dropdownRef = useRef<HTMLDivElement>();
+  /* console.log(dropdownRef?.current?.getBoundingClientRect()); */
 
   useEffect(() => {
     /**
@@ -75,11 +108,30 @@ const Select: React.FC<Props> = ({
     };
   }, [dropdownRef]);
 
+  //for switching dropdown position - not finished
+  useEffect(() => {
+    function updatePosition() {
+      if (dropdownRef.current) {
+        const bottomPos = dropdownRef.current.getBoundingClientRect().bottom;
+        console.log(bottomPos);
+      }
+    }
+    window.addEventListener('resize', updatePosition);
+    return () => window.removeEventListener('resize', updatePosition);
+  });
+
   return (
     <>
       <SelectContainer marginBottom={marginBottom} marginTop={marginTop}>
-        <Label>{label}</Label>
-        <StyledSelect onClick={handleDropdown}>
+        <Label>
+          {label}
+          {isError && <ErrorMessage>{errorMsg}</ErrorMessage>}
+        </Label>
+        <StyledSelect
+          onClick={handleDropdown}
+          /* onFocus={() => setIsOpen(true)} */
+          onKeyDown={(e) => handleKeyDown(e)}
+        >
           <DropdownButton>
             <CollapseIcon />
           </DropdownButton>
@@ -89,11 +141,15 @@ const Select: React.FC<Props> = ({
         </StyledSelect>
         {isOpen && (
           <DropdownListContainer>
-            <DropdownList ref={dropdownRef}>
+            <DropdownList ref={dropdownRef} role='listbox' tabIndex={-1}>
               {options &&
                 options.map((option) => (
                   <ListItem
+                    role='option'
                     key={option.id}
+                    isActive={
+                      options[selectedIndex]?.id === option.id ? true : false
+                    }
                     onClick={() => handleSelect(option)}
                   >
                     {option.surname

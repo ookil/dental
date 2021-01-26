@@ -10,12 +10,14 @@ interface PatientFormProps
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange: (name: string, id: number) => void;
   options?: any[];
+  errors?: string[];
 }
 
 export const PatientFormContent = ({
   handleChange,
   handleSelectChange,
   options,
+  errors,
 }: PatientFormProps) => (
   <>
     <Input
@@ -25,6 +27,8 @@ export const PatientFormContent = ({
       required
       minLength={3}
       maxLength={30}
+      isError={errors?.includes('name')}
+      errorMsg='Must be shorther than or equal 10 characters'
       onChange={(e) => handleChange(e)}
     />
     <Input
@@ -34,6 +38,8 @@ export const PatientFormContent = ({
       required
       minLength={3}
       maxLength={30}
+      isError={errors?.includes('surname')}
+      errorMsg='Must be shorther than or equal 10 characters'
       onChange={(e) => handleChange(e)}
     />
     <Input
@@ -44,6 +50,8 @@ export const PatientFormContent = ({
       required
       minLength={3}
       maxLength={30}
+      isError={errors?.includes('nationalId')}
+      errorMsg='Must be shorther than or equal 10 characters'
       onChange={(e) => handleChange(e)}
     />
     <Input
@@ -52,6 +60,8 @@ export const PatientFormContent = ({
       type='email'
       minLength={3}
       maxLength={30}
+      isError={errors?.includes('email')}
+      errorMsg='Must be a valid email adress'
       onChange={(e) => handleChange(e)}
     />
     <Select
@@ -59,6 +69,8 @@ export const PatientFormContent = ({
       name='dentistId'
       readFrom='id'
       placeholder='Please select dentist'
+      isError={errors?.includes('dentistId')}
+      errorMsg='Dentist not selected'
       options={options}
       handleSelectChange={handleSelectChange}
     />

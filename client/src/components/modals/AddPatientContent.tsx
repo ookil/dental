@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@apollo/client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   ClinicDentistsData,
   ClinicDentistVar,
@@ -26,6 +26,8 @@ export type Patient = {
 };
 
 const AddPatientContent: React.FC = () => {
+  const [errors, setErrors] = useState<string[]>([]);
+
   const [patientData, setPatientData] = useState<Patient>({
     name: '',
     surname: '',
@@ -45,32 +47,46 @@ const AddPatientContent: React.FC = () => {
 
   const dentists = data && data.clinicDentists;
 
-  const [addPatient, { error, loading: mutationLoading }] = useMutation<
+  const [addPatient, { error }] = useMutation<
     { createPatient: ClinicPatient },
     { patientData: NewPatientDetails }
   >(ADD_PATIENT, {
-    variables: {
-      patientData: {
-        ...patientData,
-        clinicId: 7,
-      },
+    onCompleted() {
+      dispatch(openModal(false));
     },
   });
 
-  console.log(error?.graphQLErrors);
+  const validationErrors =
+    error?.graphQLErrors[0].extensions?.exception?.validationErrors || null;
 
-  const handleAddPatient = (e: any) => {
+  useEffect(() => {
+    if (validationErrors) {
+      validationErrors.forEach((validationError: any) => {
+        setErrors((errors) => [...errors, validationError.property]);
+        console.log(validationError.property);
+      });
+    }
+  }, [validationErrors]);
+
+  const handleAddPatientSubmit = (e: any) => {
     e.preventDefault();
+    if (patientData.dentistId === null) {
+      setErrors((errors) => [...errors, 'dentistId']);
+    }
     if (
       patientData.name &&
       patientData.surname &&
       patientData.nationalId &&
       patientData.dentistId
     ) {
-      addPatient();
-      if (!loading && !error?.message) {
-        dispatch(openModal(false));
-      }
+      addPatient({
+        variables: {
+          patientData: {
+            ...patientData,
+            clinicId: 7,
+          },
+        },
+      });
     }
   };
 
@@ -95,14 +111,14 @@ const AddPatientContent: React.FC = () => {
   return (
     <>
       <ModalTitle>Add Patient</ModalTitle>
-      <form id='patientForm' onSubmit={handleAddPatient}>
+      <form id='patientForm' onSubmit={handleAddPatientSubmit}>
         <PatientFormContent
           handleChange={handleChange}
           handleSelectChange={handleSelectChange}
           options={dentists}
+          errors={errors}
         />
       </form>
-      <p>{error && error.message}</p>
       <ButtonsWrapper>
         <Button onClick={() => dispatch(openModal(false))}>Cancel</Button>
         <Button primary type='submit' form='patientForm'>

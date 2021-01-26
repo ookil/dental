@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
-import styled, { css, StyledComponent } from 'styled-components';
-import Modal, { ModalProps } from 'styled-react-modal';
+import styled, { css } from 'styled-components';
+import Modal from 'styled-react-modal';
 import { color } from '../../globalStyles';
 
 const { bluePrimary } = color;

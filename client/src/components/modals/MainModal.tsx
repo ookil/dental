@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ModalContainer, StyledModal } from './Modals.elements';
 import { RootState, useAppDispatch } from '../../store/store';

@@ -7,8 +7,8 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  ID,
   InputType,
-  Int,
   Mutation,
   Query,
   Resolver,
@@ -35,10 +35,10 @@ export class UpdateDentistInput implements Partial<Dentist> {
 export class DentistResolver {
   @Authorized()
   @Query(() => Dentist, { nullable: true })
-  async dentist(@Arg('id', () => Int) id: number, @Ctx() { prisma }: Context) {
+  async dentist(@Arg('id', () => ID) id: string, @Ctx() { prisma }: Context) {
     return await prisma.dentist.findUnique({
       where: {
-        id,
+        id: parseInt(id),
       },
     });
   }
@@ -46,13 +46,13 @@ export class DentistResolver {
   @Authorized(['ADMIN', 'DENTIST', 'ASSISTANT'])
   @Mutation(() => Dentist)
   async updateDentist(
-    @Arg('id', () => Int) id: number,
+    @Arg('id', () => ID) id: string,
     @Arg('dentistData') dentistData: UpdateDentistInput,
     @Ctx() { prisma }: Context
   ) {
     const dentist = await prisma.dentist.findUnique({
       where: {
-        id,
+        id: parseInt(id),
       },
     });
 
@@ -60,7 +60,7 @@ export class DentistResolver {
 
     return await prisma.dentist.update({
       where: {
-        id,
+        id: parseInt(id),
       },
       data: {
         ...dentistData,

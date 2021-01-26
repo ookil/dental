@@ -39,6 +39,20 @@ type Appointment = {
 const NewAppointmentContent: React.FC = () => {
   const dispatch = useAppDispatch();
   const [isNewPatient, setNewPatient] = useState(false);
+  const [patientData, setPatientData] = useState<Patient>({
+    name: '',
+    surname: '',
+    nationalId: null,
+    email: null,
+    dentistId: null,
+  });
+
+  const [appointmentData, setAppointmentData] = useState<Appointment>({
+    dentistId: null,
+    patientId: null,
+    startAt: '',
+    treatment: '',
+  });
 
   const { loading, data: patientQuery } = useQuery<
     ClinicPatientData,
@@ -63,30 +77,15 @@ const NewAppointmentContent: React.FC = () => {
 
   const dentists = dentistQuery && dentistQuery.clinicDentists;
 
-  const { loading: treatmentLoading, data: treatmentQuery } = useQuery<
-    TreatmentData,
-    TreatmentCategory
-  >(GET_TREATMENTS);
+  const { data: treatmentQuery } = useQuery<TreatmentData, TreatmentCategory>(
+    GET_TREATMENTS
+  );
 
   const treatments = treatmentQuery && treatmentQuery.treatments;
 
-  const [patientData, setPatientData] = useState<Patient>({
-    name: '',
-    surname: '',
-    nationalId: null,
-    email: null,
-    dentistId: null,
-  });
-
-  const [appointmentData, setAppointmentData] = useState<Appointment>({
-    dentistId: null,
-    patientId: null,
-    startAt: '',
-    treatment: '',
-  });
-
   const handleNewPatient = () => setNewPatient(!isNewPatient);
 
+  //handles new patient inputs
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPatientData({
       ...patientData,
@@ -94,12 +93,21 @@ const NewAppointmentContent: React.FC = () => {
     });
   };
 
+  //handles new appointment select options
   const handleSelectChange = (key: string, value: number | string) => {
     setAppointmentData({
       ...appointmentData,
       [key]: value,
     });
   };
+
+  //it will query only when appointmentData.dentistId is not null
+  /* const { data: availableDatesData } = useQuery(GET_DENTIST, {
+    variables: {
+      dentistId: appointmentData.dentistId,
+    },
+    skip: !appointmentData.dentistId,
+  }); */
 
   if (loading || dentistLoading) return <p>Loading...</p>;
 
