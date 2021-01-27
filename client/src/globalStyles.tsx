@@ -4,6 +4,7 @@ export const color = {
   bgPrimary: '#FAFBFC',
   bgSecondary: '#ebecf0',
   bluePrimary: '#337AE3',
+  blueSecondary: '#7EBFFB',
   blueTetriary: '#BCCEE8',
   greenConfirm: '#63b448',
   pinkCancel: '#e3339d',

@@ -118,6 +118,8 @@ export const Svg = styled(Icon)`
   max-width: 25px;
 `;
 
+
+
 export const CollapseIcon = () => (
   <svg
     width='25'

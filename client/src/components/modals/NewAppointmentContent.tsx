@@ -17,6 +17,7 @@ import {
 } from '../../graphql/queries/treatment';
 import { openModal, setPatients } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
+import CustomDayPicker from '../daypicker/CustomDayPicker';
 import { Button } from '../elements/Elements';
 import Select from '../elements/Select';
 import SelectWithInput from '../elements/SelectWithInput';
@@ -154,14 +155,15 @@ const NewAppointmentContent: React.FC = () => {
           marginTop={25}
           handleSelectChange={handleSelectChange}
         />
-        <Select
+        <CustomDayPicker />
+        {/* <Select
           label='available dates'
           name='startAt'
           readFrom='dateString'
           placeholder='Choose dentist first'
           marginBottom={5}
           handleSelectChange={handleSelectChange}
-        />
+        /> */}
         <MoreOptionLink
           to='/calendar'
           onClick={() => dispatch(openModal(false))}
