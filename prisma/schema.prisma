@@ -18,6 +18,7 @@ model Clinic {
   patients     Patient[]
   registeredAt DateTime       @default(now())
   users        UserInClinic[]
+  appointments Appointment[]
 }
 
 model User {
@@ -38,7 +39,6 @@ model UserInClinic {
 
   @@id([userId, clinicId])
 }
-
 
 model Dentist {
   id           Int           @id
@@ -124,6 +124,8 @@ model Appointment {
   patientId Int?
   dentist   Dentist           @relation(fields: [dentistId], references: [id])
   dentistId Int
+  clinic    Clinic            @relation(fields: [clinicId], references: [id])
+  clinicId  Int               
 }
 
 enum AppointmentStatus {

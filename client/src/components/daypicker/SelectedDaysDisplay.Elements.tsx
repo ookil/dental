@@ -3,32 +3,40 @@ import { color } from '../../globalStyles';
 
 const { bluePrimary, blueSecondary, textPrimary, textSecondary } = color;
 
-export const WeekWrapper = styled.div`
-  width: 100%;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  margin: 20px 0;
-`;
-
-export const DayWrapper = styled.div`
-  display: flex;
-  position: relative;
-`;
-
-export const DayButton = styled.div<{ disabled?: boolean }>`
+export const DayButton = styled.div<{ disabled?: boolean; isActive: boolean }>`
   width: 40px;
   height: 40px;
   color: ${({ disabled }) => (disabled ? textSecondary : textPrimary)};
   border-radius: 50%;
-  border: 2px solid
-    ${({ disabled }) => (disabled ? textSecondary : bluePrimary)};
+
   font-size: 12px;
   font-weight: 500;
   display: flex;
   justify-content: center;
   align-items: center;
   cursor: pointer;
+  border: 2px solid
+    ${({ disabled }) => (disabled ? textSecondary : bluePrimary)};
+
+  /* ${({ disabled, isActive }) => {
+    if (disabled && isActive === false) {
+      return `
+        color: ${textSecondary}
+        border: 2px solid ${textSecondary}
+      `;
+    } else if (isActive && disabled === false) {
+      return `
+      color: white
+      border: 2px solid ${bluePrimary}
+      box-shadow: 0px 0px 4px 1px ${blueSecondary} ;
+      `;
+    } else {
+      return `
+      color: ${textPrimary}
+      border: 2px solid ${bluePrimary}
+      `;
+    }
+  }} */
 
   &:hover {
     background-color: ${({ disabled }) =>
@@ -37,6 +45,31 @@ export const DayButton = styled.div<{ disabled?: boolean }>`
       ${({ disabled }) => (disabled ? '#C4C4C4' : blueSecondary)};
     color: white;
   }
+`;
+
+export const WeekWrapper = styled.div`
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 10px 0;
+`;
+
+export const DayContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
+
+export const DayWrapper = styled.div`
+  display: flex;
+  position: relative;
+`;
+
+export const DayName = styled.p`
+  color: ${textSecondary};
+  font-size: 0.75rem;
+  margin-bottom: 20px;
 `;
 
 export const CountDisplay = styled.div`

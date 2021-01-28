@@ -20,6 +20,12 @@ import {
   WeekPickerWrapper,
 } from './CustomDayPicke.Elements';
 import SelectedDaysDisplay from './SelectedDaysDisplay';
+import { useQuery } from '@apollo/client';
+import {
+  GET_WEEKLY_APPOINTMENTS,
+  WeeklyAppointmentsData,
+  WeeklyAppointmentsVars,
+} from '../../graphql/queries/appointments';
 
 function getWeekDays(week: Week) {
   const days = eachDayOfInterval(week);
@@ -39,10 +45,32 @@ type Week = {
   end: Date;
 };
 
-const CustomDayPicker: React.FC = () => {
+type Props = {
+  dentistId: number | string;
+};
+
+const defaultClinicId = 7;
+
+const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
   const [selectedDays, setSelectedDays] = useState<Date[]>();
   const [selectedWeek, setSelectedWeek] = useState<Week>();
   const [isOpen, setIsOpen] = useState(false);
+
+  const { loading, data: availableAppointments } = useQuery<
+    WeeklyAppointmentsData,
+    WeeklyAppointmentsVars
+  >(GET_WEEKLY_APPOINTMENTS, {
+    variables: {
+      appointmentsInput: {
+        days: selectedDays!,
+        clinicId: defaultClinicId,
+        dentistId,
+      },
+    },
+    skip: !dentistId,
+  });
+
+
 
   const handleWeekChange = (action: 'ADD' | 'SUB') => {
     if (selectedWeek) {
@@ -79,6 +107,7 @@ const CustomDayPicker: React.FC = () => {
 
   const pickerRef = useRef<DayPicker>();
 
+  //click outside
   useEffect(() => {
     function handleClickOutside(event: any) {
       if (
@@ -136,7 +165,7 @@ const CustomDayPicker: React.FC = () => {
           />
         </DayPickerWrapper>
       )}
-      <SelectedDaysDisplay selectedDays={selectedDays} />
+      <SelectedDaysDisplay availableAppointments={availableAppointments} />
     </DayPickerContainer>
   );
 };

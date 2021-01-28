@@ -1,4 +1,5 @@
 import { Field, ID, ObjectType, registerEnumType } from 'type-graphql';
+import { Clinic } from './Clinic';
 import { Dentist } from './Dentist';
 import { Patient } from './Patient';
 
@@ -35,4 +36,16 @@ export class Appointment {
 
   @Field(() => Dentist)
   dentist: Dentist;
+
+  @Field(() => Clinic)
+  clinic: Clinic;
+}
+
+@ObjectType()
+export class WeeklyAppointments {
+  @Field()
+  date: Date;
+
+  @Field(() => [Date])
+  appointments: Date[];
 }

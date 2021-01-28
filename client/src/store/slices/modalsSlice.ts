@@ -13,12 +13,14 @@ type SliceState = {
   isOpenModal: ModalsName;
   patients: Array<Patient> | null;
   filteredPatients: Array<Patient> | null;
+  availableAppointments: Date[] | null;
 };
 
 const initialState: SliceState = {
   isOpenModal: false,
   patients: null,
   filteredPatients: null,
+  availableAppointments: null,
 };
 
 const modalsSlice = createSlice({
@@ -42,6 +44,9 @@ const modalsSlice = createSlice({
     clearFilteredPatients: (state) => {
       state.filteredPatients = null;
     },
+    setAvailableAppointments: (state, action: PayloadAction<Date[]>) => {
+      state.availableAppointments = action.payload;
+    },
   },
 });
 
@@ -50,6 +55,7 @@ export const {
   setPatients,
   filterPatients,
   clearFilteredPatients,
+  setAvailableAppointments,
 } = modalsSlice.actions;
 
 export default modalsSlice.reducer;

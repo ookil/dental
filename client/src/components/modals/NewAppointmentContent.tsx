@@ -1,5 +1,6 @@
 import { useQuery } from '@apollo/client';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import {
   ClinicDentistsData,
   ClinicDentistVar,
@@ -16,7 +17,7 @@ import {
   TreatmentData,
 } from '../../graphql/queries/treatment';
 import { openModal, setPatients } from '../../store/slices/modalsSlice';
-import { useAppDispatch } from '../../store/store';
+import { useAppDispatch, RootState } from '../../store/store';
 import CustomDayPicker from '../daypicker/CustomDayPicker';
 import { Button } from '../elements/Elements';
 import Select from '../elements/Select';
@@ -31,14 +32,18 @@ import {
 import { PatientFormContent } from './PatientFormContent';
 
 type Appointment = {
-  patientId: number | null;
-  dentistId: number | null;
+  patientId: number | string;
+  dentistId: number | string;
   treatment: string;
   startAt: string;
 };
 
 const NewAppointmentContent: React.FC = () => {
   const dispatch = useAppDispatch();
+  const availableAppointments = useSelector(
+    (state: RootState) => state.modal.availableAppointments
+  );
+
   const [isNewPatient, setNewPatient] = useState(false);
   const [patientData, setPatientData] = useState<Patient>({
     name: '',
@@ -49,8 +54,8 @@ const NewAppointmentContent: React.FC = () => {
   });
 
   const [appointmentData, setAppointmentData] = useState<Appointment>({
-    dentistId: null,
-    patientId: null,
+    dentistId: '',
+    patientId: '',
     startAt: '',
     treatment: '',
   });
@@ -155,15 +160,19 @@ const NewAppointmentContent: React.FC = () => {
           marginTop={25}
           handleSelectChange={handleSelectChange}
         />
-        <CustomDayPicker />
-        {/* <Select
-          label='available dates'
-          name='startAt'
-          readFrom='dateString'
-          placeholder='Choose dentist first'
-          marginBottom={5}
-          handleSelectChange={handleSelectChange}
-        /> */}
+
+        <CustomDayPicker dentistId={appointmentData.dentistId} />
+
+        {availableAppointments && (
+          <Select
+            name='startAt'
+            readFrom='dateString'
+            placeholder='Select day'
+            options={availableAppointments}
+            marginBottom={5}
+            handleSelectChange={handleSelectChange}
+          />
+        )}
         <MoreOptionLink
           to='/calendar'
           onClick={() => dispatch(openModal(false))}

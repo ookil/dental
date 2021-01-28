@@ -92,7 +92,7 @@ export class AssistantResolver {
       );
 
       if (diff.length) disconnectIds = diff;
-      console.log(disconnectIds);
+      /* console.log(disconnectIds); */
     }
 
     return await prisma.assistant.update({

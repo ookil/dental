@@ -1,24 +1,50 @@
 import { format } from 'date-fns';
-import React from 'react';
+import React, { useState } from 'react';
+import {
+  WeeklyAppointments,
+  WeeklyAppointmentsData,
+} from '../../graphql/queries/appointments';
+import { setAvailableAppointments } from '../../store/slices/modalsSlice';
+import { useAppDispatch } from '../../store/store';
 import {
   CountDisplay,
   DayButton,
+  DayContainer,
+  DayName,
   DayWrapper,
   WeekWrapper,
 } from './SelectedDaysDisplay.Elements';
 
 type Props = {
-  selectedDays?: Date[];
+  availableAppointments?: WeeklyAppointmentsData;
 };
 
-const SelectedDaysDisplay: React.FC<Props> = ({ selectedDays }) => {
+const SelectedDaysDisplay: React.FC<Props> = ({ availableAppointments }) => {
+  const dispatch = useAppDispatch();
+  const [selected, setSelected] = useState<number>();
+
+  const handleClick = (day: WeeklyAppointments, index: number) => {
+    dispatch(setAvailableAppointments(day.appointments));
+    setSelected(index);
+  };
+
   return (
     <WeekWrapper>
-      {selectedDays?.map((day, index) => (
-        <DayWrapper key={index}>
-          <DayButton>{format(new Date(day), 'dd')}</DayButton>
-          <CountDisplay>13</CountDisplay>
-        </DayWrapper>
+      {availableAppointments?.weeklyAppointments.map((day, index) => (
+        <DayContainer key={index}>
+          <DayName>{format(new Date(day.date), 'iii')}</DayName>
+          <DayWrapper onClick={() => handleClick(day, index)}>
+            <DayButton
+              disabled={day.appointments.length === 0 ? true : false}
+              isActive={index === selected ? true : false}
+            >
+              {format(new Date(day.date), 'dd')}
+            </DayButton>
+            {day.appointments.length > 0 && (
+              <CountDisplay>{day.appointments.length}</CountDisplay>
+            )}
+          </DayWrapper>
+        </DayContainer>
       ))}
     </WeekWrapper>
   );

@@ -17,7 +17,7 @@ interface Props
     React.SelectHTMLAttributes<HTMLSelectElement>,
     HTMLSelectElement
   > {
-  label: string;
+  label?: string;
   readFrom?: string;
   marginBottom?: number;
   marginTop?: number;
@@ -143,10 +143,10 @@ const Select: React.FC<Props> = ({
           <DropdownListContainer>
             <DropdownList ref={dropdownRef} role='listbox' tabIndex={-1}>
               {options &&
-                options.map((option) => (
+                options.map((option, index) => (
                   <ListItem
                     role='option'
-                    key={option.id}
+                    key={option.id || index}
                     isActive={
                       options[selectedIndex]?.id === option.id ? true : false
                     }
@@ -155,6 +155,7 @@ const Select: React.FC<Props> = ({
                     {option.surname
                       ? option.name + ' ' + option.surname
                       : option.name}
+                      
                   </ListItem>
                 ))}
             </DropdownList>

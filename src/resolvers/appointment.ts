@@ -5,6 +5,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  ID,
   InputType,
   Int,
   Mutation,
@@ -14,9 +15,23 @@ import {
 } from 'type-graphql';
 
 import { Patient } from '../typeDefs/Patient';
-import { Appointment, AppointmentStatus } from '../typeDefs/Appointment';
+import {
+  Appointment,
+  AppointmentStatus,
+  WeeklyAppointments,
+} from '../typeDefs/Appointment';
 import { Length } from 'class-validator';
 import { CreatePatientInput } from './patient';
+import { addMinutes, isBefore, setHours, setMinutes } from 'date-fns';
+import {
+  DEAFULT_WORK_ON_SUNDAY,
+  DEFAULT_APPOINTMENT_DURATION,
+  DEFAULT_WORK_END_HOUR,
+  DEFAULT_WORK_END_MINUTES,
+  DEFAULT_WORK_START_HOUR,
+  DEFAULT_WORK_START_MINUTES,
+} from '../utils/defaults';
+import { prisma } from '../context';
 
 @InputType({ description: 'New appointment data' })
 export class CreateAppointmentInput implements Partial<Appointment> {
@@ -29,11 +44,14 @@ export class CreateAppointmentInput implements Partial<Appointment> {
   @Field()
   endAt: Date;
 
-  @Field(() => Int)
-  patientId: number;
+  @Field(() => ID)
+  patientId: number | string;
 
-  @Field(() => Int)
-  dentistId: number;
+  @Field(() => ID)
+  dentistId: number | string;
+
+  @Field(() => ID)
+  clinicId: number | string;
 }
 
 @InputType({ description: 'Update appointment data' })
@@ -53,11 +71,50 @@ export class UpdateAppointmentInput implements Partial<Appointment> {
   @Field(() => AppointmentStatus, { nullable: true })
   status?: AppointmentStatus;
 
+  @Field(() => ID, { nullable: true })
+  patientId?: number | string;
+
+  @Field(() => ID, { nullable: true })
+  dentistId?: number | string;
+}
+
+@InputType({ description: 'Clinic options' })
+export class ClinicAppointmentsOptions {
   @Field(() => Int, { nullable: true })
-  patientId?: number;
+  workStartHour?: number;
 
   @Field(() => Int, { nullable: true })
-  dentistId?: number;
+  workStartMinutes?: number;
+
+  @Field(() => Int, { nullable: true })
+  workEndHour?: number;
+
+  @Field(() => Int, { nullable: true })
+  workEndMinutes?: number;
+
+  @Field()
+  workOnSaturday?: boolean;
+
+  @Field()
+  workOnSunday?: boolean;
+
+  @Field(() => Int, { nullable: true })
+  appointmentDuration?: number;
+}
+
+@InputType({ description: 'New selected week' })
+export class WeeklyAppointmentsInput {
+  @Field(() => [Date])
+  days: Date[];
+
+  @Field(() => ID)
+  clinicId: string | number;
+
+  @Field(() => ID)
+  dentistId: string | number;
+
+  @Field(() => ClinicAppointmentsOptions, { nullable: true })
+  options?: ClinicAppointmentsOptions;
 }
 
 @Resolver(Appointment)
@@ -96,6 +153,9 @@ export class AppointmentResolver {
     newPatientData: CreatePatientInput,
     @Ctx() { prisma }: Context
   ) {
+    if (typeof appointmentData.dentistId === 'string')
+      appointmentData.dentistId = parseInt(appointmentData.dentistId);
+
     const appointment = await prisma.appointment.findMany({
       where: {
         AND: [
@@ -114,7 +174,13 @@ export class AppointmentResolver {
 
     // don't allow to create multiple appointments for dentist at the same time
     if (appointment.length)
-      throw new Error('Something went wrong, appointment alredy exists!');
+      throw new Error('Something went wrong, appointment already exists!');
+
+    if (typeof appointmentData.clinicId === 'string')
+      appointmentData.clinicId = parseInt(appointmentData.clinicId);
+
+    if (typeof appointmentData.patientId === 'string')
+      appointmentData.patientId = parseInt(appointmentData.patientId);
 
     if (newPatientData)
       return await prisma.appointment.create({
@@ -123,6 +189,11 @@ export class AppointmentResolver {
           startAt: appointmentData.startAt,
           endAt: appointmentData.endAt,
           createdAt: new Date(),
+          clinic: {
+            connect: {
+              id: appointmentData.clinicId,
+            },
+          },
           dentist: {
             connect: { id: appointmentData.dentistId },
           },
@@ -139,7 +210,7 @@ export class AppointmentResolver {
               },
               dentist: {
                 connect: {
-                  id: newPatientData.dentistId,
+                  id: parseInt(newPatientData.dentistId),
                 },
               },
             },
@@ -158,6 +229,11 @@ export class AppointmentResolver {
         startAt: appointmentData.startAt,
         endAt: appointmentData.endAt,
         createdAt: new Date(),
+        clinic: {
+          connect: {
+            id: appointmentData.clinicId,
+          },
+        },
         dentist: {
           connect: { id: appointmentData.dentistId },
         },
@@ -178,9 +254,11 @@ export class AppointmentResolver {
   @Authorized()
   @Mutation(() => Appointment)
   async deleteAppointment(
-    @Arg('id', () => Int) id: number,
+    @Arg('id', () => ID) id: number | string,
     @Ctx() { prisma }: Context
   ) {
+    if (typeof id === 'string') id = parseInt(id);
+
     return await prisma.appointment.delete({
       where: {
         id,
@@ -189,12 +267,111 @@ export class AppointmentResolver {
   }
 
   @Authorized()
+  @Query(() => [WeeklyAppointments])
+  async weeklyAppointments(
+    @Arg('weeklyAppointmentsData', () => WeeklyAppointmentsInput)
+    data: WeeklyAppointmentsInput
+  ) {
+    const workStartHour =
+      data.options?.workStartHour || DEFAULT_WORK_START_HOUR;
+    const workStartMinutes =
+      data.options?.workStartMinutes || DEFAULT_WORK_START_MINUTES;
+
+    const workEndHour = data.options?.workEndHour || DEFAULT_WORK_END_HOUR;
+    const workEndMinutes =
+      data.options?.workEndMinutes || DEFAULT_WORK_END_MINUTES;
+
+    const appointmentDuration =
+      data.options?.appointmentDuration || DEFAULT_APPOINTMENT_DURATION;
+
+    const workOnSunday = data.options?.workOnSunday || DEAFULT_WORK_ON_SUNDAY;
+    const workOnSaturday =
+      data.options?.workOnSaturday || DEAFULT_WORK_ON_SUNDAY;
+
+    // skip saturday and or sunday
+    if (workOnSaturday && workOnSunday === false) {
+      data.days = data.days.slice(0, 6);
+    } else if (workOnSunday && workOnSaturday === false) {
+      data.days = data.days.splice(5, 1);
+    } else if (workOnSaturday === false && workOnSunday === false) {
+      data.days = data.days.slice(0, 5);
+    }
+
+    if (typeof data.dentistId === 'string')
+      data.dentistId = parseInt(data.dentistId);
+
+    // already made appointments for selected week
+    const dentistNotAvailable = await prisma.appointment.findMany({
+      where: {
+        AND: [
+          {
+            dentistId: data.dentistId,
+          },
+          {
+            startAt: {
+              gte: data.days[0],
+            },
+          },
+          {
+            endAt: {
+              lte: data.days[data.days.length],
+            },
+          },
+        ],
+      },
+    });
+
+    console.log(dentistNotAvailable);
+
+    let results: WeeklyAppointments[] = [];
+
+    for (const day of data.days) {
+      const start = setMinutes(setHours(day, workStartHour), workStartMinutes);
+      const end = setMinutes(setHours(day, workEndHour), workEndMinutes);
+
+      let appointments = [start];
+
+      function addAppointmentDuration(
+        hourStart: Date,
+        hourEnd: Date,
+        durration: number
+      ) {
+        const nextAppointment = addMinutes(hourStart, durration);
+
+        if (isBefore(nextAppointment, hourEnd)) {
+          appointments.push(nextAppointment);
+          addAppointmentDuration(nextAppointment, hourEnd, durration);
+        }
+      }
+
+      addAppointmentDuration(start, end, appointmentDuration);
+
+      //when comparing Date objects getTime method is needed
+      const free = appointments.filter(
+        (date1) =>
+          !dentistNotAvailable.some(
+            ({ startAt: date2 }) => date1.getTime() === date2.getTime()
+          )
+      );
+
+      results.push({
+        date: start,
+        appointments: [...free],
+      });
+    }
+
+    return results;
+  }
+
+  @Authorized()
   @Mutation(() => Appointment)
   async updateAppointment(
-    @Arg('id', () => Int) id: number,
+    @Arg('id', () => ID) id: number | string,
     @Arg('appointmentData') appointmentData: UpdateAppointmentInput,
     @Ctx() { prisma }: Context
   ) {
+    if (typeof id === 'string') id = parseInt(id);
+
     const appointment = await prisma.appointment.findUnique({
       where: {
         id,
@@ -202,6 +379,9 @@ export class AppointmentResolver {
     });
 
     if (!appointment) throw new Error('Appointment Not Found');
+
+    if (typeof appointmentData.dentistId === 'string')
+      appointmentData.dentistId = parseInt(appointmentData.dentistId);
 
     const appointments = await prisma.appointment.findMany({
       where: {
