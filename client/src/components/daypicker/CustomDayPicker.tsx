@@ -68,9 +68,8 @@ const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
       },
     },
     skip: !dentistId,
+    fetchPolicy: 'network-only',
   });
-
-
 
   const handleWeekChange = (action: 'ADD' | 'SUB') => {
     if (selectedWeek) {

@@ -44,7 +44,10 @@ const Select: React.FC<Props> = ({
   const [selectedIndex, setSelectedIndex] = useState(0);
 
   const handleDropdown = () => setIsOpen(!isOpen);
-  const handleSelect = (option: any) => {
+  const handleSelect = (option: any, index?: number) => {
+    if (index) {
+      setSelectedIndex(index);
+    }
     if (option.surname !== undefined) {
       setSelected(option.name + ' ' + option.surname);
     } else {
@@ -150,12 +153,11 @@ const Select: React.FC<Props> = ({
                     isActive={
                       options[selectedIndex]?.id === option.id ? true : false
                     }
-                    onClick={() => handleSelect(option)}
+                    onClick={() => handleSelect(option, index)}
                   >
                     {option.surname
                       ? option.name + ' ' + option.surname
                       : option.name}
-                      
                   </ListItem>
                 ))}
             </DropdownList>

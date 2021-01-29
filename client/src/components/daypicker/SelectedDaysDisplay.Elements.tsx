@@ -1,12 +1,41 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { color } from '../../globalStyles';
 
 const { bluePrimary, blueSecondary, textPrimary, textSecondary } = color;
 
+const handleProps = (props: any) => {
+  if (props.disabled && props.isActive) {
+    return css`
+      color: white;
+      background-color: #c4c4c4;
+      box-shadow: 0px 0px 4px 1px #c4c4c4;
+    `;
+  }
+  if (props.isActive && props.disabled === false) {
+    return css`
+      color: white;
+      border: 2px solid ${bluePrimary};
+      box-shadow: 0px 0px 4px 1px ${blueSecondary};
+      background-color: ${blueSecondary};
+    `;
+  }
+  if (props.disabled) {
+    return css`
+      color: ${textSecondary};
+      border: 2px solid ${textSecondary};
+    `;
+  } else {
+    return css`
+      color: ${textPrimary};
+      border: 2px solid ${bluePrimary};
+    `;
+  }
+
+};
+
 export const DayButton = styled.div<{ disabled?: boolean; isActive: boolean }>`
   width: 40px;
   height: 40px;
-  color: ${({ disabled }) => (disabled ? textSecondary : textPrimary)};
   border-radius: 50%;
 
   font-size: 12px;
@@ -15,28 +44,7 @@ export const DayButton = styled.div<{ disabled?: boolean; isActive: boolean }>`
   justify-content: center;
   align-items: center;
   cursor: pointer;
-  border: 2px solid
-    ${({ disabled }) => (disabled ? textSecondary : bluePrimary)};
-
-  /* ${({ disabled, isActive }) => {
-    if (disabled && isActive === false) {
-      return `
-        color: ${textSecondary}
-        border: 2px solid ${textSecondary}
-      `;
-    } else if (isActive && disabled === false) {
-      return `
-      color: white
-      border: 2px solid ${bluePrimary}
-      box-shadow: 0px 0px 4px 1px ${blueSecondary} ;
-      `;
-    } else {
-      return `
-      color: ${textPrimary}
-      border: 2px solid ${bluePrimary}
-      `;
-    }
-  }} */
+  ${(props) => handleProps(props)}
 
   &:hover {
     background-color: ${({ disabled }) =>
