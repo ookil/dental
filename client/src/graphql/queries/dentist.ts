@@ -22,6 +22,7 @@ export const GET_CLINIC_DENTISTS = gql`
       name
       surname
       active
+      nameWithSurname @client
     }
   }
 `;
@@ -32,6 +33,7 @@ export const GET_DENTIST = gql`
       id
       name
       surname
+      nameWithSurname @client
       active
       patients {
         name

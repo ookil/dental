@@ -321,8 +321,6 @@ export class AppointmentResolver {
       },
     });
 
-    console.log(dentistNotAvailable);
-
     let results: WeeklyAppointments[] = [];
 
     for (const day of data.days) {

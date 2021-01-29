@@ -18,7 +18,9 @@ interface Props
     HTMLSelectElement
   > {
   label?: string;
-  readFrom?: string;
+  fieldName: string;
+  readFrom: string;
+  displayValue?: string;
   marginBottom?: number;
   marginTop?: number;
   options?: any[];
@@ -32,30 +34,28 @@ const Select: React.FC<Props> = ({
   placeholder,
   marginBottom,
   marginTop,
-  name,
+  fieldName,
   readFrom,
   options,
   isError,
   errorMsg,
+  displayValue,
   handleSelectChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSelected, setSelected] = useState('');
-  const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const handleDropdown = () => setIsOpen(!isOpen);
-  const handleSelect = (option: any, index?: number) => {
-    if (index) {
-      setSelectedIndex(index);
-    }
-    if (option.surname !== undefined) {
-      setSelected(option.name + ' ' + option.surname);
-    } else {
-      setSelected(option.name);
-    }
-    if (name && readFrom) {
-      handleSelectChange(name, option[readFrom]);
-    }
+  const handleSelect = (option: any, index: number) => {
+    setSelectedIndex(index);
+
+    displayValue ? setSelected(option[displayValue]) : setSelected(option);
+
+    //[fieldName]: [option[readFrom]] <- to set chosen options
+
+    handleSelectChange(fieldName, option[readFrom]);
+
     setIsOpen(false);
   };
 
@@ -78,7 +78,9 @@ const Select: React.FC<Props> = ({
 
       if (e.key === 'Enter') {
         if (selectedIndex !== -1 || selectedIndex <= options?.length) {
-          handleSelect(options[selectedIndex]);
+          displayValue
+            ? setSelected(options[selectedIndex][displayValue])
+            : setSelected(options[selectedIndex]);
           setSelectedIndex(0);
         }
       }
@@ -150,14 +152,10 @@ const Select: React.FC<Props> = ({
                   <ListItem
                     role='option'
                     key={option.id || index}
-                    isActive={
-                      options[selectedIndex]?.id === option.id ? true : false
-                    }
+                    isActive={selectedIndex === index}
                     onClick={() => handleSelect(option, index)}
                   >
-                    {option.surname
-                      ? option.name + ' ' + option.surname
-                      : option.name}
+                    {displayValue ? option[displayValue] : option}
                   </ListItem>
                 ))}
             </DropdownList>

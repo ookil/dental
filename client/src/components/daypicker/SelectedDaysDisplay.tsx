@@ -38,7 +38,6 @@ const SelectedDaysDisplay: React.FC<Props> = ({ availableAppointments }) => {
               disabled={day.appointments.length === 0}
               isActive={selected === index}
             >
-              {console.log(index === selected)}
               {format(new Date(day.date), 'dd')}
             </DayButton>
             {day.appointments.length > 0 && (

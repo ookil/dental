@@ -16,7 +16,11 @@ import {
   TreatmentCategory,
   TreatmentData,
 } from '../../graphql/queries/treatment';
-import { openModal, setPatients } from '../../store/slices/modalsSlice';
+import {
+  openModal,
+  setAvailableAppointments,
+  setPatients,
+} from '../../store/slices/modalsSlice';
 import { useAppDispatch, RootState } from '../../store/store';
 import CustomDayPicker from '../daypicker/CustomDayPicker';
 import { Button } from '../elements/Elements';
@@ -107,15 +111,12 @@ const NewAppointmentContent: React.FC = () => {
     });
   };
 
-  //it will query only when appointmentData.dentistId is not null
-  /* const { data: availableDatesData } = useQuery(GET_DENTIST, {
-    variables: {
-      dentistId: appointmentData.dentistId,
-    },
-    skip: !appointmentData.dentistId,
-  }); */
-
   if (loading || dentistLoading) return <p>Loading...</p>;
+
+  const handleCancel = () => {
+    dispatch(openModal(false));
+    dispatch(setAvailableAppointments([]));
+  };
 
   return (
     <>
@@ -144,8 +145,9 @@ const NewAppointmentContent: React.FC = () => {
         </MoreOptionButton>
         <Select
           label='treatment'
-          name='treatment'
+          fieldName='treatment'
           readFrom='name'
+          displayValue='name'
           placeholder='Please select treatment'
           options={treatments}
           marginTop={25}
@@ -153,7 +155,8 @@ const NewAppointmentContent: React.FC = () => {
         />
         <Select
           label='dentist'
-          name='dentistId'
+          fieldName='dentistId'
+          displayValue='nameWithSurname'
           readFrom='id'
           placeholder='Please select dentist'
           options={dentists}
@@ -163,10 +166,11 @@ const NewAppointmentContent: React.FC = () => {
 
         <CustomDayPicker dentistId={appointmentData.dentistId} />
 
-        {availableAppointments && (
+        {availableAppointments.length > 0 && (
           <Select
-            name='startAt'
+            fieldName='startAt'
             readFrom='dateString'
+            displayValue='formatedDate'
             placeholder='Select day'
             options={availableAppointments}
             marginBottom={5}
@@ -181,7 +185,7 @@ const NewAppointmentContent: React.FC = () => {
         </MoreOptionLink>
       </form>
       <ButtonsWrapper>
-        <Button onClick={() => dispatch(openModal(false))}>Cancel</Button>
+        <Button onClick={handleCancel}>Cancel</Button>
         <Button primary>Confirm</Button>
       </ButtonsWrapper>
     </>

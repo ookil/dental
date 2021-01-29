@@ -66,7 +66,8 @@ export const PatientFormContent = ({
     />
     <Select
       label='dentist'
-      name='dentistId'
+      fieldName='dentistId'
+      displayValue='nameWithSurname'
       readFrom='id'
       placeholder='Please select dentist'
       isError={errors?.includes('dentistId')}

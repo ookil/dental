@@ -5,6 +5,7 @@ const {
   textPrimary,
   textSecondary,
   bluePrimary,
+  blueSecondary,
   bgSecondary,
   greenConfirm,
   pinkCancel,
@@ -132,11 +133,11 @@ export const ListItem = styled.li<{ isActive?: boolean }>`
   width: 100%;
   line-height: 40px;
   cursor: pointer;
-  background-color: ${(props) => (props.isActive ? bluePrimary : 'inherit')};
+  background-color: ${(props) => (props.isActive ? blueSecondary : 'inherit')};
   color: ${(props) => (props.isActive ? 'white' : 'inherit')};
 
   &:hover {
-    background-color: ${bluePrimary};
+    background-color: ${blueSecondary};
     color: white;
   }
 `;
