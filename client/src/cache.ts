@@ -14,5 +14,17 @@ export const cache = new InMemoryCache({
         },
       },
     },
+    Patient: {
+      fields: {
+        nameWithSurname: {
+          read: (_, { readField }) => {
+            const name = readField('name');
+            const surname = readField('surname');
+
+            return `${name} ${surname}`;
+          },
+        },
+      },
+    },
   },
 });

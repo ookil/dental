@@ -53,7 +53,6 @@ const Select: React.FC<Props> = ({
     displayValue ? setSelected(option[displayValue]) : setSelected(option);
 
     //[fieldName]: [option[readFrom]] <- to set chosen options
-
     handleSelectChange(fieldName, option[readFrom]);
 
     setIsOpen(false);
@@ -64,20 +63,30 @@ const Select: React.FC<Props> = ({
       const indexes = Object.keys(options);
       const maxIndex = indexes.length - 1;
 
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
-        setSelectedIndex((index) =>
-          e.key === 'ArrowDown' ? index + 1 : index - 1
-        );
-      }
-
-      if (selectedIndex > maxIndex) {
-        setSelectedIndex(0);
-      } else if (selectedIndex < 0) {
-        setSelectedIndex(maxIndex);
+      if (dropdownRef && dropdownRef.current) {
+        if (e.key === 'ArrowDown') {
+          setSelectedIndex((index) =>
+            selectedIndex + 1 > maxIndex ? 0 : index + 1
+          );
+          if (selectedIndex > 0)
+            dropdownRef.current.scrollTop = dropdownRef.current?.scrollTop + 40;
+          if (selectedIndex === maxIndex) dropdownRef.current.scrollTop = 0;
+        }
+        if (e.key === 'ArrowUp') {
+          setSelectedIndex((index) =>
+            selectedIndex - 1 < 0 ? maxIndex : index - 1
+          );
+          if (selectedIndex === 0)
+            dropdownRef.current.scrollTop = dropdownRef.current.scrollHeight;
+          else {
+            dropdownRef.current.scrollTop = dropdownRef.current?.scrollTop - 40;
+          }
+        }
       }
 
       if (e.key === 'Enter') {
-        if (selectedIndex === -1) {
+        e.preventDefault();
+        if (isOpen === false) {
           setIsOpen(true);
         } else if (selectedIndex !== -1 || selectedIndex <= options?.length) {
           displayValue
@@ -136,7 +145,7 @@ const Select: React.FC<Props> = ({
         </Label>
         <StyledSelect
           onClick={handleDropdown}
-          onBlur={() => setIsOpen(false)}
+          onBlur={() => setTimeout(() => setIsOpen(false), 100)} // timeout because otherwiise onClick won't fire
           onKeyDown={(e) => handleKeyDown(e)}
         >
           <DropdownButton>

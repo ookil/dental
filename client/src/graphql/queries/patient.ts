@@ -22,6 +22,7 @@ export const GET_CLINIC_PATIENTS = gql`
       surname
       name
       active
+      nameWithSurname @client
     }
   }
 `;

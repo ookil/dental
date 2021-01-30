@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 type ModalsName = 'NEW_APPOINTMENT' | 'ADD_PATIENT' | false;
 
 type Patient = {
+  [index: string]: number | string | boolean;
   id: number;
   name: string;
   surname: string;

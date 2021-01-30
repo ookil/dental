@@ -256,8 +256,9 @@ const NewAppointmentContent: React.FC = () => {
         {!isNewPatient && (
           <SelectWithInput
             label='patient'
-            name='patientId'
+            fieldName='patientId'
             readFrom='id'
+            displayValue='nameWithSurname'
             isError={errors.includes('patient')}
             errorMsg='Please select patient'
             options={patients}

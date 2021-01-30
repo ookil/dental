@@ -24,10 +24,12 @@ interface Props
     HTMLSelectElement
   > {
   label: string;
+  fieldName: string;
+  readFrom: string;
+  displayValue?: string;
   options?: any[];
   marginBottom?: number;
   marginTop?: number;
-  readFrom?: string;
   isError?: boolean;
   errorMsg?: string;
   handleSelectChange: (key: string, value: number) => void;
@@ -35,7 +37,8 @@ interface Props
 
 const SelectWithInput: React.FC<Props> = ({
   label,
-  name,
+  fieldName,
+  displayValue,
   readFrom,
   options,
   marginBottom,
@@ -46,14 +49,16 @@ const SelectWithInput: React.FC<Props> = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isSelected, setSelected] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const handleDropdown = () => setIsOpen(!isOpen);
 
-  const handleSelect = (option: any) => {
-    setSelected(option.name + ' ' + option.surname);
-    if (name && readFrom) {
-      handleSelectChange(name, option[readFrom]);
-    }
+  const handleSelect = (option: any, index: number) => {
+    setSelectedIndex(index);
+
+    displayValue ? setSelected(option[displayValue]) : setSelected(option);
+
+    handleSelectChange(fieldName, option[readFrom]);
     setIsOpen(false);
   };
 
@@ -68,6 +73,46 @@ const SelectWithInput: React.FC<Props> = ({
       dispatch(filterPatients(e.target.value));
     } else {
       dispatch(clearFilteredPatients());
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (options) {
+      const indexes = Object.keys(options);
+      const maxIndex = indexes.length - 1;
+
+      if (dropdownRef && dropdownRef.current) {
+        if (e.key === 'ArrowDown') {
+          setSelectedIndex((index) =>
+            selectedIndex + 1 > maxIndex ? 0 : index + 1
+          );
+          if (selectedIndex > 0)
+            dropdownRef.current.scrollTop = dropdownRef.current?.scrollTop + 40;
+          if (selectedIndex === maxIndex) dropdownRef.current.scrollTop = 0;
+        }
+        if (e.key === 'ArrowUp') {
+          setSelectedIndex((index) =>
+            selectedIndex - 1 < 0 ? maxIndex : index - 1
+          );
+          if (selectedIndex === 0)
+            dropdownRef.current.scrollTop = dropdownRef.current.scrollHeight;
+          else {
+            dropdownRef.current.scrollTop = dropdownRef.current?.scrollTop - 40;
+          }
+        }
+      }
+
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (isOpen === false) {
+          setIsOpen(true);
+        } else if (selectedIndex !== -1 || selectedIndex <= options?.length) {
+          displayValue
+            ? setSelected(options[selectedIndex][displayValue])
+            : setSelected(options[selectedIndex]);
+          setIsOpen(false);
+        }
+      }
     }
   };
 
@@ -114,28 +159,32 @@ const SelectWithInput: React.FC<Props> = ({
             placeholder='Select patient'
             onChange={handleChange}
             value={isSelected}
+            onBlur={() => setTimeout(() => setIsOpen(false), 100)}
+            onKeyDown={(e) => handleKeyDown(e)}
           />
         </InputWrapper>
 
         {isOpen && filteredPatients?.length !== 0 && (
           <DropdownListContainer>
-            <DropdownList ref={dropdownRef}>
+            <DropdownList ref={dropdownRef} tabIndex={-1}>
               {filteredPatients !== null ? (
-                filteredPatients.map((option) => (
+                filteredPatients.map((option, index) => (
                   <ListItem
-                    key={option.id}
-                    onClick={() => handleSelect(option)}
+                    key={option.id || index}
+                    isActive={selectedIndex === index}
+                    onClick={() => handleSelect(option, index)}
                   >
-                    {option.name + ' ' + option.surname}
+                    {displayValue ? option[displayValue] : option}
                   </ListItem>
                 ))
               ) : options && options.length > 0 ? (
-                options.map((option) => (
+                options.map((option, index) => (
                   <ListItem
-                    key={option.id}
-                    onClick={() => handleSelect(option)}
+                    key={option.id || index}
+                    isActive={selectedIndex === index}
+                    onClick={() => handleSelect(option, index)}
                   >
-                    {option.name + ' ' + option.surname}
+                    {displayValue ? option[displayValue] : option}
                   </ListItem>
                 ))
               ) : (
