@@ -155,6 +155,7 @@ const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
       {isOpen && (
         <DayPickerWrapper>
           <StyledDayPicker
+            month={selectedDays ? selectedDays[0] : new Date()}
             ref={pickerRef}
             selectedDays={selectedDays}
             showOutsideDays

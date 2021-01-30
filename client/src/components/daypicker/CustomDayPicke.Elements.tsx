@@ -51,7 +51,8 @@ export const DayPickerWrapper = styled.div<{ ref?: any }>``;
 export const StyledDayPicker = styled(DayPicker)<{ ref?: any }>`
   width: 100%;
   position: absolute;
-  top: -240px;
+  top: 0;
+  transform: translateY(-100%);
   border-radius: 10px;
   box-shadow: -4px -4px 5px rgba(0, 0, 0, 0.25), 5px 3px 5px rgba(0, 0, 0, 0.25);
 
