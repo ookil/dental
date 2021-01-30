@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { ApolloClient, HttpLink, InMemoryCache } from '@apollo/client';
+import { ApolloClient, HttpLink} from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { cache } from './cache';
 

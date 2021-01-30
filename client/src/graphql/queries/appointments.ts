@@ -40,3 +40,34 @@ export const GET_WEEKLY_APPOINTMENTS = gql`
     }
   }
 `;
+
+export type CreateAppointmentInput = {
+  treatment: string;
+  startAt: string;
+  endAt: string;
+  patientId: string | number;
+  dentistId: string | number;
+  clinicId: string;
+};
+
+export type CreateAppointment = {
+  id: string;
+  startAt: Date;
+  endAt: Date;
+};
+
+export const CREATE_APPOINTMENT = gql`
+  mutation CreateAppointment(
+    $appointmentData: CreateAppointmentInput!
+    $newPatientData: CreatePatientInput
+  ) {
+    createAppointment(
+      appointmentData: $appointmentData
+      newPatientData: $newPatientData
+    ) {
+      id
+      startAt
+      endAt
+    }
+  }
+`;

@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { ModalContainer, StyledModal } from './Modals.elements';
+import {
+
+  ModalContainer,
+  StyledModal,
+} from './Modals.elements';
 import { RootState, useAppDispatch } from '../../store/store';
 import { openModal } from '../../store/slices/modalsSlice';
 import AddPatientContent from './AddPatientContent';
@@ -35,6 +39,17 @@ const MainModal: React.FC = () => {
   }
 
 
+  let content;
+
+  
+  if (isOpenModal === 'NEW_APPOINTMENT') {
+    content = <NewAppointmentContent />;
+  } else if (isOpenModal === 'ADD_PATIENT') {
+    content = <AddPatientContent />;
+  } else {
+    content = null;
+  }
+
   return (
     <StyledModal
       isOpen={isOpenModal ? true : false}
@@ -47,13 +62,7 @@ const MainModal: React.FC = () => {
         window.screen.width < 940 ? dispatch(openModal(false)) : null
       }
     >
-      <ModalContainer >
-        {isOpenModal === 'NEW_APPOINTMENT' ? (
-          <NewAppointmentContent />
-        ) : isOpenModal === 'ADD_PATIENT' ? (
-          <AddPatientContent />
-        ) : null}
-      </ModalContainer>
+      <ModalContainer>{content}</ModalContainer>
     </StyledModal>
   );
 };

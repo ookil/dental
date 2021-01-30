@@ -13,8 +13,10 @@ import {
 import { openModal } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
 import { Button } from '../elements/Elements';
-import { ButtonsWrapper, ModalTitle } from './Modals.elements';
+import { ButtonsWrapper, Gif, GifWrapper, ModalTitle } from './Modals.elements';
 import { PatientFormContent } from './PatientFormContent';
+import loadingGif from '../../images/loading.gif';
+import completedGif from '../../images/completed.gif';
 
 export type Patient = {
   [key: string]: string | number | null;
@@ -27,6 +29,7 @@ export type Patient = {
 
 const AddPatientContent: React.FC = () => {
   const [errors, setErrors] = useState<string[]>([]);
+  const [isCompleted, setCompleted] = useState(false);
 
   const [patientData, setPatientData] = useState<Patient>({
     name: '',
@@ -36,23 +39,27 @@ const AddPatientContent: React.FC = () => {
     dentistId: null,
   });
 
-  const { loading, data } = useQuery<ClinicDentistsData, ClinicDentistVar>(
-    GET_CLINIC_DENTISTS,
-    {
-      variables: {
-        clinicId: 7,
-      },
-    }
-  );
+  const { loading: dentistsLoading, data } = useQuery<
+    ClinicDentistsData,
+    ClinicDentistVar
+  >(GET_CLINIC_DENTISTS, {
+    variables: {
+      clinicId: 7,
+    },
+  });
 
   const dentists = data && data.clinicDentists;
 
-  const [addPatient, { error }] = useMutation<
+  const [addPatient, { error, loading: addPatientLoading }] = useMutation<
     { createPatient: ClinicPatient },
     { patientData: NewPatientDetails }
   >(ADD_PATIENT, {
     onCompleted() {
-      dispatch(openModal(false));
+      setCompleted(true);
+      setTimeout(() => {
+        setCompleted(false);
+        dispatch(openModal(false));
+      }, 2000);
     },
   });
 
@@ -68,7 +75,7 @@ const AddPatientContent: React.FC = () => {
     }
   }, [validationErrors]);
 
-  const handleAddPatientSubmit = (e: any) => {
+  const handleAddPatientSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
     if (patientData.dentistId === null) {
       setErrors((errors) => [...errors, 'dentistId']);
@@ -106,7 +113,20 @@ const AddPatientContent: React.FC = () => {
     });
   };
 
-  if (loading) return <p>Loading...</p>;
+  if (dentistsLoading || addPatientLoading)
+    return (
+      <GifWrapper>
+        <Gif src={loadingGif} />;
+      </GifWrapper>
+    );
+
+  if (isCompleted) {
+    return (
+      <GifWrapper>
+        <Gif src={completedGif} />
+      </GifWrapper>
+    );
+  }
 
   return (
     <>

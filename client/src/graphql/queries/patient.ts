@@ -31,7 +31,7 @@ export type NewPatientDetails = {
   surname: string;
   email?: string | null;
   dentistId: number | null;
-  clinicId: number;
+  clinicId: number | string;
 };
 
 export const ADD_PATIENT = gql`

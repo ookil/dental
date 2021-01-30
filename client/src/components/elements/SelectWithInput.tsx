@@ -10,6 +10,7 @@ import {
   DropdownButton,
   DropdownList,
   DropdownListContainer,
+  ErrorMessage,
   InputWrapper,
   Label,
   ListItem,
@@ -27,6 +28,8 @@ interface Props
   marginBottom?: number;
   marginTop?: number;
   readFrom?: string;
+  isError?: boolean;
+  errorMsg?: string;
   handleSelectChange: (key: string, value: number) => void;
 }
 
@@ -37,6 +40,8 @@ const SelectWithInput: React.FC<Props> = ({
   options,
   marginBottom,
   marginTop,
+  isError,
+  errorMsg,
   handleSelectChange,
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -94,7 +99,10 @@ const SelectWithInput: React.FC<Props> = ({
   return (
     <>
       <SelectContainer marginBottom={marginBottom} marginTop={marginTop}>
-        <Label>{label}</Label>
+        <Label>
+          {label}
+          {isError && <ErrorMessage>{errorMsg}</ErrorMessage>}
+        </Label>
         <InputWrapper>
           <DropdownButton>
             <CollapseIcon />

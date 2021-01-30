@@ -77,11 +77,13 @@ const Select: React.FC<Props> = ({
       }
 
       if (e.key === 'Enter') {
-        if (selectedIndex !== -1 || selectedIndex <= options?.length) {
+        if (selectedIndex === -1) {
+          setIsOpen(true);
+        } else if (selectedIndex !== -1 || selectedIndex <= options?.length) {
           displayValue
             ? setSelected(options[selectedIndex][displayValue])
             : setSelected(options[selectedIndex]);
-          setSelectedIndex(0);
+          setIsOpen(false);
         }
       }
     }
@@ -134,7 +136,7 @@ const Select: React.FC<Props> = ({
         </Label>
         <StyledSelect
           onClick={handleDropdown}
-          /* onFocus={() => setIsOpen(true)} */
+          onBlur={() => setIsOpen(false)}
           onKeyDown={(e) => handleKeyDown(e)}
         >
           <DropdownButton>

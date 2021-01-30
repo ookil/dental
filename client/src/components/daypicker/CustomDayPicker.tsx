@@ -56,7 +56,7 @@ const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
   const [selectedWeek, setSelectedWeek] = useState<Week>();
   const [isOpen, setIsOpen] = useState(false);
 
-  const { loading, data: availableAppointments } = useQuery<
+  const { data: availableAppointments } = useQuery<
     WeeklyAppointmentsData,
     WeeklyAppointmentsVars
   >(GET_WEEKLY_APPOINTMENTS, {

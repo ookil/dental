@@ -21,7 +21,7 @@ export const InputContainer = styled.div<{
       ? props.marginBottom === 0
         ? props.marginBottom
         : `${props.marginBottom}px`
-      : '25px'};
+      : '15px'};
 `;
 
 export const Label = styled.div`
@@ -160,4 +160,10 @@ export const Button = styled.button<{ primary?: boolean }>`
     background-color: ${(props) => props.primary && greenConfirm};
     color: ${(props) => (props.primary ? 'white' : pinkCancel)};
   }
+`;
+
+export const BigErrorMessage = styled.div`
+  color: ${pinkCancel};
+  font-weight: 600;
+  margin: auto;
 `;

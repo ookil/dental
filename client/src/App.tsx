@@ -10,6 +10,7 @@ import {
 import { ModalProvider } from 'styled-react-modal';
 import { client } from '.';
 import { MainModal, Navbar, Toolbar } from './components';
+import { ModalBackground } from './components/modals/Modals.elements';
 import GlobalStyle from './globalStyles';
 import { Dashboard } from './pages';
 import store from './store/store';
@@ -20,7 +21,7 @@ function App() {
       <Provider store={store}>
         <GlobalStyle />
         <Router>
-          <ModalProvider>
+          <ModalProvider backgroundComponent={ModalBackground}>
             <MainModal />
             <Redirect from='/' to='/dashboard' />
             <Navbar />
