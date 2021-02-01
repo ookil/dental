@@ -12,12 +12,9 @@ import {
   StyledSelect,
 } from './Elements';
 
-interface Props
-  extends React.DetailedHTMLProps<
-    React.SelectHTMLAttributes<HTMLSelectElement>,
-    HTMLSelectElement
-  > {
+type Props = {
   label?: string;
+  placeholder?: string;
   fieldName: string;
   readFrom: string;
   displayValue?: string;
@@ -88,7 +85,8 @@ const Select: React.FC<Props> = ({
         e.preventDefault();
         if (isOpen === false) {
           setIsOpen(true);
-        } else if (selectedIndex !== -1 || selectedIndex <= options?.length) {
+        } else if (selectedIndex !== -1 ) {
+          handleSelectChange(fieldName, options[selectedIndex][readFrom])
           displayValue
             ? setSelected(options[selectedIndex][displayValue])
             : setSelected(options[selectedIndex]);
@@ -124,20 +122,8 @@ const Select: React.FC<Props> = ({
     };
   }, [dropdownRef]);
 
-  //for switching dropdown position - not finished
-  useEffect(() => {
-    function updatePosition() {
-      if (dropdownRef.current) {
-        const bottomPos = dropdownRef.current.getBoundingClientRect().bottom;
-        console.log(bottomPos);
-      }
-    }
-    window.addEventListener('resize', updatePosition);
-    return () => window.removeEventListener('resize', updatePosition);
-  });
 
   return (
-    <>
       <SelectContainer marginBottom={marginBottom} marginTop={marginTop}>
         <Label>
           {label}
@@ -157,7 +143,7 @@ const Select: React.FC<Props> = ({
         </StyledSelect>
         {isOpen && (
           <DropdownListContainer>
-            <DropdownList ref={dropdownRef} role='listbox' tabIndex={-1}>
+            <DropdownList ref={dropdownRef} role='listbox'>
               {options &&
                 options.map((option, index) => (
                   <ListItem
@@ -173,7 +159,6 @@ const Select: React.FC<Props> = ({
           </DropdownListContainer>
         )}
       </SelectContainer>
-    </>
   );
 };
 

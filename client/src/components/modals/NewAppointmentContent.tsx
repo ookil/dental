@@ -55,7 +55,7 @@ type Appointment = {
 };
 
 const duration = 60;
-const clinicId = '7';
+const clinicId = '1';
 
 const NewAppointmentContent: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -89,7 +89,7 @@ const NewAppointmentContent: React.FC = () => {
     error: patientsError,
   } = useQuery<ClinicPatientData, ClinicPatientVar>(GET_CLINIC_PATIENTS, {
     variables: {
-      clinicId: 7,
+      clinicId,
     },
   });
 
@@ -102,7 +102,7 @@ const NewAppointmentContent: React.FC = () => {
     error: dentistsError,
   } = useQuery<ClinicDentistsData, ClinicDentistVar>(GET_CLINIC_DENTISTS, {
     variables: {
-      clinicId: 7,
+      clinicId,
     },
   });
 
@@ -244,7 +244,7 @@ const NewAppointmentContent: React.FC = () => {
   ) {
     return (
       <GifWrapper>
-        <Gif src={loadingGif} />;
+        <Gif src={loadingGif} />
       </GifWrapper>
     );
   }

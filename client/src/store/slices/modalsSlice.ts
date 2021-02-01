@@ -5,7 +5,7 @@ type ModalsName = 'NEW_APPOINTMENT' | 'ADD_PATIENT' | false;
 
 type Patient = {
   [index: string]: number | string | boolean;
-  id: number;
+  id: number | string;
   name: string;
   surname: string;
   active: boolean;

@@ -14,6 +14,7 @@ import {
   Field,
   Mutation,
   Authorized,
+  ID,
 } from 'type-graphql';
 import { Clinic, Role } from '../typeDefs/Clinic';
 import { IsEmail, Length } from 'class-validator';
@@ -65,8 +66,8 @@ export class CreateUserInput implements Partial<User> {
   @Field({ nullable: true })
   isAdmin?: boolean;
 
-  @Field(() => Int)
-  clinicId: number;
+  @Field(() => ID)
+  clinicId: number | string;
 }
 
 @InputType({ description: 'New user data' })
@@ -85,15 +86,17 @@ export class UpdateUserInput implements Partial<User> {
   @Field({ nullable: true })
   isAdmin?: boolean;
 
-  @Field(() => Int)
-  userId: number;
+  @Field(() => ID)
+  userId: number | string;
 }
 
 @Resolver(User)
 export class UserResolver {
   @Authorized()
   @Query(() => User, { nullable: true })
-  async user(@Arg('id', () => Int) id: number, @Ctx() { prisma }: Context) {
+  async user(@Arg('id', () => ID) id: number | string, @Ctx() { prisma }: Context) {
+    if (typeof id === 'string') id = parseInt(id)
+
     return await prisma.user.findUnique({
       where: {
         id,
@@ -117,6 +120,8 @@ export class UserResolver {
     @Arg('userData') userData: CreateUserInput,
     @Ctx() { prisma, user: loggedUser }: Context
   ) {
+    if (typeof userData.clinicId === 'string') userData.clinicId = parseInt(userData.clinicId)
+
     // check if admin of clinic
     const admin = await prisma.userInClinic.findUnique({
       where: {
@@ -197,6 +202,8 @@ export class UserResolver {
     @Arg('userData') userData: UpdateUserInput,
     @Ctx() { prisma, user: logedUser }: Context
   ) {
+    if (typeof userData.userId === 'string') userData.userId = parseInt(userData.userId)
+
     const user = await prisma.user.findUnique({
       where: {
         id: userData.userId,

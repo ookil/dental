@@ -13,11 +13,13 @@ import {
   Field,
   Mutation,
   Authorized,
+  ID,
 } from 'type-graphql';
 import { Clinic } from '../typeDefs/Clinic';
 import { Patient } from '../typeDefs/Patient';
-import { CreateUserInput } from './user';
 import { Dentist } from '../typeDefs/Dentist';
+import { User } from '../typeDefs/User';
+import { IsEmail, Length } from 'class-validator';
 
 @InputType({ description: 'New clinic data' })
 export class CreateClinicInput implements Partial<Clinic> {
@@ -29,11 +31,32 @@ export class CreateClinicInput implements Partial<Clinic> {
   address: string;
 }
 
+@InputType({description: 'New admin data'})
+export class CreateAdminInput implements Partial<User> {
+  @Field()
+  @Length(3, 10)
+  name: string;
+
+  @Field()
+  @Length(3, 10)
+  surname: string;
+
+  @Field()
+  @IsEmail()
+  email: string;
+
+  @Field()
+  @Length(6, 20)
+  password: string;
+}
+
 @Resolver(Clinic)
 export class ClinicResolver {
   @Authorized()
   @Query(() => Clinic, { nullable: true })
-  async clinic(@Arg('id', () => Int) id: number, @Ctx() { prisma }: Context) {
+  async clinic(@Arg('id', () => ID) id: number | string, @Ctx() { prisma }: Context) {
+    if (typeof id === 'string') id = parseInt(id)
+
     return await prisma.clinic.findUnique({
       where: {
         id,
@@ -44,9 +67,11 @@ export class ClinicResolver {
   @Authorized()
   @Query(() => [Dentist], { nullable: true })
   async clinicDentists(
-    @Arg('id', () => Int) id: number,
+    @Arg('id', () => ID) id: number | string,
     @Ctx() { prisma }: Context
   ) {
+    if (typeof id === 'string') id = parseInt(id)
+
     return await prisma.dentist.findMany({
       where: {
         clinicId: id,
@@ -57,9 +82,11 @@ export class ClinicResolver {
   @Authorized()
   @Query(() => [Patient], { nullable: true })
   async clinicPatients(
-    @Arg('id', () => Int) id: number,
+    @Arg('id', () => ID) id: number | string,
     @Ctx() { prisma }: Context
   ) {
+    if (typeof id === 'string') id = parseInt(id)
+    
     return await prisma.patient.findMany({
       where: {
         clinicId: id,
@@ -70,7 +97,7 @@ export class ClinicResolver {
   @Mutation(() => Clinic)
   async createClinic(
     @Arg('clinicData') clinicData: CreateClinicInput,
-    @Arg('adminData') adminData: CreateUserInput,
+    @Arg('adminData') adminData: CreateAdminInput,
     @Ctx() { prisma }: Context
   ) {
     const user = await prisma.user.findUnique({

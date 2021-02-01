@@ -109,7 +109,7 @@ export const DropdownListContainer = styled.div<{ ref?: any }>`
   position: relative;
 `;
 
-export const DropdownList = styled.ul<{ ref?: any }>`
+export const DropdownList = styled.ul.attrs((props) => ({ tabIndex: -1 }))<{ ref?: any }>`
   ${InputBox}
   background-color: #e0e0e0;
   padding: 0;
@@ -119,12 +119,6 @@ export const DropdownList = styled.ul<{ ref?: any }>`
   position: absolute;
   z-index: 30;
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25), -3px 3px 5px rgba(0, 0, 0, 0.25);
-
-  @media (max-height: 740px) {
-    /* top: -200px; */
-    box-shadow: -3px 0px 4px -1px rgba(0, 0, 0, 0.25),
-      3px -2px 4px -1px rgba(0, 0, 0, 0.25);
-  }
 `;
 
 export const ListItem = styled.li<{ isActive?: boolean }>`

@@ -1,7 +1,7 @@
 import { gql } from '@apollo/client';
 
 export type ClinicPatient = {
-  id: number;
+  id: number | string;
   name: string;
   surname: string;
   active: boolean;
@@ -12,11 +12,11 @@ export type ClinicPatientData = {
 };
 
 export type ClinicPatientVar = {
-  clinicId: number;
+  clinicId: number | string;
 };
 
 export const GET_CLINIC_PATIENTS = gql`
-  query GetPatientsQuery($clinicId: Int!) {
+  query GetPatientsQuery($clinicId: ID!) {
     clinicPatients(id: $clinicId) {
       id
       surname
