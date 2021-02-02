@@ -27,6 +27,8 @@ export type Patient = {
   dentistId: number | null;
 };
 
+const clinicId = 1
+
 const AddPatientContent: React.FC = () => {
   const [errors, setErrors] = useState<string[]>([]);
   const [isCompleted, setCompleted] = useState(false);
@@ -44,7 +46,7 @@ const AddPatientContent: React.FC = () => {
     ClinicDentistVar
   >(GET_CLINIC_DENTISTS, {
     variables: {
-      clinicId: 7,
+      clinicId,
     },
   });
 
@@ -90,7 +92,7 @@ const AddPatientContent: React.FC = () => {
         variables: {
           patientData: {
             ...patientData,
-            clinicId: 7,
+            clinicId,
           },
         },
       });
@@ -106,11 +108,11 @@ const AddPatientContent: React.FC = () => {
     });
   };
 
-  const handleSelectChange = (name: string, id: number) => {
-    setPatientData({
-      ...patientData,
-      [name]: id,
-    });
+  const handleSelectChange = (key: string, value: number | string) => {
+    setPatientData(prevState => ({
+      ...prevState,
+      [key]: value,
+    }));
   };
 
   if (dentistsLoading || addPatientLoading)

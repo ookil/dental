@@ -5,6 +5,7 @@ import {
   Ctx,
   Field,
   FieldResolver,
+  ID,
   InputType,
   Int,
   Mutation,
@@ -34,11 +35,11 @@ export class CreatePatientInput implements Partial<Patient> {
   @Length(3, 30)
   nationalId?: string | null;
 
-  @Field(() => Int)
-  clinicId: number;
+  @Field(() => ID)
+  clinicId: number | string;
 
-  @Field({ nullable: true })
-  dentistId: string;
+  @Field(() => ID)
+  dentistId: number | string;
 }
 
 @InputType({ description: 'Update patient data' })
@@ -67,7 +68,9 @@ export class UpdatePatientInput implements Partial<Patient> {
 export class PatientResolver {
   @Authorized()
   @Query(() => Patient, { nullable: true })
-  async patient(@Arg('id', () => Int) id: number, @Ctx() { prisma }: Context) {
+  async patient(@Arg('id', () => ID) id: number | string, @Ctx() { prisma }: Context) {
+    if (typeof id === 'string') id = parseInt(id)
+
     return await prisma.patient.findUnique({
       where: {
         id,
@@ -83,6 +86,8 @@ export class PatientResolver {
   ): Promise<Patient> {
     if (patientData.email === undefined && patientData.nationalId === undefined)
       throw new Error('Please provide email or ID number');
+
+    if (typeof patientData.clinicId === 'string') patientData.clinicId = parseInt(patientData.clinicId)  
 
     const patient = await prisma.patient.findMany({
       where: {
@@ -116,6 +121,8 @@ export class PatientResolver {
 
     if (patient.length) throw new Error('Patient already exists!');
 
+    if (typeof patientData.dentistId === 'string') patientData.dentistId = parseInt(patientData.dentistId)
+
     return await prisma.patient.create({
       data: {
         name: patientData.name,
@@ -124,7 +131,7 @@ export class PatientResolver {
         nationalId: patientData.nationalId,
         dentist: {
           connect: {
-            id: parseInt(patientData.dentistId),
+            id: patientData.dentistId,
           },
         },
         clinic: {
@@ -139,9 +146,11 @@ export class PatientResolver {
   @Authorized()
   @Mutation(() => Patient)
   async deletePatient(
-    @Arg('id', () => Int) id: number,
+    @Arg('id', () => ID) id: string | number,
     @Ctx() { prisma }: Context
   ): Promise<Patient> {
+    if (typeof id === 'string') id = parseInt(id)
+
     return await prisma.patient.delete({
       where: {
         id,
@@ -152,12 +161,14 @@ export class PatientResolver {
   @Authorized()
   @Mutation(() => Patient)
   async updatePatient(
-    @Arg('id', () => Int) id: number,
+    @Arg('id', () => ID) id: number | string,
     @Arg('patientData', { nullable: true }) patientData: UpdatePatientInput,
     @Arg('dentistId', () => Int, { nullable: true }) dentistId: number,
     @Ctx()
     { prisma }: Context
   ): Promise<Patient> {
+    if (typeof id === 'string') id = parseInt(id)
+    
     const patient = await prisma.patient.findUnique({
       where: {
         id,

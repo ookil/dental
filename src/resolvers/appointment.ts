@@ -182,6 +182,13 @@ export class AppointmentResolver {
     if (typeof appointmentData.patientId === 'string')
       appointmentData.patientId = parseInt(appointmentData.patientId);
 
+    if (typeof newPatientData.clinicId === 'string')  
+      newPatientData.clinicId = parseInt(newPatientData.clinicId) 
+
+    if (typeof newPatientData.dentistId === 'string') 
+      newPatientData.dentistId = parseInt(newPatientData.dentistId) 
+
+
     if (newPatientData)
       return await prisma.appointment.create({
         data: {
@@ -210,7 +217,7 @@ export class AppointmentResolver {
               },
               dentist: {
                 connect: {
-                  id: parseInt(newPatientData.dentistId),
+                  id: newPatientData.dentistId,
                 },
               },
             },

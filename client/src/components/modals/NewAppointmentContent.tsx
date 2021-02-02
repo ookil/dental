@@ -128,10 +128,10 @@ const NewAppointmentContent: React.FC = () => {
 
   //handles new appointment select options
   const handleSelectChange = (key: string, value: number | string) => {
-    setAppointmentData({
-      ...appointmentData,
+    setAppointmentData((prevState ) => ({
+      ...prevState,
       [key]: value,
-    });
+    }));
   };
 
   const handleCancel = () => {

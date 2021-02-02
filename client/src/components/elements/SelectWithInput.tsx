@@ -86,27 +86,22 @@ const SelectWithInput: React.FC<Props> = ({
           setSelectedIndex((index) =>
             selectedIndex + 1 > maxIndex ? 0 : index + 1
           );
-          if (selectedIndex > 0)
-            dropdownRef.current.scrollTop = dropdownRef.current?.scrollTop + 40;
-          if (selectedIndex === maxIndex) dropdownRef.current.scrollTop = 0;
         }
         if (e.key === 'ArrowUp') {
           setSelectedIndex((index) =>
             selectedIndex - 1 < 0 ? maxIndex : index - 1
           );
-          if (selectedIndex === 0)
-            dropdownRef.current.scrollTop = dropdownRef.current.scrollHeight;
-          else {
-            dropdownRef.current.scrollTop = dropdownRef.current?.scrollTop - 40;
-          }
         }
       }
+
+      if (e.key === 'Tab') if (isOpen === true) setIsOpen(false);
 
       if (e.key === 'Enter') {
         e.preventDefault();
         if (isOpen === false) {
           setIsOpen(true);
-        } else if (selectedIndex !== -1 || selectedIndex <= options?.length) {
+        } else if (selectedIndex !== -1 ) {
+          handleSelectChange(fieldName, options[selectedIndex][readFrom])
           displayValue
             ? setSelected(options[selectedIndex][displayValue])
             : setSelected(options[selectedIndex]);
@@ -119,9 +114,13 @@ const SelectWithInput: React.FC<Props> = ({
   const dropdownRef = useRef<HTMLDivElement>();
 
   useEffect(() => {
-    /**
-     Close dropdown if clicked outside
-     */
+    if (dropdownRef && dropdownRef.current) 
+      dropdownRef.current.scrollTop = selectedIndex * 40
+  });
+
+  useEffect(() => {
+    //Close dropdown if clicked outside
+
     //proper type for event?
     function handleClickOutside(event: any) {
       if (
@@ -159,7 +158,6 @@ const SelectWithInput: React.FC<Props> = ({
             placeholder='Select patient'
             onChange={handleChange}
             value={isSelected}
-            onBlur={() => setTimeout(() => setIsOpen(false), 100)}
             onKeyDown={(e) => handleKeyDown(e)}
           />
         </InputWrapper>

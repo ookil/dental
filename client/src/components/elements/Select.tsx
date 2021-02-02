@@ -55,6 +55,7 @@ const Select: React.FC<Props> = ({
     setIsOpen(false);
   };
 
+
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (options) {
       const indexes = Object.keys(options);
@@ -65,21 +66,15 @@ const Select: React.FC<Props> = ({
           setSelectedIndex((index) =>
             selectedIndex + 1 > maxIndex ? 0 : index + 1
           );
-          if (selectedIndex > 0)
-            dropdownRef.current.scrollTop = dropdownRef.current?.scrollTop + 40;
-          if (selectedIndex === maxIndex) dropdownRef.current.scrollTop = 0;
         }
         if (e.key === 'ArrowUp') {
           setSelectedIndex((index) =>
             selectedIndex - 1 < 0 ? maxIndex : index - 1
           );
-          if (selectedIndex === 0)
-            dropdownRef.current.scrollTop = dropdownRef.current.scrollHeight;
-          else {
-            dropdownRef.current.scrollTop = dropdownRef.current?.scrollTop - 40;
-          }
         }
       }
+
+      if (e.key === 'Tab') if (isOpen === true) setIsOpen(false);
 
       if (e.key === 'Enter') {
         e.preventDefault();
@@ -96,13 +91,18 @@ const Select: React.FC<Props> = ({
     }
   };
 
+
+
   const dropdownRef = useRef<HTMLDivElement>();
-  /* console.log(dropdownRef?.current?.getBoundingClientRect()); */
 
   useEffect(() => {
-    /**
-     Close dropdown if clicked outside
-     */
+    if (dropdownRef && dropdownRef.current) 
+      dropdownRef.current.scrollTop = selectedIndex * 40
+  });
+
+ useEffect(() => {
+    //Close dropdown if clicked outside
+     
     //proper type for event?
     function handleClickOutside(event: any) {
       if (
@@ -120,7 +120,9 @@ const Select: React.FC<Props> = ({
       // Unbind the event listener on clean up
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [dropdownRef]);  
+ 
+
 
 
   return (
@@ -131,7 +133,6 @@ const Select: React.FC<Props> = ({
         </Label>
         <StyledSelect
           onClick={handleDropdown}
-          onBlur={() => setTimeout(() => setIsOpen(false), 100)} // timeout because otherwiise onClick won't fire
           onKeyDown={(e) => handleKeyDown(e)}
         >
           <DropdownButton>

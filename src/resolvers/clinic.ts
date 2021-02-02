@@ -5,7 +5,6 @@ import {
   Arg,
   Ctx,
   FieldResolver,
-  Int,
   Query,
   Resolver,
   Root,
