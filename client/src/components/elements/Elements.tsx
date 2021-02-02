@@ -48,8 +48,8 @@ const InputBox = css`
   border-radius: 5px;
   width: 100%;
   height: 40px;
-  border: 1px solid ${textSecondary};
-  background-color: rgba(216, 217, 218, 0.6);
+  box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px inset;
+  background-color: rgba(242, 241, 238, 0.6);
   color: ${textPrimary};
   font-weight: 500;
   font-family: 'Montserrat';
@@ -63,7 +63,8 @@ const InputBox = css`
 
 export const StyledInput = styled.input<{ isError: boolean }>`
   ${InputBox}
-  border: 1px solid ${({ isError }) => (isError ? pinkCancel : textSecondary)};
+  border: none;
+  box-shadow: ${({isError}) => (isError &&  "#e3339d7d 0px 0px 0px 1px inset")};
 `;
 
 export const SelectContainer = styled.div<{
@@ -111,7 +112,7 @@ export const DropdownListContainer = styled.div<{ ref?: any }>`
 
 export const DropdownList = styled.ul.attrs((props) => ({ tabIndex: -1 }))<{ ref?: any }>`
   ${InputBox}
-  background-color: #e0e0e0;
+  background-color: rgba(242, 241, 238);
   padding: 0;
   height: auto;
   max-height: 160px;

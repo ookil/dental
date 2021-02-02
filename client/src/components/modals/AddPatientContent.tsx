@@ -102,10 +102,10 @@ const AddPatientContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPatientData({
-      ...patientData,
+    setPatientData(prevState => ({
+      ...prevState,
       [e.target.name]: e.target.value,
-    });
+    }));
   };
 
   const handleSelectChange = (key: string, value: number | string) => {
