@@ -55,7 +55,7 @@ type Appointment = {
 };
 
 const duration = 60;
-const clinicId = '1';
+const clinicId = '7';
 
 const NewAppointmentContent: React.FC = () => {
   const dispatch = useAppDispatch();

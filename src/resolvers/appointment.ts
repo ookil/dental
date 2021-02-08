@@ -182,14 +182,13 @@ export class AppointmentResolver {
     if (typeof appointmentData.patientId === 'string')
       appointmentData.patientId = parseInt(appointmentData.patientId);
 
-    if (typeof newPatientData.clinicId === 'string')  
-      newPatientData.clinicId = parseInt(newPatientData.clinicId) 
+    if (newPatientData) {
+      if (typeof newPatientData.clinicId === 'string')
+        newPatientData.clinicId = parseInt(newPatientData.clinicId);
 
-    if (typeof newPatientData.dentistId === 'string') 
-      newPatientData.dentistId = parseInt(newPatientData.dentistId) 
+      if (typeof newPatientData.dentistId === 'string')
+        newPatientData.dentistId = parseInt(newPatientData.dentistId);
 
-
-    if (newPatientData)
       return await prisma.appointment.create({
         data: {
           treatment: appointmentData.treatment,
@@ -229,6 +228,7 @@ export class AppointmentResolver {
           dentist: true,
         },
       });
+    }
 
     return await prisma.appointment.create({
       data: {

@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { ApolloClient, createHttpLink} from '@apollo/client';
+import { ApolloClient, createHttpLink } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { cache } from './cache';
 
@@ -20,7 +20,7 @@ const authLink = setContext((_, { headers }) => {
       ...headers,
       authorization: token
         ? `Bearer ${token}`
-        : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJyb2xlcyI6WyJBRE1JTiJdfSwiaWF0IjoxNjEyMTk4Nzg1fQ.5ra7xFyJddt0RKZT1HOmtXDIJe_9egxLwsa1ms6MZJo', //placeholder token
+        : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyNCwicm9sZXMiOlsiQURNSU4iXX0sImlhdCI6MTYxMDgwODgxNH0.sT4PL-3W9AqE7NCPddgPWZe0JgS1zksr-UV-k9OK4zc', //placeholder token
     },
   };
 });
