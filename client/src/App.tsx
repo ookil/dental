@@ -1,4 +1,4 @@
-import { ApolloProvider } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import React from 'react';
 import { Provider } from 'react-redux';
 import {
@@ -8,16 +8,38 @@ import {
   Redirect,
 } from 'react-router-dom';
 import { ModalProvider } from 'styled-react-modal';
-import { client } from '.';
 import { MainModal, Navbar, Toolbar } from './components';
+import { Gif, GifWrapper } from './components/elements/Elements';
 import { ModalBackground } from './components/modals/Modals.elements';
 import GlobalStyle from './globalStyles';
+import { GET_LOGGED_USER, UserData } from './graphql/queries/user';
 import { Dashboard } from './pages';
 import store from './store/store';
+import loadingGif from './images/loading.gif';
+import { ClinicData, ClinicVar, GET_CLINIC } from './graphql/queries/clinic';
+import { clinicIdVar } from './cache';
 
 function App() {
+  const { data } = useQuery<UserData>(GET_LOGGED_USER);
+
+  clinicIdVar(data?.loggedUser.clinic.id);
+
+  const { loading } = useQuery<ClinicData, ClinicVar>(GET_CLINIC, {
+    variables: {
+      clinicId: data?.loggedUser.clinic.id!,
+    },
+    skip: data === undefined,
+  });
+
+  if (loading)
+    return (
+      <GifWrapper>
+        <Gif src={loadingGif} />
+      </GifWrapper>
+    );
+
   return (
-    <ApolloProvider client={client}>
+    <>
       <Provider store={store}>
         <GlobalStyle />
         <Router>
@@ -32,7 +54,7 @@ function App() {
           </ModalProvider>
         </Router>
       </Provider>
-    </ApolloProvider>
+    </>
   );
 }
 

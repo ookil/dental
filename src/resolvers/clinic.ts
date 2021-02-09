@@ -30,7 +30,7 @@ export class CreateClinicInput implements Partial<Clinic> {
   address: string;
 }
 
-@InputType({description: 'New admin data'})
+@InputType({ description: 'New admin data' })
 export class CreateAdminInput implements Partial<User> {
   @Field()
   @Length(3, 10)
@@ -53,8 +53,11 @@ export class CreateAdminInput implements Partial<User> {
 export class ClinicResolver {
   @Authorized()
   @Query(() => Clinic, { nullable: true })
-  async clinic(@Arg('id', () => ID) id: number | string, @Ctx() { prisma }: Context) {
-    if (typeof id === 'string') id = parseInt(id)
+  async clinic(
+    @Arg('id', () => ID) id: number | string,
+    @Ctx() { prisma }: Context
+  ) {
+    if (typeof id === 'string') id = parseInt(id);
 
     return await prisma.clinic.findUnique({
       where: {
@@ -69,7 +72,7 @@ export class ClinicResolver {
     @Arg('id', () => ID) id: number | string,
     @Ctx() { prisma }: Context
   ) {
-    if (typeof id === 'string') id = parseInt(id)
+    if (typeof id === 'string') id = parseInt(id);
 
     return await prisma.dentist.findMany({
       where: {
@@ -84,8 +87,8 @@ export class ClinicResolver {
     @Arg('id', () => ID) id: number | string,
     @Ctx() { prisma }: Context
   ) {
-    if (typeof id === 'string') id = parseInt(id)
-    
+    if (typeof id === 'string') id = parseInt(id);
+
     return await prisma.patient.findMany({
       where: {
         clinicId: id,
@@ -197,5 +200,16 @@ export class ClinicResolver {
     const users = usersOnClinic.map((item) => item.user);
 
     return users;
+  }
+
+  @FieldResolver()
+  async settings(@Root() clinic: Clinic, @Ctx() { prisma }: Context) {
+    return await prisma.clinic
+      .findUnique({
+        where: {
+          id: clinic.id,
+        },
+      })
+      .settings();
   }
 }

@@ -46,17 +46,7 @@ export const ModalContainer = styled.div`
   height: 100%;
 `;
 
-export const GifWrapper = styled.div`
-  width: 100%;
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
 
-export const Gif = styled.img`
-  height: 60%;
-`;
 
 export const ModalTitle = styled.h3`
   font-weight: bold;

@@ -64,7 +64,7 @@ const InputBox = css`
 export const StyledInput = styled.input<{ isError: boolean }>`
   ${InputBox}
   border: none;
-  box-shadow: ${({isError}) => (isError &&  "#e3339d7d 0px 0px 0px 1px inset")};
+  box-shadow: ${({ isError }) => isError && '#e3339d7d 0px 0px 0px 1px inset'};
 `;
 
 export const SelectContainer = styled.div<{
@@ -110,7 +110,9 @@ export const DropdownListContainer = styled.div<{ ref?: any }>`
   position: relative;
 `;
 
-export const DropdownList = styled.ul.attrs((props) => ({ tabIndex: -1 }))<{ ref?: any }>`
+export const DropdownList = styled.ul.attrs((props) => ({ tabIndex: -1 }))<{
+  ref?: any;
+}>`
   ${InputBox}
   background-color: rgba(242, 241, 238);
   padding: 0;
@@ -161,4 +163,16 @@ export const BigErrorMessage = styled.div`
   color: ${pinkCancel};
   font-weight: 600;
   margin: auto;
+`;
+
+export const GifWrapper = styled.div`
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+export const Gif = styled.img`
+  height: 60%;
 `;

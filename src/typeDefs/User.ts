@@ -27,5 +27,8 @@ export class User {
   roles?: [Role];
 
   @Field(() => [Clinic])
-  clinics: [Clinic];
+  owningClinics: [Clinic];
+
+  @Field(() => Clinic)
+  clinic: Clinic;
 }

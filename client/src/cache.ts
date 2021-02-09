@@ -1,4 +1,4 @@
-import { InMemoryCache } from '@apollo/client';
+import { InMemoryCache, makeVar, ReactiveVar } from '@apollo/client';
 
 export const cache = new InMemoryCache({
   typePolicies: {
@@ -28,3 +28,5 @@ export const cache = new InMemoryCache({
     },
   },
 });
+
+export const clinicIdVar: ReactiveVar<string> = makeVar<string>('');

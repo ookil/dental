@@ -30,14 +30,12 @@ import {
 } from '../../store/slices/modalsSlice';
 import { useAppDispatch, RootState } from '../../store/store';
 import CustomDayPicker from '../daypicker/CustomDayPicker';
-import { BigErrorMessage, Button } from '../elements/Elements';
+import { BigErrorMessage, Button, Gif, GifWrapper } from '../elements/Elements';
 import Select from '../elements/Select';
 import SelectWithInput from '../elements/SelectWithInput';
 import { Patient } from './AddPatientContent';
 import {
   ButtonsWrapper,
-  Gif,
-  GifWrapper,
   ModalTitle,
   MoreOptionButton,
   MoreOptionLink,
@@ -45,6 +43,12 @@ import {
 import { PatientFormContent } from './PatientFormContent';
 import loadingGif from '../../images/loading.gif';
 import completedGif from '../../images/completed.gif';
+import {
+  ClinicData,
+  ClinicVar,
+  GET_CLINIC,
+} from '../../graphql/queries/clinic';
+import { clinicIdVar } from '../../cache';
 
 type Appointment = {
   patientId: number | string;
@@ -54,9 +58,6 @@ type Appointment = {
   endAt: string;
 };
 
-const duration = 60;
-const clinicId = '7';
-
 const NewAppointmentContent: React.FC = () => {
   const dispatch = useAppDispatch();
   const [isCompleted, setCompleted] = useState(false);
@@ -65,6 +66,16 @@ const NewAppointmentContent: React.FC = () => {
   const availableAppointments = useSelector(
     (state: RootState) => state.modal.availableAppointments
   );
+
+  const clinicId = clinicIdVar();
+
+  const { data: clinicData } = useQuery<ClinicData, ClinicVar>(GET_CLINIC, {
+    variables: {
+      clinicId,
+    },
+  });
+
+  const duration = clinicData?.clinic.settings.appointmentDuration;
 
   const [isNewPatient, setNewPatient] = useState(false);
   const [patientData, setPatientData] = useState<Patient>({
@@ -91,6 +102,7 @@ const NewAppointmentContent: React.FC = () => {
     variables: {
       clinicId,
     },
+    skip: clinicId === undefined,
   });
 
   const patients = patientQuery && patientQuery.clinicPatients;
@@ -104,6 +116,7 @@ const NewAppointmentContent: React.FC = () => {
     variables: {
       clinicId,
     },
+    skip: clinicId === undefined,
   });
 
   const dentists = dentistQuery && dentistQuery.clinicDentists;
@@ -128,7 +141,7 @@ const NewAppointmentContent: React.FC = () => {
 
   //handles new appointment select options
   const handleSelectChange = (key: string, value: number | string) => {
-    setAppointmentData((prevState ) => ({
+    setAppointmentData((prevState) => ({
       ...prevState,
       [key]: value,
     }));
@@ -158,7 +171,7 @@ const NewAppointmentContent: React.FC = () => {
     },
   });
 
-  if (appointmentData.startAt)
+  if (appointmentData.startAt && duration)
     appointmentData.endAt = addMinutes(
       new Date(appointmentData.startAt),
       duration

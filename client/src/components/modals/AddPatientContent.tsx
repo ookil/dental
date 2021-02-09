@@ -12,11 +12,13 @@ import {
 } from '../../graphql/queries/patient';
 import { openModal } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
-import { Button } from '../elements/Elements';
-import { ButtonsWrapper, Gif, GifWrapper, ModalTitle } from './Modals.elements';
+import { Button, Gif, GifWrapper } from '../elements/Elements';
+import { ButtonsWrapper, ModalTitle } from './Modals.elements';
 import { PatientFormContent } from './PatientFormContent';
 import loadingGif from '../../images/loading.gif';
 import completedGif from '../../images/completed.gif';
+import { GET_LOGGED_USER, UserData } from '../../graphql/queries/user';
+import { clinicIdVar } from '../../cache';
 
 export type Patient = {
   [key: string]: string | number | null;
@@ -26,8 +28,6 @@ export type Patient = {
   email: string | null;
   dentistId: number | null;
 };
-
-const clinicId = 1
 
 const AddPatientContent: React.FC = () => {
   const [errors, setErrors] = useState<string[]>([]);
@@ -41,13 +41,16 @@ const AddPatientContent: React.FC = () => {
     dentistId: null,
   });
 
+  const clinicId = clinicIdVar();
+
   const { loading: dentistsLoading, data } = useQuery<
     ClinicDentistsData,
     ClinicDentistVar
   >(GET_CLINIC_DENTISTS, {
     variables: {
-      clinicId,
+      clinicId: clinicId,
     },
+    skip: clinicId === undefined,
   });
 
   const dentists = data && data.clinicDentists;
@@ -86,7 +89,8 @@ const AddPatientContent: React.FC = () => {
       patientData.name &&
       patientData.surname &&
       patientData.nationalId &&
-      patientData.dentistId
+      patientData.dentistId &&
+      clinicId
     ) {
       addPatient({
         variables: {
@@ -102,14 +106,14 @@ const AddPatientContent: React.FC = () => {
   const dispatch = useAppDispatch();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setPatientData(prevState => ({
+    setPatientData((prevState) => ({
       ...prevState,
       [e.target.name]: e.target.value,
     }));
   };
 
   const handleSelectChange = (key: string, value: number | string) => {
-    setPatientData(prevState => ({
+    setPatientData((prevState) => ({
       ...prevState,
       [key]: value,
     }));

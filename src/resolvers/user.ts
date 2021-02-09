@@ -16,7 +16,7 @@ import {
   Authorized,
   ID,
 } from 'type-graphql';
-import { Clinic, Role } from '../typeDefs/Clinic';
+import { Role } from '../typeDefs/Clinic';
 import { IsEmail, Length } from 'class-validator';
 import { AuthToken, User } from '../typeDefs/User';
 import { ForbiddenError, UserInputError } from 'apollo-server-express';
@@ -94,8 +94,11 @@ export class UpdateUserInput implements Partial<User> {
 export class UserResolver {
   @Authorized()
   @Query(() => User, { nullable: true })
-  async user(@Arg('id', () => ID) id: number | string, @Ctx() { prisma }: Context) {
-    if (typeof id === 'string') id = parseInt(id)
+  async user(
+    @Arg('id', () => ID) id: number | string,
+    @Ctx() { prisma }: Context
+  ) {
+    if (typeof id === 'string') id = parseInt(id);
 
     return await prisma.user.findUnique({
       where: {
@@ -120,19 +123,24 @@ export class UserResolver {
     @Arg('userData') userData: CreateUserInput,
     @Ctx() { prisma, user: loggedUser }: Context
   ) {
-    if (typeof userData.clinicId === 'string') userData.clinicId = parseInt(userData.clinicId)
+    if (typeof userData.clinicId === 'string')
+      userData.clinicId = parseInt(userData.clinicId);
 
     // check if admin of clinic
-    const admin = await prisma.userInClinic.findUnique({
+    const admin = await prisma.clinic.findMany({
       where: {
-        userId_clinicId: {
-          clinicId: userData.clinicId,
-          userId: loggedUser?.id!,
-        },
+        AND: [
+          {
+            id: userData.clinicId,
+          },
+          {
+            adminId: loggedUser?.id!,
+          },
+        ],
       },
     });
 
-    if (!admin) throw new Error("You don't have access to this action");
+    if (!admin.length) throw new Error("You don't have access to this action");
 
     const user = await prisma.user.findUnique({
       where: {
@@ -202,7 +210,8 @@ export class UserResolver {
     @Arg('userData') userData: UpdateUserInput,
     @Ctx() { prisma, user: logedUser }: Context
   ) {
-    if (typeof userData.userId === 'string') userData.userId = parseInt(userData.userId)
+    if (typeof userData.userId === 'string')
+      userData.userId = parseInt(userData.userId);
 
     const user = await prisma.user.findUnique({
       where: {
@@ -269,19 +278,23 @@ export class UserResolver {
   async deleteUser(
     @Arg('deleteUserData', () => DeleteUserInput)
     deleteUserData: DeleteUserInput,
-    @Ctx() { prisma, user: logedUser }: Context
+    @Ctx() { prisma, user: loggedUser }: Context
   ) {
     // check if admin of clinic
-    const admin = await prisma.userInClinic.findUnique({
+    const admin = await prisma.clinic.findMany({
       where: {
-        userId_clinicId: {
-          clinicId: deleteUserData.clinicId,
-          userId: logedUser?.id!,
-        },
+        AND: [
+          {
+            id: deleteUserData.clinicId,
+          },
+          {
+            adminId: loggedUser?.id!,
+          },
+        ],
       },
     });
 
-    if (!admin) throw new Error("You don't have access to this action");
+    if (!admin.length) throw new Error("You don't have access to this action");
 
     if (deleteUserData.role === Role.DENTIST) {
       await prisma.dentist.delete({
@@ -301,10 +314,7 @@ export class UserResolver {
 
     await prisma.userInClinic.delete({
       where: {
-        userId_clinicId: {
-          userId: deleteUserData.id,
-          clinicId: deleteUserData.clinicId,
-        },
+        userId: deleteUserData.id,
       },
     });
 
@@ -316,13 +326,27 @@ export class UserResolver {
   }
 
   @FieldResolver()
-  async clinics(@Root() clinic: Clinic, @Ctx() { prisma }: Context) {
+  async owningClinics(@Root() user: User, @Ctx() { prisma }: Context) {
     return await prisma.user
       .findUnique({
         where: {
-          id: clinic.id,
+          id: user.id,
         },
       })
-      .clinics();
+      .owningClinics();
+  }
+
+  @FieldResolver()
+  async clinic(@Root() user: User, @Ctx() { prisma }: Context) {
+    const res = await prisma.userInClinic.findUnique({
+      where: {
+        userId: user.id,
+      },
+      select: {
+        clinic: true,
+      },
+    });
+
+    return res?.clinic;
   }
 }
