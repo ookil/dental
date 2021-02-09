@@ -10,3 +10,5 @@ dist
 tests
 
 client/.vscode
+
+__tests__
