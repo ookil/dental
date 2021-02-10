@@ -23,14 +23,6 @@ import {
 import { Length } from 'class-validator';
 import { CreatePatientInput } from './patient';
 import { addMinutes, isBefore, setHours, setMinutes } from 'date-fns';
-import {
-  DEAFULT_WORK_ON_SUNDAY,
-  DEFAULT_APPOINTMENT_DURATION,
-  DEFAULT_WORK_END_HOUR,
-  DEFAULT_WORK_END_MINUTES,
-  DEFAULT_WORK_START_HOUR,
-  DEFAULT_WORK_START_MINUTES,
-} from '../utils/defaults';
 import { prisma } from '../context';
 
 @InputType({ description: 'New appointment data' })
@@ -112,6 +104,9 @@ export class WeeklyAppointmentsInput {
 
   @Field(() => ID)
   dentistId: string | number;
+
+  @Field()
+  currentDate: Date;
 
   @Field(() => ClinicAppointmentsOptions, { nullable: true })
   options?: ClinicAppointmentsOptions;
@@ -279,21 +274,30 @@ export class AppointmentResolver {
     @Arg('weeklyAppointmentsData', () => WeeklyAppointmentsInput)
     data: WeeklyAppointmentsInput
   ) {
-    const workStartHour =
-      data.options?.workStartHour || DEFAULT_WORK_START_HOUR;
-    const workStartMinutes =
-      data.options?.workStartMinutes || DEFAULT_WORK_START_MINUTES;
+    if (typeof data.clinicId === 'string')
+      data.clinicId = parseInt(data.clinicId);
 
-    const workEndHour = data.options?.workEndHour || DEFAULT_WORK_END_HOUR;
-    const workEndMinutes =
-      data.options?.workEndMinutes || DEFAULT_WORK_END_MINUTES;
+    const clinic = await prisma.clinic.findUnique({
+      where: {
+        id: data.clinicId,
+      },
+      select: {
+        settings: true,
+      },
+    });
 
-    const appointmentDuration =
-      data.options?.appointmentDuration || DEFAULT_APPOINTMENT_DURATION;
+    if (!clinic?.settings)
+      throw new Error('Missing clinic settings, please try again.');
 
-    const workOnSunday = data.options?.workOnSunday || DEAFULT_WORK_ON_SUNDAY;
-    const workOnSaturday =
-      data.options?.workOnSaturday || DEAFULT_WORK_ON_SUNDAY;
+    const {
+      appointmentDuration,
+      workOnSaturday,
+      workOnSunday,
+      workStartHour,
+      workEndHour,
+      workStartMinutes,
+      workEndMinutes,
+    } = clinic.settings;
 
     // skip saturday and or sunday
     if (workOnSaturday && workOnSunday === false) {
