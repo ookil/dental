@@ -22,7 +22,12 @@ import {
 } from '../typeDefs/Appointment';
 import { Length } from 'class-validator';
 import { CreatePatientInput } from './patient';
-import { addMinutes, isBefore, setHours, setMinutes } from 'date-fns';
+import {
+  addMinutes,
+  isBefore,
+  setHours,
+  setMinutes,
+} from 'date-fns';
 import { prisma } from '../context';
 
 @InputType({ description: 'New appointment data' })
@@ -334,28 +339,37 @@ export class AppointmentResolver {
 
     let results: WeeklyAppointments[] = [];
 
+    function addAppointmentDuration(
+      hourStart: Date,
+      hourEnd: Date,
+      durration: number,
+      appointmentsArr: Date[]
+    ) {
+      const nextAppointment = addMinutes(hourStart, durration);
+
+      if (isBefore(nextAppointment, hourEnd)) {
+        appointmentsArr.push(nextAppointment);
+        addAppointmentDuration(
+          nextAppointment,
+          hourEnd,
+          durration,
+          appointmentsArr
+        );
+      }
+    }
+
     for (const day of data.days) {
+      // don't create appointments slots for past days
+
       const start = setMinutes(setHours(day, workStartHour), workStartMinutes);
       const end = setMinutes(setHours(day, workEndHour), workEndMinutes);
 
       let appointments = [start];
 
-      function addAppointmentDuration(
-        hourStart: Date,
-        hourEnd: Date,
-        durration: number
-      ) {
-        const nextAppointment = addMinutes(hourStart, durration);
-
-        if (isBefore(nextAppointment, hourEnd)) {
-          appointments.push(nextAppointment);
-          addAppointmentDuration(nextAppointment, hourEnd, durration);
-        }
-      }
-
-      addAppointmentDuration(start, end, appointmentDuration);
+      addAppointmentDuration(start, end, appointmentDuration, appointments);
 
       //when comparing Date objects getTime method is needed
+      // filter out already created appointments
       const free = appointments.filter(
         (date1) =>
           !dentistNotAvailable.some(
@@ -363,12 +377,15 @@ export class AppointmentResolver {
           )
       );
 
+      // filterout appointments hours before current hour
+      const afterCurrentTime = free.filter((date) => date > data.currentDate);
+
       results.push({
-        date: start,
-        appointments: [...free],
+        date: day,
+        appointments: [...afterCurrentTime],
       });
     }
-
+    // this is the only setup that work, whatever else I tried to filter out past dates was problematioc because of timezones
     return results;
   }
 

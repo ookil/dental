@@ -167,6 +167,7 @@ const NewAppointmentContent: React.FC = () => {
       setTimeout(() => {
         setCompleted(false);
         dispatch(openModal(false));
+        dispatch(setAvailableAppointments([]));
       }, 2000);
     },
   });

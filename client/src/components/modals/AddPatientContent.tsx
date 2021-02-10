@@ -17,7 +17,6 @@ import { ButtonsWrapper, ModalTitle } from './Modals.elements';
 import { PatientFormContent } from './PatientFormContent';
 import loadingGif from '../../images/loading.gif';
 import completedGif from '../../images/completed.gif';
-import { GET_LOGGED_USER, UserData } from '../../graphql/queries/user';
 import { clinicIdVar } from '../../cache';
 
 export type Patient = {

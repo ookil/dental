@@ -26,6 +26,7 @@ import {
   WeeklyAppointmentsData,
   WeeklyAppointmentsVars,
 } from '../../graphql/queries/appointments';
+import { clinicIdVar } from '../../cache';
 
 function getWeekDays(week: Week) {
   const days = eachDayOfInterval(week);
@@ -34,8 +35,8 @@ function getWeekDays(week: Week) {
 
 function getWeekRange(date: Date) {
   const res = {
-    start: startOfWeek(new Date(date), { weekStartsOn: 1 }),
-    end: endOfWeek(new Date(date), { weekStartsOn: 1 }),
+    start: startOfWeek(date, { weekStartsOn: 1 }),
+    end: endOfWeek(date, { weekStartsOn: 1 }),
   };
   return res;
 }
@@ -49,12 +50,14 @@ type Props = {
   dentistId: number | string;
 };
 
-const defaultClinicId = 7;
-
 const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
   const [selectedDays, setSelectedDays] = useState<Date[]>();
+  const [selectedDay, setSelectedDay] = useState<Date>();
   const [selectedWeek, setSelectedWeek] = useState<Week>();
+  const [currentDate] = useState(new Date());
   const [isOpen, setIsOpen] = useState(false);
+
+  const clinicId = clinicIdVar();
 
   const { data: availableAppointments } = useQuery<
     WeeklyAppointmentsData,
@@ -63,8 +66,9 @@ const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
     variables: {
       appointmentsInput: {
         days: selectedDays!,
-        clinicId: defaultClinicId,
+        clinicId,
         dentistId,
+        currentDate,
       },
     },
     skip: !dentistId,
@@ -72,6 +76,7 @@ const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
   });
 
   const handleWeekChange = (action: 'ADD' | 'SUB') => {
+    setSelectedDay(undefined);
     if (selectedWeek) {
       let newSelectedWeek = selectedWeek;
       if (action === 'ADD') {
@@ -93,6 +98,7 @@ const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
   };
 
   const handleDayChange = (date: Date) => {
+    setSelectedDay(date);
     setSelectedDays(getWeekDays(getWeekRange(date)));
     setSelectedWeek(getWeekRange(date));
     setIsOpen(false);
@@ -165,7 +171,10 @@ const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
           />
         </DayPickerWrapper>
       )}
-      <SelectedDaysDisplay availableAppointments={availableAppointments} />
+      <SelectedDaysDisplay
+        availableAppointments={availableAppointments}
+        selectedDay={selectedDay}
+      />
     </DayPickerContainer>
   );
 };

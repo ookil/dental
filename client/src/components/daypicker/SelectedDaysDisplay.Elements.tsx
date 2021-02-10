@@ -17,6 +17,7 @@ const handleProps = (props: any) => {
       border: 2px solid ${bluePrimary};
       box-shadow: 0px 0px 4px 1px ${blueSecondary};
       background-color: ${blueSecondary};
+      cursor: pointer;
     `;
   }
   if (props.disabled) {
@@ -30,7 +31,6 @@ const handleProps = (props: any) => {
       border: 2px solid ${bluePrimary};
     `;
   }
-
 };
 
 export const DayButton = styled.div<{ disabled?: boolean; isActive: boolean }>`
@@ -43,15 +43,14 @@ export const DayButton = styled.div<{ disabled?: boolean; isActive: boolean }>`
   display: flex;
   justify-content: center;
   align-items: center;
-  cursor: pointer;
+
   ${(props) => handleProps(props)}
 
   &:hover {
-    background-color: ${({ disabled }) =>
-      disabled ? '#C4C4C4' : blueSecondary};
+    background-color: ${({ disabled }) => !disabled && blueSecondary};
     box-shadow: 0px 0px 4px 1px
       ${({ disabled }) => (disabled ? '#C4C4C4' : blueSecondary)};
-    color: white;
+    color: ${({ disabled }) => !disabled && 'white'};
   }
 `;
 

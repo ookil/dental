@@ -53,6 +53,7 @@ const modalsSlice = createSlice({
     },
     setAvailableAppointments: (state, action: PayloadAction<Date[]>) => {
       if (action.payload.length > 0) {
+        state.availableAppointments = [];
         for (const appointment of action.payload) {
           const formated = {
             dateString: appointment,

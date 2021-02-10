@@ -24,6 +24,7 @@ export type WeeklyAppointmentsInput = {
   clinicId: string | number;
   dentistId: string | number;
   options?: ClinicAppointmentsOptions;
+  currentDate: Date;
 };
 
 export type WeeklyAppointmentsVars = {
