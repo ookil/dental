@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
     <>
       <Nav>
         <NavbarContainer>
-          <NavLogo to='/'>
+          <NavLogo to='/dashboard'>
             <NavIcon src={ClinicIcon} />
             <NavLogoTitle>DENTAL</NavLogoTitle>
           </NavLogo>

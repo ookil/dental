@@ -30,3 +30,4 @@ export const cache = new InMemoryCache({
 });
 
 export const clinicIdVar: ReactiveVar<string> = makeVar<string>('');
+

@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { setToolbarCollapse } from '../../store/slices/clinicSlice';
+import { useAppDispatch } from '../../store/store';
 import {
   ToolbarMenu,
   ToolbarWrapper,
@@ -19,7 +21,13 @@ const Toolbar: React.FC = () => {
 
   const hanldeButton = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
     setButton(e.currentTarget.id);
-  const handleCollapse = () => setCollapse(!isCollapsed);
+
+  const dispatch = useAppDispatch();
+
+  const handleCollapse = () => {
+    dispatch(setToolbarCollapse());
+    setCollapse(!isCollapsed);
+  };
 
   return (
     <ToolbarMenu isCollapsed={isCollapsed}>

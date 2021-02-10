@@ -1,10 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { useDispatch } from 'react-redux';
 import modalsReducer from './slices/modalsSlice';
+import clinicReducer from './slices/clinicSlice';
 
 const store = configureStore({
   reducer: {
     modal: modalsReducer,
+    clinic: clinicReducer,
   },
 });
 

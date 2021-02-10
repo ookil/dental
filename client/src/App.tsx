@@ -18,6 +18,7 @@ import store from './store/store';
 import loadingGif from './images/loading.gif';
 import { ClinicData, ClinicVar, GET_CLINIC } from './graphql/queries/clinic';
 import { clinicIdVar } from './cache';
+import MainContainer from './pages/MainContainer';
 
 function App() {
   const { data } = useQuery<UserData>(GET_LOGGED_USER);
@@ -49,7 +50,10 @@ function App() {
             <Navbar />
             <Toolbar />
             <Switch>
-              <Route path='/:page' component={Dashboard} />
+              <MainContainer>
+                <Route exact path='/dashboard' component={Dashboard} />
+                <Route exact path='/calendar' render={() => <div>Hello</div>} />
+              </MainContainer>
             </Switch>
           </ModalProvider>
         </Router>
