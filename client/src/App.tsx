@@ -13,7 +13,7 @@ import { Gif, GifWrapper } from './components/elements/Elements';
 import { ModalBackground } from './components/modals/Modals.elements';
 import GlobalStyle from './globalStyles';
 import { GET_LOGGED_USER, UserData } from './graphql/queries/user';
-import { Dashboard } from './pages';
+import { Calendar, Dashboard } from './pages';
 import store from './store/store';
 import loadingGif from './images/loading.gif';
 import { ClinicData, ClinicVar, GET_CLINIC } from './graphql/queries/clinic';
@@ -52,7 +52,7 @@ function App() {
             <Switch>
               <MainContainer>
                 <Route exact path='/dashboard' component={Dashboard} />
-                <Route exact path='/calendar' render={() => <div>Hello</div>} />
+                <Route exact path='/calendar' component={Calendar} />
               </MainContainer>
             </Switch>
           </ModalProvider>

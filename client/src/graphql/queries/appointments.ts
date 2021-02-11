@@ -72,3 +72,29 @@ export const CREATE_APPOINTMENT = gql`
     }
   }
 `;
+
+type Patient = {
+  id: string | number;
+  name: string;
+  surname: string;
+};
+
+type Dentist = {
+  id: string | number;
+  nameWithSurname: string;
+  name: string;
+  surname: string;
+};
+
+type AppointmentStatus = 'REGISTERED' | 'CONFIRMED' | 'CANCELED';
+
+export type Appointment = {
+  id: string | number;
+  startDate: Date;
+  endDate: Date;
+  treatment: string;
+  patient: Patient;
+  dentistId: number | string;
+  status: AppointmentStatus;
+  clinicId: number | string;
+};
