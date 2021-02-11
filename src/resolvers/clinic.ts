@@ -96,6 +96,21 @@ export class ClinicResolver {
     });
   }
 
+  @Authorized()
+  @Query(() => [Patient], { nullable: true })
+  async clinicAppointments(
+    @Arg('id', () => ID) id: number | string,
+    @Ctx() { prisma }: Context
+  ) {
+    if (typeof id === 'string') id = parseInt(id);
+
+    return await prisma.patient.findMany({
+      where: {
+        clinicId: id,
+      },
+    });
+  }
+
   @Mutation(() => Clinic)
   async createClinic(
     @Arg('clinicData') clinicData: CreateClinicInput,
