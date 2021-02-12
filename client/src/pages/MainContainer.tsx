@@ -13,7 +13,7 @@ export const Container = styled.div<{ toolbarCollapsed: boolean }>`
   //background-color: skyblue;
   float: right;
   transition: width 0.5s ease-in-out;
-  padding: 10px 15px;
+  //padding: 10px 15px;
   background: linear-gradient(
       rgba(255, 255, 255, 0.3),
       rgba(255, 255, 255, 0.3)

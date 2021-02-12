@@ -1,11 +1,20 @@
 import { AppointmentTooltip } from '@devexpress/dx-react-scheduler'; //Appointments
-import { Appointments } from '@devexpress/dx-react-scheduler-material-ui';
+import {
+  Appointments,
+  DateNavigator,
+  TodayButton,
+  Toolbar,
+} from '@devexpress/dx-react-scheduler-material-ui';
 import { format } from 'date-fns';
 import styled from 'styled-components';
 import { color } from '../../globalStyles';
 import ScheduleRoundedIcon from '@material-ui/icons/ScheduleRounded';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
+import React from 'react';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const {
   textPrimary,
@@ -13,9 +22,15 @@ const {
   greenConfirm,
   yellowUnknow,
   pinkCancel,
+  bluePrimary,
 } = color;
 
-type AppointmentProps = Appointments.AppointmentProps;
+export const RootContainer = styled.div`
+  height: 100%;
+  width: 100%;
+  background-color: #fff;
+`;
+
 type AppointmentContentProps = Appointments.AppointmentContentProps;
 
 const Container = styled.div`
@@ -38,44 +53,24 @@ const TreatmentText = styled.div`
 `;
 
 const StyledAppointment = styled(Appointments.Appointment)`
-  background-color: ${({ status }) =>
-    status === 'CONFIRMED' ? lightGreen : yellowUnknow} !important;
+  // prioritaze styled-components rules over material-ui
+  && {
+    background-color: ${({ status }) =>
+      status === 'CONFIRMED' ? lightGreen : yellowUnknow};
+
+    &:hover {
+      background-color: ${({ status }) =>
+        status === 'CONFIRMED' ? '#7fdd7f' : '#fff97b'};
+    }
+  }
 `;
 
 export const AppointmentCell = ({
   data,
-  onClick,
   ...restProps
-}: AppointmentProps) => {
+}: Appointments.AppointmentProps) => {
   return <StyledAppointment {...restProps} data={data} status={data.status} />;
 };
-
-/* interface StyledAppointment extends Appointments.AppointmentProps {
-  status: 'REGISTERED' | 'CONFIRMED';
-}
-
-const StyledAppointment = styled.div<StyledAppointment>`
-  width: 100%;
-  border: 1px solid #fff;
-  height: 100%;
-  overflow: hidden;
-  position: absolute;
-  font-size: 0.75rem;
-  box-sizing: border-box;
-  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
-  font-weight: 400;
-  line-height: 1.66;
-  user-select: none;
-  border-radius: 4px;
-  letter-spacing: 0.03333em;
-  background-clip: padding-box;
-  background-color: ${({ status }) =>
-    status === 'CONFIRMED' ? lightGreen : yellowUnknow};
-`; 
-
-export const AppointmentCell = ({ data, ...restProps }: Appointments.AppointmentProps) => {
-  return <StyledAppointment {...restProps} data={data} status={data.status} />;
-};*/
 
 export const AppointmentContent = ({
   data,
@@ -190,5 +185,115 @@ export const TooltipContent = ({
         </Text>
       </Row>
     </ContentContainer>
+  );
+};
+
+const DentistSelectorItem = ({ dentistName }: { dentistName?: string }) => {
+  const displayText = dentistName || 'All Dentists';
+  return (
+    <div>
+      <Text>{displayText}</Text>
+    </div>
+  );
+};
+
+type DentistSelectorProps = {
+  dentistId: string;
+  dentists: any[];
+  handleDentistChange: (dentistId: string) => void;
+};
+
+const DentistSelector: React.FC<DentistSelectorProps> = ({
+  dentistId,
+  dentists,
+  handleDentistChange,
+}) => {
+  const currentDentist =
+    dentistId === '-1'
+      ? { text: 'All Dentists' }
+      : dentists.find((dentist) => dentist.id === dentistId);
+
+  return (
+    <FormControl>
+      <Select
+        disableUnderline
+        value={dentistId}
+        onChange={(e) => {
+          handleDentistChange(e.target.value as any);
+        }}
+        renderValue={() => (
+          <DentistSelectorItem dentistName={currentDentist.text} />
+        )}
+      >
+        <MenuItem value={'-1'}>
+          <DentistSelectorItem />
+        </MenuItem>
+        {dentists.map(({ id, text }) => (
+          <MenuItem value={id} key={id}>
+            <DentistSelectorItem dentistName={text} />
+          </MenuItem>
+        ))}
+      </Select>
+    </FormControl>
+  );
+};
+
+export const FlexibleSpace = ({
+  dentistId,
+  dentists,
+  handleDentistChange,
+  ...restProps
+}: DentistSelectorProps) => {
+  return (
+    <Toolbar.FlexibleSpace {...restProps}>
+      <DentistSelector
+        dentistId={dentistId}
+        dentists={dentists}
+        handleDentistChange={handleDentistChange}
+      />
+    </Toolbar.FlexibleSpace>
+  );
+};
+
+export const StyledToday = styled(TodayButton.Button)`
+  && {
+    border: 1px solid ${bluePrimary};
+    border-radius: 10px;
+    color: ${bluePrimary};
+
+    &:hover {
+      background-color: ${bluePrimary};
+      color: #fff;
+    }
+  }
+`;
+
+export const StyledTodayBtn = (props: TodayButton.ButtonProps) => {
+  return <StyledToday {...props} />;
+};
+
+const StyledToolbar = styled(Toolbar.Root)`
+  && {
+    background: red;
+  }
+`;
+
+export const ToolbarRoot = (props: Toolbar.RootProps) => {
+  return <StyledToolbar {...props} />;
+};
+
+export const RootNavigator = (props: DateNavigator.RootProps) => {
+  return <DateNavigator.Root {...props} />;
+};
+
+export const CustomNavigatorChildren = (
+  props: DateNavigator.NavigationButtonProps
+) => {
+  return (
+    <>
+      <DateNavigator.NavigationButton {...props} type={'back'} />
+
+      <DateNavigator.NavigationButton type={'forward'} />
+    </>
   );
 };

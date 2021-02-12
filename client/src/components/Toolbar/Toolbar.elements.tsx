@@ -49,6 +49,7 @@ export const ToolbarMenu = styled.div<{ isCollapsed: boolean }>`
   box-shadow: 4px -3px 4px rgba(0, 0, 0, 0.25);
   padding-top: 25px;
   transition: left 0.5s ease-in-out;
+  z-index: 5;
 
   &:hover ${CollapseButton} {
     opacity: 1;
@@ -117,8 +118,6 @@ export const Svg = styled(Icon)`
   max-height: 25px;
   max-width: 25px;
 `;
-
-
 
 export const CollapseIcon = () => (
   <svg

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Appointments,
   AppointmentTooltip,
@@ -20,10 +20,15 @@ import {
   IntegratedGrouping,
   ViewState,
 } from '@devexpress/dx-react-scheduler';
-import { Paper } from '@material-ui/core';
 import {
   AppointmentCell,
   AppointmentContent,
+  CustomNavigatorChildren,
+  FlexibleSpace,
+  RootContainer,
+  RootNavigator,
+  StyledTodayBtn,
+  ToolbarRoot,
   TooltipContent,
 } from './AppointmentsScheduler.elements';
 import { Appointment } from '../../graphql/queries/appointments';
@@ -39,7 +44,7 @@ const appointments: Appointment[] = [
       surname: 'Kowalski',
     },
     treatment: 'Root Canal',
-    dentistId: 1,
+    dentistId: '1',
     status: 'REGISTERED',
     clinicId: '7',
   },
@@ -53,7 +58,21 @@ const appointments: Appointment[] = [
       surname: 'Air',
     },
     treatment: 'Root Canal',
-    dentistId: 2,
+    dentistId: '2',
+    status: 'CONFIRMED',
+    clinicId: '7',
+  },
+  {
+    id: 3,
+    startDate: new Date('2021-02-11T11:00'),
+    endDate: new Date('2021-02-11T11:30'),
+    patient: {
+      id: 1,
+      name: 'Wiola',
+      surname: 'Kowalska',
+    },
+    treatment: 'Root Canal',
+    dentistId: '1',
     status: 'CONFIRMED',
     clinicId: '7',
   },
@@ -63,32 +82,41 @@ const workStartHour = 8;
 const workEndHour = 18;
 const appointmentDuration = 30;
 
-const isDayOrWeek = (viewName: string) =>
-  viewName === 'Day' || viewName === 'Week';
+const filterByDentist = (appointments: Appointment[], dentistId: string) => {
+  if (dentistId === '-1') return appointments;
+  return appointments.filter(
+    (appointment) => !dentistId || appointment.dentistId === dentistId
+  );
+};
 
 const AppointmentsScheduler: React.FC = () => {
+  const [currentDentistId, setCurrentDentistId] = useState<string>('-1'); //default all dentists
+
   const dentists = [
     {
-      id: 1,
+      id: '1',
       text: 'Doktor Ząbek',
     },
     {
-      id: 2,
+      id: '2',
       text: 'Barabasz Cat',
     },
     {
-      id: 3,
+      id: '3',
       text: 'Sylwia Cukier',
     },
+    {
+      id: '4',
+      text: 'Grażyna Kowalczyk',
+    },
   ];
-
-  const resources = [
+  const [resources, setResources] = useState<any[]>([
     {
       fieldName: 'dentistId',
       title: 'Dentist',
       instances: dentists,
     },
-  ];
+  ]);
 
   const grouping = [
     {
@@ -96,9 +124,29 @@ const AppointmentsScheduler: React.FC = () => {
     },
   ];
 
+  const isDayOrWeek = (viewName: string) =>
+    viewName === 'Day' || (viewName === 'Week' && currentDentistId === '-1');
+
+  const handleDentistChange = (dentistId: string) => {
+    setCurrentDentistId(dentistId);
+    setResources([
+      {
+        ...resources[0],
+        instances:
+          dentistId === '-1'
+            ? dentists
+            : dentists.filter((dentist) => dentist.id === dentistId),
+      },
+    ]);
+  };
+
   return (
-    <Paper>
-      <Scheduler firstDayOfWeek={1} height={850} data={appointments}>
+    <RootContainer>
+      <Scheduler
+        firstDayOfWeek={1}
+        height={'auto'}
+        data={filterByDentist(appointments, currentDentistId)}
+      >
         <ViewState
           defaultCurrentDate={'2021-02-11T10:00'}
           defaultCurrentViewName='Day'
@@ -131,9 +179,20 @@ const AppointmentsScheduler: React.FC = () => {
         <IntegratedEditing />
         <GroupingPanel />
 
-        <Toolbar />
+        <Toolbar
+          rootComponent={ToolbarRoot}
+          flexibleSpaceComponent={(props) => (
+            <FlexibleSpace
+              {...props}
+              dentistId={currentDentistId}
+              dentists={dentists}
+              handleDentistChange={handleDentistChange}
+            />
+          )}
+        />
+
         <DateNavigator />
-        <TodayButton />
+        <TodayButton buttonComponent={StyledTodayBtn} />
         <ViewSwitcher />
         <AppointmentTooltip
           contentComponent={TooltipContent}
@@ -141,7 +200,7 @@ const AppointmentsScheduler: React.FC = () => {
           showCloseButton
         />
       </Scheduler>
-    </Paper>
+    </RootContainer>
   );
 };
 
