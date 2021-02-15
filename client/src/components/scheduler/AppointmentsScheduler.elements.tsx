@@ -2,11 +2,10 @@ import { AppointmentTooltip } from '@devexpress/dx-react-scheduler'; //Appointme
 import {
   Appointments,
   DateNavigator,
-  TodayButton,
   Toolbar,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { format } from 'date-fns';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { color } from '../../globalStyles';
 import ScheduleRoundedIcon from '@material-ui/icons/ScheduleRounded';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
@@ -15,6 +14,7 @@ import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import MenuItem from '@material-ui/core/MenuItem';
+import PersonRoundedIcon from '@material-ui/icons/PersonRounded';
 
 const {
   textPrimary,
@@ -22,7 +22,6 @@ const {
   greenConfirm,
   yellowUnknow,
   pinkCancel,
-  bluePrimary,
 } = color;
 
 export const RootContainer = styled.div`
@@ -170,9 +169,9 @@ export const TooltipContent = ({
         <Wrapper>
           <Text>{format(new Date(startDate), 'iiii, d MMM , y')}</Text>
           <Text>
-            {format(new Date(startDate), 'h:mm') +
+            {format(new Date(startDate), 'H:mm') +
               ' - ' +
-              format(new Date(endDate), 'h:mm')}
+              format(new Date(endDate), 'H:mm')}
           </Text>
         </Wrapper>
       </Row>
@@ -188,14 +187,46 @@ export const TooltipContent = ({
   );
 };
 
-const DentistSelectorItem = ({ dentistName }: { dentistName?: string }) => {
+const ItemWrapper = styled.div<{ mobile?: boolean }>`
+  ${({ mobile }) => css`
+    ${mobile &&
+    css`
+      @media screen and (max-width: 740px) {
+        display: none;
+      }
+    `}
+  `}
+`;
+
+const DentistSelectorItem = ({
+  dentistName,
+  mobile,
+}: {
+  dentistName?: string;
+  mobile?: boolean;
+}) => {
   const displayText = dentistName || 'All Dentists';
   return (
-    <div>
+    <ItemWrapper mobile={mobile}>
       <Text>{displayText}</Text>
-    </div>
+    </ItemWrapper>
   );
 };
+
+const IconWrapper = styled.div`
+  height: 24px;
+  color: ${textPrimary};
+
+  @media screen and (min-width: 740px) {
+    display: none;
+  }
+`;
+
+const DentistIcon = () => (
+  <IconWrapper>
+    <PersonRoundedIcon />
+  </IconWrapper>
+);
 
 type DentistSelectorProps = {
   dentistId: string;
@@ -222,7 +253,13 @@ const DentistSelector: React.FC<DentistSelectorProps> = ({
           handleDentistChange(e.target.value as any);
         }}
         renderValue={() => (
-          <DentistSelectorItem dentistName={currentDentist.text} />
+          <>
+            <DentistIcon />
+            <DentistSelectorItem
+              dentistName={currentDentist.text}
+              mobile={true}
+            />
+          </>
         )}
       >
         <MenuItem value={'-1'}>
@@ -255,22 +292,6 @@ export const FlexibleSpace = ({
   );
 };
 
-export const StyledToday = styled(TodayButton.Button)`
-  && {
-    border: 1px solid ${bluePrimary};
-    border-radius: 10px;
-    color: ${bluePrimary};
-
-    &:hover {
-      background-color: ${bluePrimary};
-      color: #fff;
-    }
-  }
-`;
-
-export const StyledTodayBtn = (props: TodayButton.ButtonProps) => {
-  return <StyledToday {...props} />;
-};
 
 const StyledToolbar = styled(Toolbar.Root)`
   && {

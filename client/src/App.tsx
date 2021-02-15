@@ -40,7 +40,7 @@ function App() {
     );
 
   return (
-    <>
+    <div style={{ minHeight: '100vh' }}>
       <Provider store={store}>
         <GlobalStyle />
         <Router>
@@ -58,7 +58,7 @@ function App() {
           </ModalProvider>
         </Router>
       </Provider>
-    </>
+    </div>
   );
 }
 

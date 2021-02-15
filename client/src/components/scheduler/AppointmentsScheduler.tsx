@@ -23,15 +23,26 @@ import {
 import {
   AppointmentCell,
   AppointmentContent,
-  CustomNavigatorChildren,
   FlexibleSpace,
   RootContainer,
-  RootNavigator,
-  StyledTodayBtn,
-  ToolbarRoot,
   TooltipContent,
 } from './AppointmentsScheduler.elements';
 import { Appointment } from '../../graphql/queries/appointments';
+import {
+  DesktopViewSwitcher,
+  ExternalViewSwitcher,
+  NavigationButtons,
+  StyledTodayBtn,
+} from './SchedulerToolbar.elements';
+import {
+  DayScaleEmptyCell,
+  DayScaleLayout,
+  DayScaleRow,
+  TimeScaleLabel,
+  TimeScaleLayout,
+  TimeTableLayout,
+} from './SchedulerViews.elements';
+import { GroupCell } from './GroupingPanel';
 
 const appointments: Appointment[] = [
   {
@@ -72,7 +83,21 @@ const appointments: Appointment[] = [
       surname: 'Kowalska',
     },
     treatment: 'Root Canal',
-    dentistId: '1',
+    dentistId: '3',
+    status: 'CONFIRMED',
+    clinicId: '7',
+  },
+  {
+    id: 4,
+    startDate: new Date('2021-02-12T13:00'),
+    endDate: new Date('2021-02-12T13:30'),
+    patient: {
+      id: 1,
+      name: 'Wiola',
+      surname: 'Kowalska',
+    },
+    treatment: 'Root Canal',
+    dentistId: '4',
     status: 'CONFIRMED',
     clinicId: '7',
   },
@@ -91,6 +116,7 @@ const filterByDentist = (appointments: Appointment[], dentistId: string) => {
 
 const AppointmentsScheduler: React.FC = () => {
   const [currentDentistId, setCurrentDentistId] = useState<string>('-1'); //default all dentists
+  const [currentView, setCurrentView] = useState<string>('Day');
 
   const dentists = [
     {
@@ -108,6 +134,10 @@ const AppointmentsScheduler: React.FC = () => {
     {
       id: '4',
       text: 'Grażyna Kowalczyk',
+    },
+    {
+      id: '5',
+      text: 'Roman Clue',
     },
   ];
   const [resources, setResources] = useState<any[]>([
@@ -141,66 +171,75 @@ const AppointmentsScheduler: React.FC = () => {
   };
 
   return (
-    <RootContainer>
-      <Scheduler
-        firstDayOfWeek={1}
-        height={'auto'}
-        data={filterByDentist(appointments, currentDentistId)}
-      >
-        <ViewState
-          defaultCurrentDate={'2021-02-11T10:00'}
-          defaultCurrentViewName='Day'
-        />
-        <EditingState onCommitChanges={() => console.log('change')} />
+    <>
+      <ExternalViewSwitcher
+        currentViewName={currentView}
+        onViewChange={(e) => setCurrentView(e.target.value)}
+      />
 
-        <GroupingState grouping={grouping} groupByDate={isDayOrWeek} />
-
-        <DayView
-          startDayHour={workStartHour}
-          endDayHour={workEndHour}
-          cellDuration={appointmentDuration}
-        />
-        <WeekView
-          startDayHour={workStartHour}
-          endDayHour={workEndHour}
-          cellDuration={appointmentDuration}
-          excludedDays={[0, 6]}
-        />
-        <MonthView />
-
-        <Appointments
-          appointmentComponent={AppointmentCell}
-          appointmentContentComponent={AppointmentContent}
-        />
-
-        <Resources data={resources} />
-
-        <IntegratedGrouping />
-        <IntegratedEditing />
-        <GroupingPanel />
-
-        <Toolbar
-          rootComponent={ToolbarRoot}
-          flexibleSpaceComponent={(props) => (
-            <FlexibleSpace
-              {...props}
-              dentistId={currentDentistId}
-              dentists={dentists}
-              handleDentistChange={handleDentistChange}
-            />
-          )}
-        />
-
-        <DateNavigator />
-        <TodayButton buttonComponent={StyledTodayBtn} />
-        <ViewSwitcher />
-        <AppointmentTooltip
-          contentComponent={TooltipContent}
-          showOpenButton
-          showCloseButton
-        />
-      </Scheduler>
-    </RootContainer>
+      <RootContainer>
+        <Scheduler
+          firstDayOfWeek={1}
+          locale='en-GB'
+          height={'auto'}
+          data={filterByDentist(appointments, currentDentistId)}
+        >
+          <ViewState
+            defaultCurrentDate={'2021-02-11T10:00'}
+            currentViewName={currentView}
+            onCurrentViewNameChange={(viewName) => setCurrentView(viewName)}
+          />
+          <EditingState onCommitChanges={() => console.log('change')} />
+          <GroupingState grouping={grouping} groupByDate={isDayOrWeek} />
+          <DayView
+            startDayHour={workStartHour}
+            endDayHour={workEndHour}
+            cellDuration={appointmentDuration}
+            timeScaleLayoutComponent={TimeScaleLayout}
+            dayScaleLayoutComponent={DayScaleLayout}
+            dayScaleEmptyCellComponent={DayScaleEmptyCell}
+            timeTableLayoutComponent={TimeTableLayout}
+            layoutComponent={DayScaleRow}
+            timeScaleLabelComponent={(props) => (
+              <TimeScaleLabel {...props} viewName='day' />
+            )}
+          />
+          <WeekView
+            startDayHour={workStartHour}
+            endDayHour={workEndHour}
+            cellDuration={appointmentDuration}
+            excludedDays={[0, 6]}
+          />
+          <MonthView />
+          <Appointments
+            appointmentComponent={AppointmentCell}
+            appointmentContentComponent={AppointmentContent}
+          />
+          <Resources data={resources} />
+          <IntegratedGrouping />
+          <IntegratedEditing />
+          <GroupingPanel cellComponent={GroupCell} />
+          <Toolbar
+            flexibleSpaceComponent={(props) => (
+              <FlexibleSpace
+                {...props}
+                dentistId={currentDentistId}
+                dentists={dentists}
+                handleDentistChange={handleDentistChange}
+              />
+            )}
+          />
+          <DateNavigator navigationButtonComponent={NavigationButtons} />
+          <TodayButton buttonComponent={StyledTodayBtn} />
+          <ViewSwitcher switcherComponent={DesktopViewSwitcher} />
+          <AppointmentTooltip
+            contentComponent={TooltipContent}
+            showOpenButton
+            showCloseButton
+          />
+        </Scheduler>
+      </RootContainer>
+    </>
   );
 };
 

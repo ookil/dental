@@ -15,7 +15,7 @@ export const color = {
   textSecondary: '#8D8D97',
 };
 
-const size = {
+export const size = {
   mobileS: '320px',
   mobileM: '375px',
   mobileL: '425px',
@@ -73,6 +73,16 @@ const GlobalStyle = createGlobalStyle`
           background-color: ${color.textSecondary};
         }
     }
+
+    html { 
+      height: 100%;
+      width: 100%;
+    }
+
+    body {
+      min-height: 100%;
+    }
+
 `;
 
 export default GlobalStyle;
