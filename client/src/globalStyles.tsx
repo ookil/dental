@@ -66,6 +66,7 @@ const GlobalStyle = createGlobalStyle`
 
         &::-webkit-scrollbar {
           width: 3px;
+          height: 3px;
         }
 
         &::-webkit-scrollbar-thumb {

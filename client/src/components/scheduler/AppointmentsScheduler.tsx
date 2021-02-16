@@ -35,12 +35,13 @@ import {
   StyledTodayBtn,
 } from './SchedulerToolbar.elements';
 import {
-  DayScaleEmptyCell,
   DayScaleLayout,
+  DayScaleLayoutWeek,
   DayScaleRow,
   TimeScaleLabel,
   TimeScaleLayout,
   TimeTableLayout,
+  TimeTableLayoutWeek,
 } from './SchedulerViews.elements';
 import { GroupCell } from './GroupingPanel';
 
@@ -195,20 +196,22 @@ const AppointmentsScheduler: React.FC = () => {
             startDayHour={workStartHour}
             endDayHour={workEndHour}
             cellDuration={appointmentDuration}
+            timeScaleLabelComponent={TimeScaleLabel}
             timeScaleLayoutComponent={TimeScaleLayout}
-            dayScaleLayoutComponent={DayScaleLayout}
-            dayScaleEmptyCellComponent={DayScaleEmptyCell}
-            timeTableLayoutComponent={TimeTableLayout}
             layoutComponent={DayScaleRow}
-            timeScaleLabelComponent={(props) => (
-              <TimeScaleLabel {...props} viewName='day' />
-            )}
+            dayScaleLayoutComponent={DayScaleLayout}
+            timeTableLayoutComponent={TimeTableLayout}
           />
           <WeekView
             startDayHour={workStartHour}
             endDayHour={workEndHour}
             cellDuration={appointmentDuration}
             excludedDays={[0, 6]}
+            timeScaleLabelComponent={TimeScaleLabel}
+            timeScaleLayoutComponent={TimeScaleLayout}
+            layoutComponent={DayScaleRow}
+            dayScaleLayoutComponent={DayScaleLayoutWeek}
+            timeTableLayoutComponent={TimeTableLayoutWeek}
           />
           <MonthView />
           <Appointments

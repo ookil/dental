@@ -4,29 +4,21 @@ import styled from 'styled-components';
 
 const handleFormatDate = (date: any) => format(new Date(date), 'H:mm');
 
+// style for timescale labels
 const StyledTimeScaleLabel = styled(DayView.TimeScaleLabel)`
   && {
     padding-left: 8px;
   }
 `;
 
-type TimeScaleProps = DayView.TimeScaleLabelProps &
-  WeekView.TimeScaleLabelProps & { viewName: 'day' | 'month' };
-
 export const TimeScaleLabel = ({
   formatDate,
-  viewName,
   ...restProps
-}: TimeScaleProps) => {
-  if (viewName === 'day')
-    return (
-      <StyledTimeScaleLabel {...restProps} formatDate={handleFormatDate} />
-    );
-  return (
-    <WeekView.TimeScaleLabel {...restProps} formatDate={handleFormatDate} />
-  );
-};
+}: DayView.TimeScaleLabelProps) => (
+  <StyledTimeScaleLabel {...restProps} formatDate={handleFormatDate} />
+);
 
+// styling that col with time scale
 const StyledTimeScaleLayout = styled(DayView.TimeScaleLayout)`
   && {
     @media (max-width: 900px) {
@@ -41,6 +33,20 @@ export const TimeScaleLayout = (props: DayView.TimeScaleLayoutProps) => (
   <StyledTimeScaleLayout {...props} />
 );
 
+// bigger table with appointments in mobile view
+const StyledTimeTableLayout = styled(DayView.TimeTableLayout)`
+  && {
+    @media (max-width: 500px) {
+      min-width: 450px;
+    }
+  }
+`;
+
+export const TimeTableLayout = (props: DayView.TimeTableLayoutProps) => (
+  <StyledTimeTableLayout {...props} />
+);
+
+// bigger table with dates in mobile view
 const StyledDayScaleLayout = styled(DayView.DayScaleLayout)`
   && {
     font-family: 'Montserrat', sans-serif;
@@ -55,42 +61,47 @@ export const DayScaleLayout = (props: DayView.DayScaleLayoutProps) => (
   <StyledDayScaleLayout {...props} />
 );
 
-const StyledDayScaleEmptyCell = styled.div`
-  && {
-    width: 80px;
-
-    @media (max-width: 900px) {
-      width: 25px;
-    }
-  }
-`;
-
-export const DayScaleEmptyCell = (props: DayView.DayScaleEmptyCellProps) => (
-  <StyledDayScaleEmptyCell {...props} />
-);
-
-const StyledTimeTableLayout = styled(DayView.TimeTableLayout)`
-  && {
-    @media (max-width: 500px) {
-      min-width: 450px;
-    }
-  }
-`;
-
-export const TimeTableLayout = (props: DayView.TimeTableLayoutProps) => (
-  <StyledTimeTableLayout {...props} />
-);
-
+// targeting that empty cell
 const StyledDayScaleRow = styled(DayView.Layout)`
   && {
-    background-color: pink;
-
-    /* div:first-of-type > div:first-of-type > div:first-of-type {
-      background-color: skyblue;
-    } */
+    div[class*='makeStyles-dayScaleEmptyCell'] {
+      @media (max-width: 900px) {
+        width: 55px;
+        min-width: 55px;
+      }
+    }
   }
 `;
 
 export const DayScaleRow = (props: DayView.LayoutProps) => (
   <StyledDayScaleRow {...props} />
+);
+
+// for week view
+
+// bigger table with appointments in mobile view
+const StyledTimeTableLayoutWeek = styled(WeekView.TimeTableLayout)`
+  && {
+    @media (max-width: 500px) {
+      min-width: 1450px;
+    }
+  }
+`;
+
+export const TimeTableLayoutWeek = (props: WeekView.TimeTableLayoutProps) => (
+  <StyledTimeTableLayoutWeek {...props} />
+);
+
+// bigger table with dates in mobile view
+const StyledDayScaleLayoutWeek = styled(WeekView.DayScaleLayout)`
+  && {
+    font-family: 'Montserrat', sans-serif;
+
+    @media (max-width: 500px) {
+      min-width: 1450px;
+    }
+  }
+`;
+export const DayScaleLayoutWeek = (props: DayView.DayScaleLayoutProps) => (
+  <StyledDayScaleLayoutWeek {...props} />
 );
