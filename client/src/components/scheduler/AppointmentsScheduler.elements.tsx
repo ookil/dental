@@ -25,12 +25,14 @@ const {
 } = color;
 
 export const RootContainer = styled.div`
-  height: 100%;
+  height: calc(100% - 3px);
   width: 100%;
   background-color: #fff;
 `;
 
-type AppointmentContentProps = Appointments.AppointmentContentProps;
+type AppointmentContentProps = Appointments.AppointmentContentProps & {
+  viewName: string;
+};
 
 const Container = styled.div`
   width: 100%;
@@ -64,17 +66,89 @@ const StyledAppointment = styled(Appointments.Appointment)`
   }
 `;
 
+const StyledMonthAppointment = styled.div<{
+  status: 'REGISTERED' | 'CONFIRMED';
+}>`
+  width: 100%;
+  display: flex;
+  padding-left: .9em;
+  align-items: center;
+  border: 1px solid #fff;
+  height: 50%;
+  overflow: hidden;
+  position: absolute;
+  font-size: 0.75rem;
+  box-sizing: border-box;
+  font-weight: 400;
+  line-height: 1.66;
+  user-select: none;
+  border-radius: 4px;
+  letter-spacing: 0.03333em;
+  background-clip: padding-box;
+  background-color: ${({ status }) =>
+    status === 'CONFIRMED' ? lightGreen : yellowUnknow};
+
+  ${({ status }) =>
+    status === 'REGISTERED' &&
+    css`
+      top: 50%;
+    `}
+
+  &:hover {
+    background-color: ${({ status }) =>
+      status === 'CONFIRMED' ? '#7fdd7f' : '#fff97b'};
+  }
+`;
+
+const MonthAppointmentCell = ({ data }: any) => {
+  console.log(data);
+  let registeredCount = 0;
+  let confirmedCount = 0;
+
+  for (let i = 0; i < data.length; i++) {
+    if (data[i].status === 'REGISTERED') {
+      registeredCount++;
+    }
+    if (data[i].status === 'CONFIRMED') {
+      confirmedCount++;
+    }
+  }
+
+  return (
+    <>
+      {confirmedCount > 0 && (
+        <StyledMonthAppointment status='CONFIRMED'>
+          {confirmedCount} Confirmed
+        </StyledMonthAppointment>
+      )}
+      {registeredCount > 0 && (
+        <StyledMonthAppointment status='REGISTERED'>
+          {registeredCount} Registered
+        </StyledMonthAppointment>
+      )}
+    </>
+  );
+};
+
+type AppointmentCellProps = Appointments.AppointmentProps & {
+  viewName: string;
+};
+
 export const AppointmentCell = ({
   data,
+  viewName,
   ...restProps
-}: Appointments.AppointmentProps) => {
+}: AppointmentCellProps) => {
+  if (viewName === 'Month') return <MonthAppointmentCell data={data} />;
   return <StyledAppointment {...restProps} data={data} status={data.status} />;
 };
 
 export const AppointmentContent = ({
   data,
+  viewName,
   ...restProps
 }: AppointmentContentProps) => {
+  if (viewName === 'Month') return null;
   return (
     <Appointments.AppointmentContent {...restProps} data={data}>
       <Container>
@@ -291,7 +365,6 @@ export const FlexibleSpace = ({
     </Toolbar.FlexibleSpace>
   );
 };
-
 
 const StyledToolbar = styled(Toolbar.Root)`
   && {

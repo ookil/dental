@@ -44,6 +44,7 @@ import {
   TimeTableLayoutWeek,
 } from './SchedulerViews.elements';
 import { GroupCell } from './GroupingPanel';
+import { IntegratedAppointments } from './IntegratedAppointments';
 
 const appointments: Appointment[] = [
   {
@@ -99,6 +100,76 @@ const appointments: Appointment[] = [
     },
     treatment: 'Root Canal',
     dentistId: '4',
+    status: 'CONFIRMED',
+    clinicId: '7',
+  },
+  {
+    id: 5,
+    startDate: new Date('2021-02-12T13:00'),
+    endDate: new Date('2021-02-12T13:30'),
+    patient: {
+      id: 1,
+      name: 'Wiola',
+      surname: 'Kowalska',
+    },
+    treatment: 'Root Canal',
+    dentistId: '1',
+    status: 'CONFIRMED',
+    clinicId: '7',
+  },
+  {
+    id: 6,
+    startDate: new Date('2021-02-12T13:30'),
+    endDate: new Date('2021-02-12T14:00'),
+    patient: {
+      id: 1,
+      name: 'Wiola',
+      surname: 'Kowalska',
+    },
+    treatment: 'Root Canal',
+    dentistId: '1',
+    status: 'CONFIRMED',
+    clinicId: '7',
+  },
+  {
+    id: 7,
+    startDate: new Date('2021-02-12T15:00'),
+    endDate: new Date('2021-02-12T15:30'),
+    patient: {
+      id: 1,
+      name: 'Wiola',
+      surname: 'Kowalska',
+    },
+    treatment: 'Root Canal',
+    dentistId: '1',
+    status: 'REGISTERED',
+    clinicId: '7',
+  },
+  {
+    id: 8,
+    startDate: new Date('2021-02-12T16:00'),
+    endDate: new Date('2021-02-12T16:30'),
+    patient: {
+      id: 1,
+      name: 'Wiola',
+      surname: 'Kowalska',
+    },
+    treatment: 'Root Canal',
+    dentistId: '1',
+    status: 'REGISTERED',
+    clinicId: '7',
+  },
+  {
+    id: 9,
+    startDate: new Date('2021-02-12T08:00'),
+    endDate: new Date('2021-02-12T08:30'),
+    patient: {
+      id: 1,
+      name: 'Wiola',
+      surname: 'Kowalska',
+    },
+    treatment: 'Root Canal',
+    dentistId: '1',
     status: 'CONFIRMED',
     clinicId: '7',
   },
@@ -199,8 +270,18 @@ const AppointmentsScheduler: React.FC = () => {
             timeScaleLabelComponent={TimeScaleLabel}
             timeScaleLayoutComponent={TimeScaleLayout}
             layoutComponent={DayScaleRow}
-            dayScaleLayoutComponent={DayScaleLayout}
-            timeTableLayoutComponent={TimeTableLayout}
+            dayScaleLayoutComponent={(props) => (
+              <DayScaleLayout
+                {...props}
+                isOneDentistView={currentDentistId !== '-1' ? true : false}
+              />
+            )}
+            timeTableLayoutComponent={(props) => (
+              <TimeTableLayout
+                {...props}
+                isOneDentistView={currentDentistId !== '-1' ? true : false}
+              />
+            )}
           />
           <WeekView
             startDayHour={workStartHour}
@@ -210,17 +291,32 @@ const AppointmentsScheduler: React.FC = () => {
             timeScaleLabelComponent={TimeScaleLabel}
             timeScaleLayoutComponent={TimeScaleLayout}
             layoutComponent={DayScaleRow}
-            dayScaleLayoutComponent={DayScaleLayoutWeek}
-            timeTableLayoutComponent={TimeTableLayoutWeek}
+            dayScaleLayoutComponent={(props) => (
+              <DayScaleLayoutWeek
+                {...props}
+                isOneDentistView={currentDentistId !== '-1' ? true : false}
+              />
+            )}
+            timeTableLayoutComponent={(props) => (
+              <TimeTableLayoutWeek
+                {...props}
+                isOneDentistView={currentDentistId !== '-1' ? true : false}
+              />
+            )}
           />
           <MonthView />
           <Appointments
-            appointmentComponent={AppointmentCell}
-            appointmentContentComponent={AppointmentContent}
+            appointmentComponent={(props) => (
+              <AppointmentCell {...props} viewName={currentView} />
+            )}
+            appointmentContentComponent={(props) => (
+              <AppointmentContent {...props} viewName={currentView} />
+            )}
           />
           <Resources data={resources} />
           <IntegratedGrouping />
           <IntegratedEditing />
+          <IntegratedAppointments />
           <GroupingPanel cellComponent={GroupCell} />
           <Toolbar
             flexibleSpaceComponent={(props) => (

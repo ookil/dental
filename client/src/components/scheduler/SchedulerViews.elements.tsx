@@ -37,13 +37,21 @@ export const TimeScaleLayout = (props: DayView.TimeScaleLayoutProps) => (
 const StyledTimeTableLayout = styled(DayView.TimeTableLayout)`
   && {
     @media (max-width: 500px) {
-      min-width: 450px;
+      min-width: ${({ isOneDentistView }) =>
+        isOneDentistView ? '100%' : '450px'};
     }
   }
 `;
 
-export const TimeTableLayout = (props: DayView.TimeTableLayoutProps) => (
-  <StyledTimeTableLayout {...props} />
+type TimeTableLayoutProps = DayView.TimeTableLayoutProps & {
+  isOneDentistView?: boolean;
+};
+
+export const TimeTableLayout = ({
+  isOneDentistView,
+  ...restProps
+}: TimeTableLayoutProps) => (
+  <StyledTimeTableLayout {...restProps} isOneDentistView={isOneDentistView} />
 );
 
 // bigger table with dates in mobile view
@@ -52,13 +60,21 @@ const StyledDayScaleLayout = styled(DayView.DayScaleLayout)`
     font-family: 'Montserrat', sans-serif;
 
     @media (max-width: 500px) {
-      min-width: 450px;
+      min-width: ${({ isOneDentistView }) =>
+        isOneDentistView ? '100%' : '450px'};
     }
   }
 `;
 
-export const DayScaleLayout = (props: DayView.DayScaleLayoutProps) => (
-  <StyledDayScaleLayout {...props} />
+type DayScaleLayoutProps = DayView.DayScaleLayoutProps & {
+  isOneDentistView?: boolean;
+};
+
+export const DayScaleLayout = ({
+  isOneDentistView,
+  ...restProps
+}: DayScaleLayoutProps) => (
+  <StyledDayScaleLayout {...restProps} isOneDentistView={isOneDentistView} />
 );
 
 // targeting that empty cell
@@ -83,13 +99,24 @@ export const DayScaleRow = (props: DayView.LayoutProps) => (
 const StyledTimeTableLayoutWeek = styled(WeekView.TimeTableLayout)`
   && {
     @media (max-width: 500px) {
-      min-width: 1450px;
+      min-width: ${({ isOneDentistView }) =>
+        isOneDentistView ? '100%' : '1450px'};
     }
   }
 `;
 
-export const TimeTableLayoutWeek = (props: WeekView.TimeTableLayoutProps) => (
-  <StyledTimeTableLayoutWeek {...props} />
+type TimeTableLayoutWeekProps = WeekView.TimeTableLayoutProps & {
+  isOneDentistView?: boolean;
+};
+
+export const TimeTableLayoutWeek = ({
+  isOneDentistView,
+  ...restProps
+}: TimeTableLayoutWeekProps) => (
+  <StyledTimeTableLayoutWeek
+    {...restProps}
+    isOneDentistView={isOneDentistView}
+  />
 );
 
 // bigger table with dates in mobile view
@@ -98,10 +125,17 @@ const StyledDayScaleLayoutWeek = styled(WeekView.DayScaleLayout)`
     font-family: 'Montserrat', sans-serif;
 
     @media (max-width: 500px) {
-      min-width: 1450px;
+      min-width: ${({ isOneDentistView }) =>
+        isOneDentistView ? '100%' : '1450px'};
     }
   }
 `;
-export const DayScaleLayoutWeek = (props: DayView.DayScaleLayoutProps) => (
-  <StyledDayScaleLayoutWeek {...props} />
+export const DayScaleLayoutWeek = ({
+  isOneDentistView,
+  ...restProps
+}: DayScaleLayoutProps) => (
+  <StyledDayScaleLayoutWeek
+    {...restProps}
+    isOneDentistView={isOneDentistView}
+  />
 );
