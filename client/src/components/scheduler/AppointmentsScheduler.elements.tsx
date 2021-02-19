@@ -1,8 +1,10 @@
-import { AppointmentTooltip } from '@devexpress/dx-react-scheduler'; //Appointments
+import {
+  AppointmentModel,
+  AppointmentTooltip,
+} from '@devexpress/dx-react-scheduler'; //Appointments
 import {
   Appointments,
   DateNavigator,
-  Toolbar,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
@@ -11,10 +13,6 @@ import ScheduleRoundedIcon from '@material-ui/icons/ScheduleRounded';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
 import React from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import PersonRoundedIcon from '@material-ui/icons/PersonRounded';
 
 const {
   textPrimary,
@@ -28,6 +26,10 @@ export const RootContainer = styled.div`
   height: calc(100% - 3px);
   width: 100%;
   background-color: #fff;
+
+  div[class*='makeStyles-container-'] {
+    height: 100%;
+  }
 `;
 
 type AppointmentContentProps = Appointments.AppointmentContentProps & {
@@ -56,22 +58,29 @@ const TreatmentText = styled.div`
 const StyledAppointment = styled(Appointments.Appointment)`
   // prioritaze styled-components rules over material-ui
   && {
-    background-color: ${({ status }) =>
-      status === 'CONFIRMED' ? lightGreen : yellowUnknow};
+    background-color: ${({ status, isShaded }) =>
+      status === 'CONFIRMED'
+        ? isShaded
+          ? '#85e48599'
+          : '#85e485'
+        : isShaded
+        ? '#f0ea5699'
+        : yellowUnknow};
 
     &:hover {
       background-color: ${({ status }) =>
-        status === 'CONFIRMED' ? '#7fdd7f' : '#fff97b'};
+        status === 'CONFIRMED' ? lightGreen : '#fff97b'};
     }
   }
 `;
 
 const StyledMonthAppointment = styled.div<{
   status: 'REGISTERED' | 'CONFIRMED';
+  isShaded?: boolean;
 }>`
   width: 100%;
   display: flex;
-  padding-left: .9em;
+  padding-left: 0.9em;
   align-items: center;
   border: 1px solid #fff;
   height: 50%;
@@ -85,8 +94,15 @@ const StyledMonthAppointment = styled.div<{
   border-radius: 4px;
   letter-spacing: 0.03333em;
   background-clip: padding-box;
-  background-color: ${({ status }) =>
-    status === 'CONFIRMED' ? lightGreen : yellowUnknow};
+  cursor: pointer;
+  background-color: ${({ status, isShaded }) =>
+    status === 'CONFIRMED'
+      ? isShaded
+        ? '#85e48599'
+        : '#85e485'
+      : isShaded
+      ? '#f0ea5699'
+      : yellowUnknow};
 
   ${({ status }) =>
     status === 'REGISTERED' &&
@@ -96,12 +112,19 @@ const StyledMonthAppointment = styled.div<{
 
   &:hover {
     background-color: ${({ status }) =>
-      status === 'CONFIRMED' ? '#7fdd7f' : '#fff97b'};
+      status === 'CONFIRMED' ? lightGreen : '#fff97b'};
   }
 `;
 
-const MonthAppointmentCell = ({ data }: any) => {
-  console.log(data);
+const MonthAppointmentCell = ({
+  data,
+  onClick,
+  isShaded,
+}: {
+  data: AppointmentModel[];
+  onClick: () => void;
+  isShaded?: boolean;
+}) => {
   let registeredCount = 0;
   let confirmedCount = 0;
 
@@ -117,12 +140,20 @@ const MonthAppointmentCell = ({ data }: any) => {
   return (
     <>
       {confirmedCount > 0 && (
-        <StyledMonthAppointment status='CONFIRMED'>
+        <StyledMonthAppointment
+          status='CONFIRMED'
+          onClick={onClick}
+          isShaded={isShaded}
+        >
           {confirmedCount} Confirmed
         </StyledMonthAppointment>
       )}
       {registeredCount > 0 && (
-        <StyledMonthAppointment status='REGISTERED'>
+        <StyledMonthAppointment
+          status='REGISTERED'
+          onClick={onClick}
+          isShaded={isShaded}
+        >
           {registeredCount} Registered
         </StyledMonthAppointment>
       )}
@@ -132,15 +163,33 @@ const MonthAppointmentCell = ({ data }: any) => {
 
 type AppointmentCellProps = Appointments.AppointmentProps & {
   viewName: string;
+  handleClick: (startDate: any) => void;
 };
 
 export const AppointmentCell = ({
   data,
   viewName,
+  isShaded,
+  handleClick,
   ...restProps
 }: AppointmentCellProps) => {
-  if (viewName === 'Month') return <MonthAppointmentCell data={data} />;
-  return <StyledAppointment {...restProps} data={data} status={data.status} />;
+  if (viewName === 'Month') {
+    return (
+      <MonthAppointmentCell
+        data={data.appointmentsList}
+        onClick={() => handleClick(data.startDate)}
+        isShaded={isShaded}
+      />
+    );
+  }
+  return (
+    <StyledAppointment
+      {...restProps}
+      isShaded={isShaded}
+      data={data}
+      status={data.status}
+    />
+  );
 };
 
 export const AppointmentContent = ({
@@ -261,7 +310,7 @@ export const TooltipContent = ({
   );
 };
 
-const ItemWrapper = styled.div<{ mobile?: boolean }>`
+/* const ItemWrapper = styled.div<{ mobile?: boolean }>`
   ${({ mobile }) => css`
     ${mobile &&
     css`
@@ -374,7 +423,7 @@ const StyledToolbar = styled(Toolbar.Root)`
 
 export const ToolbarRoot = (props: Toolbar.RootProps) => {
   return <StyledToolbar {...props} />;
-};
+}; */
 
 export const RootNavigator = (props: DateNavigator.RootProps) => {
   return <DateNavigator.Root {...props} />;

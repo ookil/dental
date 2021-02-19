@@ -6,6 +6,7 @@ export const color = {
   bluePrimary: '#337AE3',
   blueSecondary: '#7EBFFB',
   blueTetriary: '#BCCEE8',
+  blueLight: '#d6e7ff',
   greenConfirm: '#63b448',
   lightGreen: '#86e986',
   yellowUnknow: '#F0EA56',

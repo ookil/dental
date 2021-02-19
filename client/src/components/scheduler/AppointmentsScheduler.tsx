@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import {
   Appointments,
   AppointmentTooltip,
+  CurrentTimeIndicator,
   DateNavigator,
   DayView,
   GroupingPanel,
@@ -23,7 +24,6 @@ import {
 import {
   AppointmentCell,
   AppointmentContent,
-  FlexibleSpace,
   RootContainer,
   TooltipContent,
 } from './AppointmentsScheduler.elements';
@@ -31,10 +31,13 @@ import { Appointment } from '../../graphql/queries/appointments';
 import {
   DesktopViewSwitcher,
   ExternalViewSwitcher,
+  FlexibleSpace,
   NavigationButtons,
   StyledTodayBtn,
+  ToolbarWithLoading,
 } from './SchedulerToolbar.elements';
 import {
+  Cell,
   DayScaleLayout,
   DayScaleLayoutWeek,
   DayScaleRow,
@@ -45,6 +48,8 @@ import {
 } from './SchedulerViews.elements';
 import { GroupCell } from './GroupingPanel';
 import { IntegratedAppointments } from './IntegratedAppointments';
+import { filterByDentist } from './utils/helpers';
+import { TimeIndicator } from './TimeIndicator';
 
 const appointments: Appointment[] = [
   {
@@ -175,20 +180,15 @@ const appointments: Appointment[] = [
   },
 ];
 
-const workStartHour = 8;
-const workEndHour = 18;
+const workStartHour = 14;
+const workEndHour = 23;
 const appointmentDuration = 30;
-
-const filterByDentist = (appointments: Appointment[], dentistId: string) => {
-  if (dentistId === '-1') return appointments;
-  return appointments.filter(
-    (appointment) => !dentistId || appointment.dentistId === dentistId
-  );
-};
+const loading = false;
 
 const AppointmentsScheduler: React.FC = () => {
   const [currentDentistId, setCurrentDentistId] = useState<string>('-1'); //default all dentists
   const [currentView, setCurrentView] = useState<string>('Day');
+  const [currentDate, setCurrentDate] = useState<Date>(new Date());
 
   const dentists = [
     {
@@ -242,6 +242,11 @@ const AppointmentsScheduler: React.FC = () => {
     ]);
   };
 
+  const handleClick = (startDate: Date) => {
+    setCurrentDate(startDate);
+    setCurrentView('Day');
+  };
+
   return (
     <>
       <ExternalViewSwitcher
@@ -257,7 +262,8 @@ const AppointmentsScheduler: React.FC = () => {
           data={filterByDentist(appointments, currentDentistId)}
         >
           <ViewState
-            defaultCurrentDate={'2021-02-11T10:00'}
+            currentDate={currentDate}
+            onCurrentDateChange={(date) => setCurrentDate(date)}
             currentViewName={currentView}
             onCurrentViewNameChange={(viewName) => setCurrentView(viewName)}
           />
@@ -304,21 +310,34 @@ const AppointmentsScheduler: React.FC = () => {
               />
             )}
           />
-          <MonthView />
+          <MonthView
+            timeTableCellComponent={(props) => (
+              <Cell {...props} handleClick={handleClick} />
+            )}
+          />
           <Appointments
             appointmentComponent={(props) => (
-              <AppointmentCell {...props} viewName={currentView} />
+              <AppointmentCell
+                {...props}
+                viewName={currentView}
+                handleClick={handleClick}
+              />
             )}
             appointmentContentComponent={(props) => (
               <AppointmentContent {...props} viewName={currentView} />
             )}
           />
+
           <Resources data={resources} />
+
           <IntegratedGrouping />
           <IntegratedEditing />
           <IntegratedAppointments />
+
           <GroupingPanel cellComponent={GroupCell} />
+
           <Toolbar
+            {...(loading ? { rootComponent: ToolbarWithLoading } : null)}
             flexibleSpaceComponent={(props) => (
               <FlexibleSpace
                 {...props}
@@ -328,6 +347,7 @@ const AppointmentsScheduler: React.FC = () => {
               />
             )}
           />
+
           <DateNavigator navigationButtonComponent={NavigationButtons} />
           <TodayButton buttonComponent={StyledTodayBtn} />
           <ViewSwitcher switcherComponent={DesktopViewSwitcher} />
@@ -335,6 +355,12 @@ const AppointmentsScheduler: React.FC = () => {
             contentComponent={TooltipContent}
             showOpenButton
             showCloseButton
+          />
+
+          <CurrentTimeIndicator
+            shadePreviousCells={true}
+            shadePreviousAppointments={true}
+            indicatorComponent={TimeIndicator}
           />
         </Scheduler>
       </RootContainer>

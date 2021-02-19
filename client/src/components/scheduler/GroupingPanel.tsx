@@ -1,6 +1,5 @@
 import { GroupingPanel } from '@devexpress/dx-react-scheduler-material-ui';
 import styled, { css } from 'styled-components';
-import { color } from '../../globalStyles';
 
 const CellRoot = css`
   display: table-cell;
@@ -50,8 +49,6 @@ const StyledGroupCell = styled.td<GroupingPanel.CellProps>`
 
 const Container = styled.div`
   height: 100%;
-  /* display: flex;
-  align-items: center; */
 `;
 
 const Text = styled.div`

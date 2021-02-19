@@ -9,7 +9,7 @@ import { Appointment } from '../../graphql/queries/appointments';
 
 // timeTableAppointments is an array(arr1) where element is another array(arr2) consisting of all appointments by grouping - dentist in my case
 // so I'm grouping appointments that happen on the same day and change arr2 to have only one element per day (this will be used to display information in the right cell)
-// and overriting dataItem to insead hold array of all appointmens
+// and overriting dataItem to insead hold just startDate, endDate and array of appointments happening on that day
 
 // i know, that's a lot of nested arrays...
 
@@ -41,12 +41,30 @@ const sortAppointments = (
 
 const groupBySameDay = (appointments: TimeTableAppointmentProps[]) => {
   if (appointments.length === 1)
-    return [{ ...appointments[0], dataItem: [appointments[0].dataItem] }];
+    return [
+      {
+        ...appointments[0],
+        dataItem: {
+          startDate: appointments[0].dataItem.startDate,
+          endDate: appointments[0].dataItem.endDate,
+          appointmentsList: [appointments[0].dataItem],
+        },
+      },
+    ];
 
   if (appointments.length > 1) {
     let results = [];
+
     let currentDay = appointments[0];
-    let day = { ...appointments[0], dataItem: [appointments[0].dataItem] };
+    let day = {
+      ...appointments[0],
+      dataItem: {
+        startDate: appointments[0].dataItem.startDate,
+        endDate: appointments[0].dataItem.endDate,
+        appointmentsList: [appointments[0].dataItem],
+      },
+    };
+
     for (let index = 1; index < appointments.length; index++) {
       if (
         isSameDay(
@@ -54,14 +72,24 @@ const groupBySameDay = (appointments: TimeTableAppointmentProps[]) => {
           appointments[index].dataItem.startDate
         )
       ) {
-        day.dataItem = [...day.dataItem, appointments[index].dataItem];
-        if (index === appointments.length - 1) results.push(day);
+        day.dataItem.appointmentsList = [
+          ...day.dataItem.appointmentsList,
+          appointments[index].dataItem,
+        ];
+
+        if (index === appointments.length - 1) {
+          results.push(day);
+        }
       } else {
         results.push(day);
         currentDay = appointments[index];
         day = {
           ...appointments[index],
-          dataItem: [appointments[index].dataItem],
+          dataItem: {
+            startDate: appointments[index].dataItem.startDate,
+            endDate: appointments[index].dataItem.endDate,
+            appointmentsList: [appointments[index].dataItem],
+          },
         };
       }
     }

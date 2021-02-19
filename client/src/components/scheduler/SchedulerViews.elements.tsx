@@ -1,6 +1,12 @@
-import { DayView, WeekView } from '@devexpress/dx-react-scheduler-material-ui';
+import {
+  DayView,
+  MonthView,
+  WeekView,
+} from '@devexpress/dx-react-scheduler-material-ui';
 import { format } from 'date-fns';
+import React from 'react';
 import styled from 'styled-components';
+import { color } from '../../globalStyles';
 
 const handleFormatDate = (date: any) => format(new Date(date), 'H:mm');
 
@@ -59,6 +65,14 @@ const StyledDayScaleLayout = styled(DayView.DayScaleLayout)`
   && {
     font-family: 'Montserrat', sans-serif;
 
+    div[class*='Cell-highlightedText'] {
+      color: ${color.bluePrimary};
+    }
+
+    p[class*='Cell-highlightedText'] {
+      color: ${color.bluePrimary};
+    }
+
     @media (max-width: 500px) {
       min-width: ${({ isOneDentistView }) =>
         isOneDentistView ? '100%' : '450px'};
@@ -93,7 +107,9 @@ export const DayScaleRow = (props: DayView.LayoutProps) => (
   <StyledDayScaleRow {...props} />
 );
 
-// for week view
+////////////////////////////////////////////////////////////////////////////////
+/////                         WEEK VIEW                                     ////
+////////////////////////////////////////////////////////////////////////////////
 
 // bigger table with appointments in mobile view
 const StyledTimeTableLayoutWeek = styled(WeekView.TimeTableLayout)`
@@ -124,6 +140,14 @@ const StyledDayScaleLayoutWeek = styled(WeekView.DayScaleLayout)`
   && {
     font-family: 'Montserrat', sans-serif;
 
+    div[class*='Cell-highlightedText'] {
+      color: ${color.bluePrimary};
+    }
+
+    p[class*='Cell-highlightedText'] {
+      color: ${color.bluePrimary};
+    }
+
     @media (max-width: 500px) {
       min-width: ${({ isOneDentistView }) =>
         isOneDentistView ? '100%' : '1450px'};
@@ -139,3 +163,25 @@ export const DayScaleLayoutWeek = ({
     isOneDentistView={isOneDentistView}
   />
 );
+
+////////////////////////////////////////////////////////////////////////////////
+/////                         MONTH VIEW                                    ////
+////////////////////////////////////////////////////////////////////////////////
+
+type TimeTableCellProps = MonthView.TimeTableCellProps & {
+  handleClick: (startDate: Date) => void;
+};
+
+export const Cell = ({
+  startDate,
+  handleClick,
+  ...restProps
+}: TimeTableCellProps) => {
+  return (
+    <MonthView.TimeTableCell
+      {...restProps}
+      startDate={startDate}
+      onClick={() => handleClick(startDate)}
+    />
+  );
+};
