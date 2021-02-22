@@ -1,6 +1,6 @@
 import { Plugin, Getter } from '@devexpress/dx-react-core';
-import { compareAsc, isSameDay } from 'date-fns';
-import { Appointment } from '../../graphql/queries/appointments';
+import { compareAsc, isSameDay, parseISO } from 'date-fns';
+import { GetClinicAppointments_clinicAppointments } from '../../graphql/queries/__generated__/GetClinicAppointments';
 
 // this plugin is created in order to make month view more readable and useful.
 // by deafault appointments will get squished inside cell if there is too much
@@ -23,7 +23,7 @@ type GettersProps = {
 };
 
 type TimeTableAppointmentProps = {
-  dataItem: Appointment;
+  dataItem: GetClinicAppointments_clinicAppointments;
   dentistId: string;
   start: any;
   end: any;
@@ -36,7 +36,9 @@ const sortAppointments = (
 ) => {
   return timeTableAppointments
     .slice()
-    .sort((a, b) => compareAsc(a.dataItem.startDate, b.dataItem.startDate));
+    .sort((a, b) =>
+      compareAsc(parseISO(a.dataItem.startDate), parseISO(b.dataItem.startDate))
+    );
 };
 
 const groupBySameDay = (appointments: TimeTableAppointmentProps[]) => {
@@ -68,8 +70,8 @@ const groupBySameDay = (appointments: TimeTableAppointmentProps[]) => {
     for (let index = 1; index < appointments.length; index++) {
       if (
         isSameDay(
-          currentDay.dataItem.startDate,
-          appointments[index].dataItem.startDate
+          parseISO(currentDay.dataItem.startDate),
+          parseISO(appointments[index].dataItem.startDate)
         )
       ) {
         day.dataItem.appointmentsList = [

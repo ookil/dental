@@ -40,7 +40,9 @@ export const TimeScaleLayout = (props: DayView.TimeScaleLayoutProps) => (
 );
 
 // bigger table with appointments in mobile view
-const StyledTimeTableLayout = styled(DayView.TimeTableLayout)`
+const StyledTimeTableLayout = styled(DayView.TimeTableLayout)<{
+  isOneDentistView: boolean;
+}>`
   && {
     @media (max-width: 500px) {
       min-width: ${({ isOneDentistView }) =>
@@ -61,7 +63,9 @@ export const TimeTableLayout = ({
 );
 
 // bigger table with dates in mobile view
-const StyledDayScaleLayout = styled(DayView.DayScaleLayout)`
+const StyledDayScaleLayout = styled(DayView.DayScaleLayout)<{
+  isOneDentistView?: boolean;
+}>`
   && {
     font-family: 'Montserrat', sans-serif;
 

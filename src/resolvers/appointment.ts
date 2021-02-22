@@ -145,6 +145,8 @@ export class AppointmentResolver {
     });
   }
 
+ 
+
   @Authorized()
   @Mutation(() => Appointment)
   async createAppointment(

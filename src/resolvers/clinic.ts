@@ -19,6 +19,7 @@ import { Patient } from '../typeDefs/Patient';
 import { Dentist } from '../typeDefs/Dentist';
 import { User } from '../typeDefs/User';
 import { IsEmail, Length } from 'class-validator';
+import { Appointment } from '../typeDefs/Appointment';
 
 @InputType({ description: 'New clinic data' })
 export class CreateClinicInput implements Partial<Clinic> {
@@ -47,6 +48,18 @@ export class CreateAdminInput implements Partial<User> {
   @Field()
   @Length(6, 20)
   password: string;
+}
+
+@InputType({ description: 'Get appointments' })
+class GetAppointmentsInput {
+  @Field(() => ID)
+  clinicId: string | number;
+
+  @Field()
+  firstDay: Date;
+
+  @Field()
+  lastDay: Date;
 }
 
 @Resolver(Clinic)
@@ -97,18 +110,33 @@ export class ClinicResolver {
   }
 
   @Authorized()
-  @Query(() => [Patient], { nullable: true })
+  @Query(() => [Appointment], { nullable: true })
   async clinicAppointments(
-    @Arg('id', () => ID) id: number | string,
+    @Arg('appointmentsData') appointmentsData: GetAppointmentsInput,
     @Ctx() { prisma }: Context
   ) {
-    if (typeof id === 'string') id = parseInt(id);
+    if (typeof appointmentsData.clinicId === 'string')
+      appointmentsData.clinicId = parseInt(appointmentsData.clinicId);
 
-    return await prisma.patient.findMany({
+    const res = await prisma.appointment.findMany({
       where: {
-        clinicId: id,
+        AND: [
+          { clinicId: appointmentsData.clinicId },
+          {
+            startAt: {
+              gte: appointmentsData.firstDay,
+            },
+          },
+          {
+            endAt: {
+              lte: appointmentsData.lastDay,
+            },
+          },
+        ],
       },
     });
+
+    return res;
   }
 
   @Mutation(() => Clinic)

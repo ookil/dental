@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
+  AppointmentForm,
   Appointments,
   AppointmentTooltip,
   CurrentTimeIndicator,
@@ -27,7 +28,6 @@ import {
   RootContainer,
   TooltipContent,
 } from './AppointmentsScheduler.elements';
-import { Appointment } from '../../graphql/queries/appointments';
 import {
   DesktopViewSwitcher,
   ExternalViewSwitcher,
@@ -48,170 +48,61 @@ import {
 } from './SchedulerViews.elements';
 import { GroupCell } from './GroupingPanel';
 import { IntegratedAppointments } from './IntegratedAppointments';
-import { filterByDentist } from './utils/helpers';
+import { filterByDentist, getDaysRange } from './utils/helpers';
 import { TimeIndicator } from './TimeIndicator';
+import { GetDentistsGrouping_clinicDentists } from '../../graphql/queries/__generated__/GetDentistsGrouping';
+import {
+  GetClinicAppointments,
+  GetClinicAppointmentsVariables,
+} from '../../graphql/queries/__generated__/GetClinicAppointments';
+import { useQuery } from '@apollo/client';
+import { GET_APPOINTMENTS } from '../../graphql/queries/clinic';
+import { clinicIdVar } from '../../cache';
+import { FormLayout, FormOverlay } from './AppointmentForm';
 
-const appointments: Appointment[] = [
+const grouping = [
   {
-    id: 1,
-    startDate: new Date('2021-02-11T10:00'),
-    endDate: new Date('2021-02-11T10:30'),
-    patient: {
-      id: 1,
-      name: 'Zbigniew',
-      surname: 'Kowalski',
-    },
-    treatment: 'Root Canal',
-    dentistId: '1',
-    status: 'REGISTERED',
-    clinicId: '7',
-  },
-  {
-    id: 2,
-    startDate: new Date('2021-02-11T11:00'),
-    endDate: new Date('2021-02-11T12:30'),
-    patient: {
-      id: 2,
-      name: 'Aang',
-      surname: 'Air',
-    },
-    treatment: 'Root Canal',
-    dentistId: '2',
-    status: 'CONFIRMED',
-    clinicId: '7',
-  },
-  {
-    id: 3,
-    startDate: new Date('2021-02-11T11:00'),
-    endDate: new Date('2021-02-11T11:30'),
-    patient: {
-      id: 1,
-      name: 'Wiola',
-      surname: 'Kowalska',
-    },
-    treatment: 'Root Canal',
-    dentistId: '3',
-    status: 'CONFIRMED',
-    clinicId: '7',
-  },
-  {
-    id: 4,
-    startDate: new Date('2021-02-12T13:00'),
-    endDate: new Date('2021-02-12T13:30'),
-    patient: {
-      id: 1,
-      name: 'Wiola',
-      surname: 'Kowalska',
-    },
-    treatment: 'Root Canal',
-    dentistId: '4',
-    status: 'CONFIRMED',
-    clinicId: '7',
-  },
-  {
-    id: 5,
-    startDate: new Date('2021-02-12T13:00'),
-    endDate: new Date('2021-02-12T13:30'),
-    patient: {
-      id: 1,
-      name: 'Wiola',
-      surname: 'Kowalska',
-    },
-    treatment: 'Root Canal',
-    dentistId: '1',
-    status: 'CONFIRMED',
-    clinicId: '7',
-  },
-  {
-    id: 6,
-    startDate: new Date('2021-02-12T13:30'),
-    endDate: new Date('2021-02-12T14:00'),
-    patient: {
-      id: 1,
-      name: 'Wiola',
-      surname: 'Kowalska',
-    },
-    treatment: 'Root Canal',
-    dentistId: '1',
-    status: 'CONFIRMED',
-    clinicId: '7',
-  },
-  {
-    id: 7,
-    startDate: new Date('2021-02-12T15:00'),
-    endDate: new Date('2021-02-12T15:30'),
-    patient: {
-      id: 1,
-      name: 'Wiola',
-      surname: 'Kowalska',
-    },
-    treatment: 'Root Canal',
-    dentistId: '1',
-    status: 'REGISTERED',
-    clinicId: '7',
-  },
-  {
-    id: 8,
-    startDate: new Date('2021-02-12T16:00'),
-    endDate: new Date('2021-02-12T16:30'),
-    patient: {
-      id: 1,
-      name: 'Wiola',
-      surname: 'Kowalska',
-    },
-    treatment: 'Root Canal',
-    dentistId: '1',
-    status: 'REGISTERED',
-    clinicId: '7',
-  },
-  {
-    id: 9,
-    startDate: new Date('2021-02-12T08:00'),
-    endDate: new Date('2021-02-12T08:30'),
-    patient: {
-      id: 1,
-      name: 'Wiola',
-      surname: 'Kowalska',
-    },
-    treatment: 'Root Canal',
-    dentistId: '1',
-    status: 'CONFIRMED',
-    clinicId: '7',
+    resourceName: 'dentistId',
   },
 ];
 
 const workStartHour = 14;
 const workEndHour = 23;
 const appointmentDuration = 30;
-const loading = false;
 
-const AppointmentsScheduler: React.FC = () => {
+type SchedulerProps = {
+  dentists: GetDentistsGrouping_clinicDentists[];
+};
+
+const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
+  const clinicId = clinicIdVar();
   const [currentDentistId, setCurrentDentistId] = useState<string>('-1'); //default all dentists
   const [currentView, setCurrentView] = useState<string>('Day');
   const [currentDate, setCurrentDate] = useState<Date>(new Date());
+  const [daysRange, setDaysRange] = useState<{
+    firstDay: Date;
+    lastDay: Date;
+  }>();
 
-  const dentists = [
-    {
-      id: '1',
-      text: 'Doktor Ząbek',
+  const { data: appointmnetsData, loading } = useQuery<
+    GetClinicAppointments,
+    GetClinicAppointmentsVariables
+  >(GET_APPOINTMENTS, {
+    variables: {
+      appointmentsData: {
+        clinicId,
+        firstDay: daysRange?.firstDay,
+        lastDay: daysRange?.lastDay,
+      },
     },
-    {
-      id: '2',
-      text: 'Barabasz Cat',
-    },
-    {
-      id: '3',
-      text: 'Sylwia Cukier',
-    },
-    {
-      id: '4',
-      text: 'Grażyna Kowalczyk',
-    },
-    {
-      id: '5',
-      text: 'Roman Clue',
-    },
-  ];
+  });
+
+  useEffect(() => {
+    setDaysRange(getDaysRange(currentDate, currentView));
+  }, [currentDate, currentView]);
+
+  const appointments = appointmnetsData?.clinicAppointments || [];
+
   const [resources, setResources] = useState<any[]>([
     {
       fieldName: 'dentistId',
@@ -219,12 +110,6 @@ const AppointmentsScheduler: React.FC = () => {
       instances: dentists,
     },
   ]);
-
-  const grouping = [
-    {
-      resourceName: 'dentistId',
-    },
-  ];
 
   const isDayOrWeek = (viewName: string) =>
     viewName === 'Day' || (viewName === 'Week' && currentDentistId === '-1');
@@ -361,6 +246,11 @@ const AppointmentsScheduler: React.FC = () => {
             shadePreviousCells={true}
             shadePreviousAppointments={true}
             indicatorComponent={TimeIndicator}
+          />
+
+          <AppointmentForm
+            overlayComponent={FormOverlay}
+            layoutComponent={FormLayout}
           />
         </Scheduler>
       </RootContainer>

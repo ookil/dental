@@ -44,3 +44,14 @@ export const GET_DENTIST = gql`
     }
   }
 `;
+
+export const DENTIST_GROUPING = gql`
+  query GetDentistsGrouping($clinicId: ID!) {
+    clinicDentists(id: $clinicId) {
+      id
+      name
+      surname
+      text: nameWithSurname @client
+    }
+  }
+`;

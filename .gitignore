@@ -12,3 +12,5 @@ tests
 client/.vscode
 
 __tests__
+
+apollo.config.js

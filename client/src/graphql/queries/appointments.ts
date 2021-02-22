@@ -79,19 +79,14 @@ type Patient = {
   surname: string;
 };
 
-type Dentist = {
-  id: string | number;
-  nameWithSurname: string;
-  name: string;
-  surname: string;
-};
+
 
 type AppointmentStatus = 'REGISTERED' | 'CONFIRMED' | 'CANCELED';
 
 export type Appointment = {
   id: string | number;
-  startDate: Date;
-  endDate: Date;
+  startDate: string;
+  endDate: string;
   treatment: string;
   patient: Patient;
   dentistId: number | string;

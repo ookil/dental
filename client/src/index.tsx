@@ -1,7 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './App';
-import { ApolloClient, ApolloProvider, createHttpLink } from '@apollo/client';
+import {
+  ApolloClient,
+  ApolloProvider,
+  createHttpLink,
+  gql,
+} from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { cache } from './cache';
 
@@ -23,9 +28,20 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const typeDefs = gql`
+  extend type Dentist {
+    nameWithSurname: String
+  }
+
+  extend type Patient {
+    nameWithSurname: String
+  }
+`;
+
 export const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache,
+  typeDefs,
 });
 
 ReactDOM.render(

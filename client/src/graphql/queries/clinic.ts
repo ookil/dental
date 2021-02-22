@@ -47,3 +47,21 @@ export const GET_CLINIC = gql`
   }
   ${CLINIC_SETTINGS_DATA}
 `;
+
+export const GET_APPOINTMENTS = gql`
+  query GetClinicAppointments($appointmentsData: GetAppointmentsInput!) {
+    clinicAppointments(appointmentsData: $appointmentsData) {
+      id
+      treatment
+      startDate: startAt
+      endDate: endAt
+      status
+      patient {
+        id
+        name
+        surname
+      }
+      dentistId
+    }
+  }
+`;

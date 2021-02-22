@@ -37,6 +37,9 @@ export class Appointment {
   @Field(() => Dentist)
   dentist: Dentist;
 
+  @Field(() => ID)
+  dentistId: number | string;
+
   @Field(() => Clinic)
   clinic: Clinic;
 }
