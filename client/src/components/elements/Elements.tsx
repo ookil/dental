@@ -24,13 +24,21 @@ export const InputContainer = styled.div<{
       : '15px'};
 `;
 
-export const Label = styled.div`
+export const Label = styled.div<{ sizing?: 'big' }>`
   text-transform: uppercase;
   color: black;
   font-size: 12px;
   line-height: 15px;
   margin-bottom: 5px;
   font-weight: 500;
+
+  ${({ sizing }) =>
+    sizing === 'big' &&
+    css`
+      font-size: 15px;
+      text-transform: none;
+      font-weight: 600;
+    `}
 
   span {
     color: ${pinkCancel};
@@ -61,9 +69,18 @@ const InputBox = css`
   }
 `;
 
-export const StyledInput = styled.input<{ isError: boolean }>`
+const SizingBig = css`
+  height: 55px;
+  box-shadow: none;
+  border-bottom: 1px solid ${bluePrimary};
+  font-size: 16px;
+`;
+
+export const StyledInput = styled.input<{ isError: boolean; sizing?: 'big' }>`
   ${InputBox}
   border: none;
+
+  ${({ sizing }) => sizing === 'big' && SizingBig}
   box-shadow: ${({ isError }) => isError && '#e3339d7d 0px 0px 0px 1px inset'};
 `;
 
@@ -77,8 +94,12 @@ export const SelectContainer = styled.div<{
     props.marginBottom ? `${props.marginBottom}px` : '25px'};
 `;
 
-export const StyledSelect = styled.div.attrs((props) => ({ tabIndex: 0 }))`
+export const StyledSelect = styled.div.attrs(() => ({ tabIndex: 0 }))<{
+  sizing?: 'big';
+}>`
   ${InputBox}
+  ${({ sizing }) => sizing === 'big' && SizingBig}
+
   cursor: pointer;
   position: relative;
 `;
@@ -88,12 +109,17 @@ export const InputWrapper = styled.div`
   position: relative;
 `;
 
-export const SelectPlaceholder = styled.p`
-  color: ${textSecondary};
+export const DisplayValue = styled.p<{ sizing?: 'big' }>`
+  color: ${textPrimary};
   line-height: 40px;
+  ${({ sizing }) =>
+    sizing === 'big' &&
+    css`
+      line-height: 55px;
+    `}
 
   span {
-    color: ${textPrimary};
+    color: ${textSecondary};
   }
 `;
 
@@ -175,4 +201,6 @@ export const GifWrapper = styled.div`
 
 export const Gif = styled.img`
   height: 60%;
+  max-width: 100px;
+  max-height: 100px;
 `;

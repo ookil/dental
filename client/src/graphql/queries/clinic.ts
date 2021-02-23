@@ -60,6 +60,7 @@ export const GET_APPOINTMENTS = gql`
         id
         name
         surname
+        nameWithSurname @client
       }
       dentistId
     }

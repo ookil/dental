@@ -8,7 +8,7 @@ interface PatientFormProps
     HTMLInputElement
   > {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  handleSelectChange: (name: string, id: number) => void;
+  handleSelectChange: (key: string, value: string | number) => void;
   options?: any[];
   errors?: string[];
 }

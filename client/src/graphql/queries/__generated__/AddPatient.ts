@@ -6,10 +6,10 @@
 import { CreatePatientInput } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
-// GraphQL mutation operation: AddPatientMutation
+// GraphQL mutation operation: AddPatient
 // ====================================================
 
-export interface AddPatientMutation_createPatient {
+export interface AddPatient_createPatient {
   __typename: "Patient";
   id: string;
   name: string;
@@ -17,10 +17,10 @@ export interface AddPatientMutation_createPatient {
   active: boolean;
 }
 
-export interface AddPatientMutation {
-  createPatient: AddPatientMutation_createPatient;
+export interface AddPatient {
+  createPatient: AddPatient_createPatient;
 }
 
-export interface AddPatientMutationVariables {
+export interface AddPatientVariables {
   patientData: CreatePatientInput;
 }

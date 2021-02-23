@@ -11,6 +11,7 @@ interface Props
   marginTop?: number;
   isError?: boolean;
   errorMsg?: string;
+  sizing?: 'big';
 }
 
 const Input: React.FC<Props> = ({

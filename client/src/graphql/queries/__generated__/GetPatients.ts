@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetPatientsQuery
+// GraphQL query operation: GetPatients
 // ====================================================
 
-export interface GetPatientsQuery_clinicPatients {
+export interface GetPatients_clinicPatients {
   __typename: "Patient";
   id: string;
   surname: string;
@@ -16,10 +16,10 @@ export interface GetPatientsQuery_clinicPatients {
   nameWithSurname: string | null;
 }
 
-export interface GetPatientsQuery {
-  clinicPatients: GetPatientsQuery_clinicPatients[] | null;
+export interface GetPatients {
+  clinicPatients: GetPatients_clinicPatients[] | null;
 }
 
-export interface GetPatientsQueryVariables {
+export interface GetPatientsVariables {
   clinicId: string;
 }

@@ -14,6 +14,7 @@ export interface GetClinicAppointments_clinicAppointments_patient {
   id: string;
   name: string;
   surname: string;
+  nameWithSurname: string | null;
 }
 
 export interface GetClinicAppointments_clinicAppointments {

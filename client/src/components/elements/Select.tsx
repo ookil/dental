@@ -9,7 +9,7 @@ import {
   Label,
   ListItem,
   SelectContainer,
-  SelectPlaceholder,
+  DisplayValue,
   StyledSelect,
 } from './Elements';
 
@@ -24,7 +24,9 @@ type Props = {
   options?: any[];
   isError?: boolean;
   errorMsg?: string;
-  handleSelectChange: (key: string, value: number) => void;
+  initialValue?: string;
+  sizing?: 'big';
+  handleSelectChange: (key: string, value: number | string) => void;
 };
 
 const Select: React.FC<Props> = ({
@@ -38,6 +40,8 @@ const Select: React.FC<Props> = ({
   isError,
   errorMsg,
   displayValue,
+  initialValue,
+  sizing,
   handleSelectChange,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>();
@@ -60,20 +64,27 @@ const Select: React.FC<Props> = ({
 
   return (
     <SelectContainer marginBottom={marginBottom} marginTop={marginTop}>
-      <Label>
+      <Label sizing={sizing}>
         {label}
         {isError && <ErrorMessage>{errorMsg}</ErrorMessage>}
       </Label>
       <StyledSelect
         onClick={handleDropdown}
         onKeyDown={(e) => handleKeyDown(e)}
+        sizing={sizing}
       >
         <DropdownButton>
           <CollapseIcon />
         </DropdownButton>
-        <SelectPlaceholder>
-          {isSelected ? <span>{isSelected}</span> : placeholder}
-        </SelectPlaceholder>
+        <DisplayValue sizing={sizing}>
+          {isSelected ? (
+            isSelected
+          ) : initialValue ? (
+            initialValue
+          ) : (
+            <span>{placeholder}</span>
+          )}
+        </DisplayValue>
       </StyledSelect>
       {isOpen && (
         <DropdownListContainer>

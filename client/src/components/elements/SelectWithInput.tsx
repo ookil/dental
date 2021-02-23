@@ -33,7 +33,9 @@ interface Props
   marginTop?: number;
   isError?: boolean;
   errorMsg?: string;
-  handleSelectChange: (key: string, value: number) => void;
+  initialValue?: string;
+  sizing?: 'big';
+  handleSelectChange: (key: string, value: number | string) => void;
 }
 
 const SelectWithInput: React.FC<Props> = ({
@@ -46,6 +48,8 @@ const SelectWithInput: React.FC<Props> = ({
   marginTop,
   isError,
   errorMsg,
+  initialValue,
+  sizing,
   handleSelectChange,
 }) => {
   const dispatch = useAppDispatch();
@@ -85,7 +89,7 @@ const SelectWithInput: React.FC<Props> = ({
   return (
     <>
       <SelectContainer marginBottom={marginBottom} marginTop={marginTop}>
-        <Label>
+        <Label sizing={sizing}>
           {label}
           {isError && <ErrorMessage>{errorMsg}</ErrorMessage>}
         </Label>
@@ -94,13 +98,14 @@ const SelectWithInput: React.FC<Props> = ({
             <CollapseIcon />
           </DropdownButton>
           <Input
-            marginBottom={marginBottom}
+            marginBottom={1}
             onClick={handleDropdown}
             type='text'
             placeholder='Select patient'
             onChange={handleChange}
-            value={isSelected}
+            value={isSelected ? isSelected : initialValue}
             onKeyDown={(e) => handleKeyDown(e)}
+            sizing={sizing}
           />
         </InputWrapper>
 

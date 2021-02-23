@@ -58,7 +58,7 @@ import {
 import { useQuery } from '@apollo/client';
 import { GET_APPOINTMENTS } from '../../graphql/queries/clinic';
 import { clinicIdVar } from '../../cache';
-import { FormLayout, FormOverlay } from './AppointmentForm';
+import { BasicLayout, FormLayout, FormOverlay } from './AppointmentForm';
 
 const grouping = [
   {
@@ -95,6 +95,7 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
         lastDay: daysRange?.lastDay,
       },
     },
+    skip: daysRange === undefined,
   });
 
   useEffect(() => {
@@ -250,7 +251,14 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
 
           <AppointmentForm
             overlayComponent={FormOverlay}
-            layoutComponent={FormLayout}
+            /* layoutComponent={FormLayout} */
+            basicLayoutComponent={BasicLayout}
+            booleanEditorComponent={() => null}
+            textEditorComponent={() => null}
+            dateEditorComponent={() => null}
+            labelComponent={() => null}
+            resourceEditorComponent={() => null}
+            
           />
         </Scheduler>
       </RootContainer>

@@ -24,7 +24,7 @@ export type TreatmentVar = {
 };
 
 export const GET_TREATMENTS = gql`
-  query Query($category: TreatmentCategory) {
+  query GetTreatments($category: TreatmentCategory) {
     treatments(category: $category) {
       id
       name

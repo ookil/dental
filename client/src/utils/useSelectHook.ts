@@ -4,7 +4,7 @@ export const useSelectHook = (
   dropdownRef: any,
   fieldName: string,
   readFrom: string,
-  handleSelectChange: (key: string, value: number) => void,
+  handleSelectChange: (key: string, value: number | string) => void,
   displayValue?: string,
   options?: any[],
   filteredOptions?: any[] | null

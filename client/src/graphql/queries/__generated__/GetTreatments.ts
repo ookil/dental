@@ -6,10 +6,10 @@
 import { TreatmentCategory } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
-// GraphQL query operation: Query
+// GraphQL query operation: GetTreatments
 // ====================================================
 
-export interface Query_treatments {
+export interface GetTreatments_treatments {
   __typename: "Treatment";
   id: string;
   name: string;
@@ -17,10 +17,10 @@ export interface Query_treatments {
   category: TreatmentCategory;
 }
 
-export interface Query {
-  treatments: Query_treatments[];
+export interface GetTreatments {
+  treatments: GetTreatments_treatments[];
 }
 
-export interface QueryVariables {
+export interface GetTreatmentsVariables {
   category?: TreatmentCategory | null;
 }

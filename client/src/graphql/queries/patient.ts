@@ -16,7 +16,7 @@ export type ClinicPatientVar = {
 };
 
 export const GET_CLINIC_PATIENTS = gql`
-  query GetPatientsQuery($clinicId: ID!) {
+  query GetPatients($clinicId: ID!) {
     clinicPatients(id: $clinicId) {
       id
       surname
@@ -36,7 +36,7 @@ export type NewPatientDetails = {
 };
 
 export const ADD_PATIENT = gql`
-  mutation AddPatientMutation($patientData: CreatePatientInput!) {
+  mutation AddPatient($patientData: CreatePatientInput!) {
     createPatient(patientData: $patientData) {
       id
       name
