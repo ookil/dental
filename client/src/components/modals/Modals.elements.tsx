@@ -13,7 +13,7 @@ export const ModalBackground = styled.div`
   left: 0;
   width: 100vw;
   height: 100vh;
-  z-index: 30;
+  z-index: 9999;
   -webkit-align-items: center;
   -webkit-box-align: center;
   -ms-flex-align: center;
