@@ -13,8 +13,6 @@ import {
   GET_CLINIC_DENTISTS,
 } from '../../graphql/queries/dentist';
 import {
-  ClinicPatientData,
-  ClinicPatientVar,
   GET_CLINIC_PATIENTS,
   NewPatientDetails,
 } from '../../graphql/queries/patient';
@@ -49,6 +47,10 @@ import {
   GET_CLINIC,
 } from '../../graphql/queries/clinic';
 import { clinicIdVar } from '../../cache';
+import {
+  GetPatients,
+  GetPatientsVariables,
+} from '../../graphql/queries/__generated__/GetPatients';
 
 type Appointment = {
   patientId: number | string;
@@ -98,14 +100,14 @@ const NewAppointmentContent: React.FC = () => {
     loading: patientsLoading,
     data: patientQuery,
     error: patientsError,
-  } = useQuery<ClinicPatientData, ClinicPatientVar>(GET_CLINIC_PATIENTS, {
+  } = useQuery<GetPatients, GetPatientsVariables>(GET_CLINIC_PATIENTS, {
     variables: {
       clinicId,
     },
     skip: clinicId === undefined,
   });
 
-  const patients = patientQuery && patientQuery.clinicPatients;
+  const patients = (patientQuery && patientQuery.clinicPatients) || undefined;
   if (patients) dispatch(setPatients(patients));
 
   const {

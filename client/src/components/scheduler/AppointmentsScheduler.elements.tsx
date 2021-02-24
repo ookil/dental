@@ -6,13 +6,14 @@ import {
   Appointments,
   DateNavigator,
 } from '@devexpress/dx-react-scheduler-material-ui';
-import { format } from 'date-fns';
+import { format, parseISO } from 'date-fns';
 import styled, { css } from 'styled-components';
 import { color } from '../../globalStyles';
 import ScheduleRoundedIcon from '@material-ui/icons/ScheduleRounded';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
 import React from 'react';
+import { GetClinicAppointments_clinicAppointments } from '../../graphql/queries/__generated__/GetClinicAppointments';
 
 const {
   textPrimary,
@@ -164,6 +165,7 @@ const MonthAppointmentCell = ({
 type AppointmentCellProps = Appointments.AppointmentProps & {
   viewName: string;
   handleClick: (startDate: any) => void;
+  data: GetClinicAppointments_clinicAppointments;
 };
 
 export const AppointmentCell = ({
@@ -177,7 +179,7 @@ export const AppointmentCell = ({
     return (
       <MonthAppointmentCell
         data={data.appointmentsList}
-        onClick={() => handleClick(data.startDate)}
+        onClick={() => handleClick(parseISO(data.startDate))}
         isShaded={isShaded}
       />
     );
@@ -309,8 +311,6 @@ export const TooltipContent = ({
     </ContentContainer>
   );
 };
-
-
 
 export const RootNavigator = (props: DateNavigator.RootProps) => {
   return <DateNavigator.Root {...props} />;

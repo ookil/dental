@@ -8,7 +8,8 @@
 // ====================================================
 
 export interface GetPatients_clinicPatients {
-  __typename: "Patient";
+  [key: string]: any;
+  __typename: 'Patient';
   id: string;
   surname: string;
   name: string;

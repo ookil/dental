@@ -54,11 +54,12 @@ import { GetDentistsGrouping_clinicDentists } from '../../graphql/queries/__gene
 import {
   GetClinicAppointments,
   GetClinicAppointmentsVariables,
+  GetClinicAppointments_clinicAppointments,
 } from '../../graphql/queries/__generated__/GetClinicAppointments';
 import { useQuery } from '@apollo/client';
 import { GET_APPOINTMENTS } from '../../graphql/queries/clinic';
 import { clinicIdVar } from '../../cache';
-import { BasicLayout, FormLayout, FormOverlay } from './AppointmentForm';
+import { BasicLayout, FormOverlay } from './AppointmentForm';
 
 const grouping = [
   {
@@ -66,8 +67,8 @@ const grouping = [
   },
 ];
 
-const workStartHour = 14;
-const workEndHour = 23;
+const workStartHour = 9;
+const workEndHour = 18;
 const appointmentDuration = 30;
 
 type SchedulerProps = {
@@ -135,12 +136,11 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
 
   return (
     <>
-      <ExternalViewSwitcher
-        currentViewName={currentView}
-        onViewChange={(e) => setCurrentView(e.target.value)}
-      />
-
       <RootContainer>
+        <ExternalViewSwitcher
+          currentViewName={currentView}
+          onViewChange={(e) => setCurrentView(e.target.value)}
+        />
         <Scheduler
           firstDayOfWeek={1}
           locale='en-GB'
@@ -207,6 +207,7 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
                 {...props}
                 viewName={currentView}
                 handleClick={handleClick}
+                data={props.data as GetClinicAppointments_clinicAppointments}
               />
             )}
             appointmentContentComponent={(props) => (
@@ -252,13 +253,19 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
           <AppointmentForm
             overlayComponent={FormOverlay}
             /* layoutComponent={FormLayout} */
-            basicLayoutComponent={BasicLayout}
+            basicLayoutComponent={(props) => (
+              <BasicLayout
+                {...props}
+                appointmentData={
+                  props.appointmentData as GetClinicAppointments_clinicAppointments
+                }
+              />
+            )}
             booleanEditorComponent={() => null}
             textEditorComponent={() => null}
             dateEditorComponent={() => null}
             labelComponent={() => null}
             resourceEditorComponent={() => null}
-            
           />
         </Scheduler>
       </RootContainer>

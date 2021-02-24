@@ -1,15 +1,9 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { format } from 'date-fns';
+import { GetPatients_clinicPatients } from '../../graphql/queries/__generated__/GetPatients';
 
 type ModalsName = 'NEW_APPOINTMENT' | 'ADD_PATIENT' | false;
 
-type Patient = {
-  [index: string]: number | string | boolean;
-  id: number | string;
-  name: string;
-  surname: string;
-  active: boolean;
-};
 
 type AvailableAppointment = {
   dateString: Date;
@@ -18,8 +12,8 @@ type AvailableAppointment = {
 
 type SliceState = {
   isOpenModal: ModalsName;
-  patients: Array<Patient> | null;
-  filteredPatients: Array<Patient> | null;
+  patients: Array<GetPatients_clinicPatients> | null;
+  filteredPatients: Array<GetPatients_clinicPatients> | null;
   availableAppointments: AvailableAppointment[];
 };
 
@@ -37,7 +31,10 @@ const modalsSlice = createSlice({
     openModal: (state, action: PayloadAction<ModalsName>) => {
       state.isOpenModal = action.payload;
     },
-    setPatients: (state, action: PayloadAction<Patient[]>) => {
+    setPatients: (
+      state,
+      action: PayloadAction<GetPatients_clinicPatients[]>
+    ) => {
       state.patients = action.payload;
     },
     filterPatients: (state, action: PayloadAction<string>) => {

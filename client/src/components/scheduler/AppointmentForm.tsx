@@ -18,6 +18,7 @@ import SelectWithInput from '../elements/SelectWithInput';
 import { color } from '../../globalStyles';
 import { setPatients } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
+import StatusToggler from '../elements/StatusToggler';
 
 const StyledOverlay = styled(AppointmentForm.Overlay)`
   && {
@@ -66,7 +67,12 @@ const DateWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
 `;
+
+interface Props extends AppointmentForm.BasicLayoutProps {
+  appointmentData: GetClinicAppointments_clinicAppointments;
+}
 
 export const BasicLayout = ({
   appointmentData,
@@ -74,10 +80,8 @@ export const BasicLayout = ({
   resources,
   appointmentResources,
   ...restProps
-}: AppointmentForm.BasicLayoutProps) => {
+}: Props) => {
   const clinicId = clinicIdVar();
-
-  const appointment = appointmentData as GetClinicAppointments_clinicAppointments;
 
   const { data: treatmentsData } = useQuery<
     GetTreatments,
@@ -102,7 +106,7 @@ export const BasicLayout = ({
 
   return (
     <AppointmentForm.BasicLayout
-      appointmentData={appointment}
+      appointmentData={appointmentData}
       onFieldChange={onFieldChange}
       resources={resources}
       appointmentResources={appointmentResources}
@@ -114,7 +118,7 @@ export const BasicLayout = ({
         readFrom='id'
         displayValue='nameWithSurname'
         options={patientData?.clinicPatients || []}
-        initialValue={appointment?.patient?.nameWithSurname || ''}
+        initialValue={appointmentData?.patient?.nameWithSurname || ''}
         handleSelectChange={() => console.log()}
         sizing='big'
       />
@@ -125,7 +129,7 @@ export const BasicLayout = ({
         readFrom='name'
         displayValue='name'
         options={treatmentsData?.treatments}
-        initialValue={appointment.treatment}
+        initialValue={appointmentData.treatment}
         handleSelectChange={onCustomChange}
         sizing='big'
       />
@@ -133,7 +137,7 @@ export const BasicLayout = ({
       <DateWrapper>
         <DateEditor
           locale='en-GB'
-          value={appointment.startDate}
+          value={appointmentData.startDate}
           onValueChange={(newDate) => {
             console.log(newDate);
             onFieldChange({ startDate: newDate });
@@ -141,7 +145,7 @@ export const BasicLayout = ({
         />
         -
         <DateEditor
-          value={appointment.endDate}
+          value={appointmentData.endDate}
           onValueChange={(newDate) => onFieldChange({ endDate: newDate })}
         />
       </DateWrapper>
@@ -155,6 +159,16 @@ export const BasicLayout = ({
         initialValue={appointmentResources[0].text}
         handleSelectChange={onCustomChange}
         sizing='big'
+      />
+
+      <StatusToggler
+        label='Appointments Status'
+        sizing='big'
+        confirmText='Confirmed'
+        registerText='Registered'
+        showCancel={false}
+        value={appointmentData.status}
+        onToggleChange={(newStatus: string) => onFieldChange({ status: newStatus })}
       />
     </AppointmentForm.BasicLayout>
   );

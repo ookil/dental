@@ -7,10 +7,11 @@ export const useSelectHook = (
   handleSelectChange: (key: string, value: number | string) => void,
   displayValue?: string,
   options?: any[],
+  inititialValue?: string,
   filteredOptions?: any[] | null
 ) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [isSelected, setSelected] = useState('');
+  const [isSelected, setSelected] = useState(inititialValue);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const handleDropdown = () => setIsOpen(!isOpen);

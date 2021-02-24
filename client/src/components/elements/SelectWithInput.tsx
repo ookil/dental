@@ -74,6 +74,7 @@ const SelectWithInput: React.FC<Props> = ({
     handleSelectChange,
     displayValue,
     options,
+    initialValue,
     filteredPatients
   );
 
@@ -103,7 +104,7 @@ const SelectWithInput: React.FC<Props> = ({
             type='text'
             placeholder='Select patient'
             onChange={handleChange}
-            value={isSelected ? isSelected : initialValue}
+            value={isSelected}
             onKeyDown={(e) => handleKeyDown(e)}
             sizing={sizing}
           />

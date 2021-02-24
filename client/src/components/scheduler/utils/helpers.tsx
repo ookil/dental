@@ -18,7 +18,7 @@ export const filterByDentist = (
   );
 };
 
-export const getDaysRange = (date: Date, currentView: string) => {
+export const getDaysRange = (date: any, currentView: string) => {
   if (currentView === 'Day') {
     const res = {
       firstDay: startOfDay(date),
