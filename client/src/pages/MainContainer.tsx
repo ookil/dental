@@ -14,12 +14,12 @@ export const Container = styled.div<{ toolbarCollapsed: boolean }>`
   float: right;
   transition: width 0.5s ease-in-out;
   //padding: 10px 15px;
-  background: linear-gradient(
+  /* background: linear-gradient(
       rgba(255, 255, 255, 0.3),
       rgba(255, 255, 255, 0.3)
     ),
     url(${bgImage});
-  background-size: cover;
+  background-size: cover; */
 
   @media ${device.maxMobile} {
     width: 100vw;

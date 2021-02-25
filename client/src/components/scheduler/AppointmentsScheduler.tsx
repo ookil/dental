@@ -3,6 +3,7 @@ import {
   AppointmentForm,
   Appointments,
   AppointmentTooltip,
+  ConfirmationDialog,
   CurrentTimeIndicator,
   DateNavigator,
   DayView,
@@ -56,10 +57,22 @@ import {
   GetClinicAppointmentsVariables,
   GetClinicAppointments_clinicAppointments,
 } from '../../graphql/queries/__generated__/GetClinicAppointments';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { GET_APPOINTMENTS } from '../../graphql/queries/clinic';
 import { clinicIdVar } from '../../cache';
-import { BasicLayout, FormOverlay } from './AppointmentForm';
+import { BasicLayout } from './AppointmentForm';
+import {
+  CREATE_APPOINTMENT,
+  DELETE_APPOINTMENT,
+} from '../../graphql/queries/appointments';
+import {
+  DeleteAppointment,
+  DeleteAppointmentVariables,
+} from '../../graphql/queries/__generated__/DeleteAppointment';
+import {
+  CreateAppointment,
+  CreateAppointmentVariables,
+} from '../../graphql/queries/__generated__/CreateAppointment';
 
 const grouping = [
   {
@@ -67,7 +80,7 @@ const grouping = [
   },
 ];
 
-const workStartHour = 9;
+const workStartHour = 8;
 const workEndHour = 18;
 const appointmentDuration = 30;
 
@@ -134,12 +147,49 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
     setCurrentView('Day');
   };
 
+  const [deleteAppointment] = useMutation<
+    DeleteAppointment,
+    DeleteAppointmentVariables
+  >(DELETE_APPOINTMENT);
+
+  const [createAppointment] = useMutation<
+    CreateAppointment,
+    CreateAppointmentVariables
+  >(CREATE_APPOINTMENT);
+
+  const commitChanges = ({ added, changed, deleted }: any) => {
+    if (added) {
+      console.log(added);
+      createAppointment({
+        variables: {
+          appointmentData: {
+            clinicId,
+            dentistId: added.dentistId,
+            patientId: added.patientId,
+            treatment: added.treatment,
+            startAt: added.startDate,
+            endAt: added.endDate,
+            status: added.status,
+          },
+        },
+      });
+    }
+
+    if (deleted) {
+      deleteAppointment({
+        variables: {
+          appointmentId: deleted,
+        },
+      });
+    }
+  };
+
   return (
     <>
       <RootContainer>
         <ExternalViewSwitcher
           currentViewName={currentView}
-          onViewChange={(e) => setCurrentView(e.target.value)}
+          onViewChange={(e) => setCurrentView(e.currentTarget.value)}
         />
         <Scheduler
           firstDayOfWeek={1}
@@ -153,7 +203,7 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
             currentViewName={currentView}
             onCurrentViewNameChange={(viewName) => setCurrentView(viewName)}
           />
-          <EditingState onCommitChanges={() => console.log('change')} />
+          <EditingState onCommitChanges={commitChanges} />
           <GroupingState grouping={grouping} groupByDate={isDayOrWeek} />
           <DayView
             startDayHour={workStartHour}
@@ -242,6 +292,7 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
             contentComponent={TooltipContent}
             showOpenButton
             showCloseButton
+            showDeleteButton
           />
 
           <CurrentTimeIndicator
@@ -251,8 +302,6 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
           />
 
           <AppointmentForm
-            overlayComponent={FormOverlay}
-            /* layoutComponent={FormLayout} */
             basicLayoutComponent={(props) => (
               <BasicLayout
                 {...props}
@@ -267,6 +316,8 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
             labelComponent={() => null}
             resourceEditorComponent={() => null}
           />
+
+          <ConfirmationDialog />
         </Scheduler>
       </RootContainer>
     </>

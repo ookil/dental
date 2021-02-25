@@ -8,7 +8,7 @@ import {
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { format, parseISO } from 'date-fns';
 import styled, { css } from 'styled-components';
-import { color } from '../../globalStyles';
+import { color, size } from '../../globalStyles';
 import ScheduleRoundedIcon from '@material-ui/icons/ScheduleRounded';
 import CheckCircleOutlineRoundedIcon from '@material-ui/icons/CheckCircleOutlineRounded';
 import HelpOutlineRoundedIcon from '@material-ui/icons/HelpOutlineRounded';
@@ -28,9 +28,22 @@ export const RootContainer = styled.div`
   width: 100%;
   background-color: #fff;
 
+  div[class*='Root-container'] {
+    @media (max-width: ${size.mobileL}) {
+      height: calc(100% - 51px) !important;
+    }
+  }
   div[class*='makeStyles-container-'] {
     height: 100%;
   }
+
+  div[class*='OverlayContainer-container'] {
+    @media (max-width: ${size.mobileL}) {
+      top: -51px;
+      height: calc(100% + 51px);
+    }
+  }
+
 `;
 
 type AppointmentContentProps = Appointments.AppointmentContentProps & {

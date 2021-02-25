@@ -22,12 +22,7 @@ import {
 } from '../typeDefs/Appointment';
 import { Length } from 'class-validator';
 import { CreatePatientInput } from './patient';
-import {
-  addMinutes,
-  isBefore,
-  setHours,
-  setMinutes,
-} from 'date-fns';
+import { addMinutes, isBefore, setHours, setMinutes } from 'date-fns';
 import { prisma } from '../context';
 
 @InputType({ description: 'New appointment data' })
@@ -40,6 +35,9 @@ export class CreateAppointmentInput implements Partial<Appointment> {
 
   @Field()
   endAt: Date;
+
+  @Field(() => AppointmentStatus, {nullable: true})
+  status?: AppointmentStatus
 
   @Field(() => ID)
   patientId: number | string;
@@ -145,8 +143,6 @@ export class AppointmentResolver {
     });
   }
 
- 
-
   @Authorized()
   @Mutation(() => Appointment)
   async createAppointment(
@@ -197,6 +193,7 @@ export class AppointmentResolver {
           startAt: appointmentData.startAt,
           endAt: appointmentData.endAt,
           createdAt: new Date(),
+          status: appointmentData.status || 'REGISTERED',
           clinic: {
             connect: {
               id: appointmentData.clinicId,
@@ -223,7 +220,6 @@ export class AppointmentResolver {
               },
             },
           },
-          status: 'REGISTERED',
         },
         include: {
           patient: true,
@@ -238,6 +234,7 @@ export class AppointmentResolver {
         startAt: appointmentData.startAt,
         endAt: appointmentData.endAt,
         createdAt: new Date(),
+        status: appointmentData.status || 'REGISTERED',
         clinic: {
           connect: {
             id: appointmentData.clinicId,
@@ -251,7 +248,6 @@ export class AppointmentResolver {
             id: appointmentData.patientId,
           },
         },
-        status: 'REGISTERED',
       },
       include: {
         patient: true,

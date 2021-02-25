@@ -21,7 +21,7 @@ import { clinicIdVar } from './cache';
 import MainContainer from './pages/MainContainer';
 
 function App() {
-  const { data } = useQuery<UserData>(GET_LOGGED_USER);
+  const { data, loading: userLoading } = useQuery<UserData>(GET_LOGGED_USER);
 
   clinicIdVar(data?.loggedUser.clinic.id);
 
@@ -32,7 +32,7 @@ function App() {
     skip: data === undefined,
   });
 
-  if (loading)
+  if (loading || userLoading)
     return (
       <GifWrapper>
         <Gif src={loadingGif} />

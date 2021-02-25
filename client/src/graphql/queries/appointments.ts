@@ -73,13 +73,19 @@ export const CREATE_APPOINTMENT = gql`
   }
 `;
 
+export const DELETE_APPOINTMENT = gql`
+  mutation DeleteAppointment($appointmentId: ID!) {
+    deleteAppointment(id: $appointmentId) {
+      id
+    }
+  }
+`;
+
 type Patient = {
   id: string | number;
   name: string;
   surname: string;
 };
-
-
 
 type AppointmentStatus = 'REGISTERED' | 'CONFIRMED' | 'CANCELED';
 

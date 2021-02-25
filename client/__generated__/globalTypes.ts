@@ -42,6 +42,7 @@ export interface CreateAppointmentInput {
   treatment: string;
   startAt: any;
   endAt: any;
+  status?: AppointmentStatus | null;
   patientId: string;
   dentistId: string;
   clinicId: string;

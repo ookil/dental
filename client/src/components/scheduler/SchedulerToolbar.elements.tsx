@@ -185,6 +185,8 @@ const SwitcherButton = styled.button<{ isActive?: boolean }>`
   padding: 6px 10px;
   font-size: 0.9em;
   outline: 0;
+  position: relative;
+  z-index: 1;
 
   ${({ isActive }) =>
     isActive &&

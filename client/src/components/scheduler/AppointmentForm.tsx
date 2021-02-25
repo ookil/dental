@@ -20,29 +20,6 @@ import { setPatients } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
 import StatusToggler from '../elements/StatusToggler';
 
-const StyledOverlay = styled(AppointmentForm.Overlay)`
-  && {
-    z-index: 5;
-    background-color: red;
-  }
-`;
-
-const StyledLayout = styled(AppointmentForm.Layout)`
-  && {
-    z-index: 5;
-    font-family: 'Montserrat', sans-serif;
-    //background-color: #d3eef8;
-  }
-`;
-
-export const FormOverlay = (props: AppointmentForm.OverlayProps) => (
-  <StyledOverlay {...props} />
-);
-
-export const FormLayout = (props: AppointmentForm.LayoutProps) => (
-  <StyledLayout {...props} />
-);
-
 const StyledDateEditor = styled(AppointmentForm.DateEditor)`
   && {
     div[class*='MuiInputBase-root'] {
@@ -68,6 +45,14 @@ const DateWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   flex-wrap: wrap;
+  margin-bottom: 10px;
+`;
+
+const Separator = styled.p`
+  display: none;
+  @media (min-width: 559px) {
+    display: inline;
+  }
 `;
 
 interface Props extends AppointmentForm.BasicLayoutProps {
@@ -119,7 +104,7 @@ export const BasicLayout = ({
         displayValue='nameWithSurname'
         options={patientData?.clinicPatients || []}
         initialValue={appointmentData?.patient?.nameWithSurname || ''}
-        handleSelectChange={() => console.log()}
+        handleSelectChange={onCustomChange}
         sizing='big'
       />
 
@@ -139,11 +124,10 @@ export const BasicLayout = ({
           locale='en-GB'
           value={appointmentData.startDate}
           onValueChange={(newDate) => {
-            console.log(newDate);
             onFieldChange({ startDate: newDate });
           }}
         />
-        -
+        <Separator>-</Separator>
         <DateEditor
           value={appointmentData.endDate}
           onValueChange={(newDate) => onFieldChange({ endDate: newDate })}
@@ -167,8 +151,10 @@ export const BasicLayout = ({
         confirmText='Confirmed'
         registerText='Registered'
         showCancel={false}
-        value={appointmentData.status}
-        onToggleChange={(newStatus: string) => onFieldChange({ status: newStatus })}
+        value={appointmentData.status || 'REGISTERED'}
+        onToggleChange={(newStatus: string) =>
+          onFieldChange({ status: newStatus })
+        }
       />
     </AppointmentForm.BasicLayout>
   );

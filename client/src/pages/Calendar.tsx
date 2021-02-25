@@ -4,6 +4,7 @@ import { clinicIdVar } from '../cache';
 import { AppointmentsScheduler } from '../components';
 import { Gif, GifWrapper } from '../components/elements/Elements';
 import { DENTIST_GROUPING } from '../graphql/queries/dentist';
+
 import {
   GetDentistsGrouping,
   GetDentistsGroupingVariables,
@@ -16,7 +17,7 @@ const Calendar: React.FC = () => {
   const { data: dentistsGrouping, loading } = useQuery<
     GetDentistsGrouping,
     GetDentistsGroupingVariables
-  >(DENTIST_GROUPING, { variables: { clinicId } });
+  >(DENTIST_GROUPING, { variables: { clinicId }, skip: !clinicId });
 
   if (loading)
     return (
