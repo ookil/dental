@@ -52,3 +52,12 @@ export class WeeklyAppointments {
   @Field(() => [Date])
   appointments: Date[];
 }
+
+@ObjectType()
+export class AppointmentSubscription {
+  @Field()
+  mutation: 'ADDED' | 'UPDATED' | 'DELETED';
+
+  @Field(() => Appointment)
+  data: Appointment;
+}

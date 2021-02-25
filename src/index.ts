@@ -13,6 +13,7 @@ import { TeethResolver } from './resolvers/teeth';
 import { TreatmentResolver } from './resolvers/treatment';
 import { getUser, User } from './utils/utils';
 import { UserResolver } from './resolvers/user';
+import { createServer } from 'http';
 
 export type Context = {
   prisma: PrismaClient;
@@ -51,27 +52,44 @@ const main = async () => {
   });
 
   const prisma = new PrismaClient();
-  
 
   /*   const context = createContext(); */
 
   const apolloServer = new ApolloServer({
     schema,
     /* context, */
-    context: ({ req }) => {
+    context: ({ req, connection }) => {
+      if (connection) {
+        return connection.context;
+      }
+
       const user: User | null = getUser(req);
 
       return { prisma, user };
     },
   });
 
+  const httpServer = createServer(app);
   apolloServer.applyMiddleware({ app });
+  apolloServer.installSubscriptionHandlers(httpServer);
 
   const PORT = process.env.PORT || 4000;
 
-  
+  httpServer.listen(PORT, () => {
+    console.log(`🚀 Server ready on port ${PORT}${apolloServer.graphqlPath}`);
+    console.log(
+      `🚀 Subscriptions ready on port ${PORT}${apolloServer.subscriptionsPath}`
+    );
+  });
 
-  app.listen(PORT, () => console.log(`🚀 Server ready on port ${PORT} and ${apolloServer.graphqlPath} `));
+  /* app.listen(PORT, () => {
+    console.log(
+      `🚀 Server ready on port ${PORT} and graph on ${apolloServer.graphqlPath} `
+    );
+    console.log(
+      `🚀 Server ready on port ${PORT} and subscriptions on ${apolloServer.subscriptionsPath} `
+    );
+  }); */
 };
 
 main();

@@ -1,6 +1,7 @@
 import { Context } from '../index';
 import {
   Arg,
+  Args,
   Authorized,
   Ctx,
   Field,
@@ -9,21 +10,26 @@ import {
   InputType,
   Int,
   Mutation,
+  PubSub,
+  PubSubEngine,
   Query,
   Resolver,
   Root,
+  Subscription,
 } from 'type-graphql';
 
 import { Patient } from '../typeDefs/Patient';
 import {
   Appointment,
   AppointmentStatus,
+  AppointmentSubscription,
   WeeklyAppointments,
 } from '../typeDefs/Appointment';
 import { Length } from 'class-validator';
 import { CreatePatientInput } from './patient';
 import { addMinutes, isBefore, setHours, setMinutes } from 'date-fns';
 import { prisma } from '../context';
+import { AppointmentPayload } from 'src/subsciptions/appointments.types';
 
 @InputType({ description: 'New appointment data' })
 export class CreateAppointmentInput implements Partial<Appointment> {
@@ -36,8 +42,8 @@ export class CreateAppointmentInput implements Partial<Appointment> {
   @Field()
   endAt: Date;
 
-  @Field(() => AppointmentStatus, {nullable: true})
-  status?: AppointmentStatus
+  @Field(() => AppointmentStatus, { nullable: true })
+  status?: AppointmentStatus;
 
   @Field(() => ID)
   patientId: number | string;
@@ -260,15 +266,25 @@ export class AppointmentResolver {
   @Mutation(() => Appointment)
   async deleteAppointment(
     @Arg('id', () => ID) id: number | string,
-    @Ctx() { prisma }: Context
+    @Ctx() { prisma }: Context,
+    @PubSub() pubSub: PubSubEngine
   ) {
     if (typeof id === 'string') id = parseInt(id);
 
-    return await prisma.appointment.delete({
+    const res = await prisma.appointment.delete({
       where: {
         id,
       },
     });
+
+    const payload: AppointmentPayload = {
+      mutation: 'DELETED',
+      data: res,
+    };
+
+    await pubSub.publish('ADDED_APPOINTMENT', payload);
+
+    return res;
   }
 
   @Authorized()
@@ -435,6 +451,21 @@ export class AppointmentResolver {
         ...appointmentData,
       },
     });
+  }
+
+  @Subscription(() => AppointmentSubscription, {
+    topics: ['ADDED_APPOINTMENT', 'UPDATED_APPOINTMENT', 'DELETED_APPOINTMETN'],
+    filter: ({ payload, args }) => {
+      return payload.data.clinicId === parseInt(args.clinicId);
+    },
+  })
+  appointmentsSubscription(
+    @Root() appointmentPayload: AppointmentPayload,
+    @Arg('clinicId', () => ID) clinicId: string | number
+  ) {
+    return {
+      ...appointmentPayload,
+    };
   }
 
   @FieldResolver()
