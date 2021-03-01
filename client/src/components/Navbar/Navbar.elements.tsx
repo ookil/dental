@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import styled from 'styled-components';
 import { color, device } from '../../globalStyles';
 
-const { bgPrimary, bluePrimary, blueTetriary, textPrimary } = color;
+const { bgPrimary, bluePrimary, textPrimary } = color;
 
 export const Nav = styled.nav`
   background-color: ${bgPrimary};
@@ -64,7 +64,6 @@ export const MobileIcon = styled.div`
 `;
 
 export const QuickMenu = styled.div`
-  background-color: ${blueTetriary};
   align-self: flex-end;
   display: flex;
   align-items: center;
@@ -85,22 +84,25 @@ export const QuickMenu = styled.div`
 
 export const QuickMenuItem = styled.div`
   height: 90%;
-  min-width: 170px;
-  padding: 5px 10px;
   display: flex;
   align-items: center;
   cursor: pointer;
-  font-size: 0.9em;
   margin-right: 10px;
+
+  @media ${device.laptop} {
+    margin-right: 0;
+  }
+`;
+
+export const Text = styled.div`
+  padding: 8px 10px;
+  font-size: 0.95em;
   font-weight: 500;
 
   &:hover {
     border-radius: 5px;
-    background-color: white;
-  }
-
-  @media ${device.laptop} {
-    margin-right: 0;
+    background-color: rgba(222, 235, 255, 0.9);
+    color: ${bluePrimary};
   }
 `;
 
@@ -130,9 +132,6 @@ export const CurrentPageTitle = styled.h3`
   text-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
   margin-left: 10px;
 `;
-
-
-
 
 export const CloseIcon = () => (
   <svg

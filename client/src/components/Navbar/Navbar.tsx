@@ -12,13 +12,10 @@ import {
   NavLogo,
   NavLogoTitle,
   QuickMenu,
-  QuickMenuIcon,
   QuickMenuItem,
+  Text,
 } from './Navbar.elements';
 import ClinicIcon from '../../images/logo.svg';
-import AppointmentIcon from '../../images/appointment.svg';
-import AddPatient from '../../images/new_patient.svg';
-import Search from '../../images/search.svg';
 import {
   CalendarIcon,
   DashboardIcon,
@@ -82,16 +79,15 @@ const Navbar: React.FC = () => {
             <QuickMenuItem
               onClick={() => dispatch(openModal('NEW_APPOINTMENT'))}
             >
-              <QuickMenuIcon src={AppointmentIcon} />
-              New Appointment
+              <Text>New Appointment</Text>
             </QuickMenuItem>
+
             <QuickMenuItem onClick={() => dispatch(openModal('ADD_PATIENT'))}>
-              <QuickMenuIcon src={AddPatient} />
-              Add Patient
+              <Text>Add Patient</Text>
             </QuickMenuItem>
+
             <QuickMenuItem>
-              <QuickMenuIcon src={Search} />
-              Find Patient
+              <Text>Find Patient</Text>
             </QuickMenuItem>
           </QuickMenu>
         </NavbarContainer>

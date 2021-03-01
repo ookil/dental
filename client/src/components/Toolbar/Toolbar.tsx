@@ -19,7 +19,7 @@ const Toolbar: React.FC = () => {
   const [button, setButton] = useState('dashboard');
   const [isCollapsed, setCollapse] = useState(false);
 
-  const hanldeButton = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
+  const handleButton = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) =>
     setButton(e.currentTarget.id);
 
   const dispatch = useAppDispatch();
@@ -36,7 +36,8 @@ const Toolbar: React.FC = () => {
           to='/dashboard'
           id='dashboard'
           selected={button}
-          onClick={(e) => hanldeButton(e)}
+          onClick={(e) => handleButton(e)}
+          isCollapsed={isCollapsed}
         >
           <LinkIconWrapper>
             <DashboardIcon />
@@ -47,7 +48,8 @@ const Toolbar: React.FC = () => {
           to='/calendar'
           id='calendar'
           selected={button}
-          onClick={(e) => hanldeButton(e)}
+          onClick={(e) => handleButton(e)}
+          isCollapsed={isCollapsed}
         >
           <LinkIconWrapper>
             <CalendarIcon />
@@ -58,7 +60,8 @@ const Toolbar: React.FC = () => {
           to='/patients'
           id='patients'
           selected={button}
-          onClick={(e) => hanldeButton(e)}
+          onClick={(e) => handleButton(e)}
+          isCollapsed={isCollapsed}
         >
           <LinkIconWrapper>
             <DashboardIcon />
@@ -69,7 +72,8 @@ const Toolbar: React.FC = () => {
           to='/settings'
           id='settings'
           selected={button}
-          onClick={(e) => hanldeButton(e)}
+          onClick={(e) => handleButton(e)}
+          isCollapsed={isCollapsed}
         >
           <LinkIconWrapper>
             <SettingsIcon />

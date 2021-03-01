@@ -4,6 +4,7 @@ import { color, device } from '../../globalStyles';
 
 type LinkProps = {
   readonly selected: string;
+  isCollapsed?: boolean;
 };
 
 const {
@@ -46,7 +47,7 @@ export const ToolbarMenu = styled.div<{ isCollapsed: boolean }>`
   height: calc(100vh - 60px);
   width: 160px;
   background-color: ${bgPrimary};
-  box-shadow: 4px -3px 4px rgba(0, 0, 0, 0.25);
+  box-shadow: 4px 0px 4px rgba(0, 0, 0, 0.25);
   padding-top: 25px;
   transition: left 0.5s ease-in-out;
   z-index: 9980;
@@ -78,9 +79,13 @@ export const ToolbarLink = styled(Link)<LinkProps>`
   padding: 10px 15px;
   width: 100%;
   height: 50px;
-
   text-decoration: none;
   margin-bottom: 10px;
+  visibility: visible;
+  opacity: 1;
+  ${({ isCollapsed }) => isCollapsed && 'visibility: hidden; opacity: 0;'};
+
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
 
   &:hover {
     color: ${bluePrimary};
