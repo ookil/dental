@@ -11,6 +11,7 @@ import PersonRoundedIcon from '@material-ui/icons/PersonRounded';
 import styled, { css } from 'styled-components';
 import { color, size } from '../../globalStyles';
 import { LinearProgress } from '@material-ui/core';
+import CustomSelect from '../elements/Select';
 
 const { bluePrimary, textPrimary, blueLight } = color;
 
@@ -152,20 +153,31 @@ export const ToolbarWithLoading = ({
 /////                         View Switcher                                 ////
 ////////////////////////////////////////////////////////////////////////////////
 
-const DesktopStyledSwitcher = styled(ViewSwitcher.Switcher)`
-  && {
-    fieldset {
-      border: none;
-    }
-
-    @media (max-width: ${size.mobileL}) {
+const DesktopStyledSwitcher = styled(CustomSelect)`
+  @media (max-width: ${size.mobileL}) {
+    div {
       display: none;
     }
   }
 `;
 
-export const DesktopViewSwitcher = (props: ViewSwitcher.SwitcherProps) => {
-  return <DesktopStyledSwitcher {...props} />;
+export const DesktopViewSwitcher = ({
+  currentView,
+  availableViews,
+  onChange,
+}: ViewSwitcher.SwitcherProps) => {
+  return (
+    <CustomSelect
+      options={availableViews}
+      readFrom='displayName'
+      displayValue='displayName'
+      fieldName='name'
+      initialValue={currentView.name}
+      sizing='small'
+      handleSelectChange={(_, value) => onChange(value)}
+      marginBottom={5}
+    />
+  );
 };
 
 const ButtonsWrapper = styled.div`

@@ -5,14 +5,21 @@ export const useSelectHook = (
   fieldName: string,
   readFrom: string,
   handleSelectChange: (key: string, value: number | string) => void,
-  displayValue?: string,
   options?: any[],
-  inititialValue?: string,
+  displayValue?: string,
+  initialValue?: string,
   filteredOptions?: any[] | null
 ) => {
+  const initialIndex = options?.findIndex((option) => {
+    if (displayValue) {
+      return option[displayValue] === initialValue;
+    }
+    return option === initialValue;
+  });
+
   const [isOpen, setIsOpen] = useState(false);
-  const [isSelected, setSelected] = useState(inititialValue);
-  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isSelected, setSelected] = useState(initialValue);
+  const [selectedIndex, setSelectedIndex] = useState(initialIndex || -1);
 
   const handleDropdown = () => setIsOpen(!isOpen);
   const handleSelect = useCallback(

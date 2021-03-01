@@ -72,8 +72,8 @@ const SelectWithInput: React.FC<Props> = ({
     fieldName,
     readFrom,
     handleSelectChange,
-    displayValue,
     options,
+    displayValue,
     initialValue,
     filteredPatients
   );

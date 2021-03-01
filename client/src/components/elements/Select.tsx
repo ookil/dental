@@ -25,8 +25,8 @@ type Props = {
   isError?: boolean;
   errorMsg?: string;
   initialValue?: string;
-  sizing?: 'big';
-  handleSelectChange: (key: string, value: number | string) => void;
+  sizing?: 'big' | 'small';
+  handleSelectChange: (key: string, value: any) => void;
 };
 
 const Select: React.FC<Props> = ({
@@ -58,12 +58,17 @@ const Select: React.FC<Props> = ({
     fieldName,
     readFrom,
     handleSelectChange,
+    options,
     displayValue,
-    options
+    initialValue
   );
 
   return (
-    <SelectContainer marginBottom={marginBottom} marginTop={marginTop}>
+    <SelectContainer
+      marginBottom={marginBottom}
+      marginTop={marginTop}
+      sizing={sizing}
+    >
       <Label sizing={sizing}>
         {label}
         {isError && <ErrorMessage>{errorMsg}</ErrorMessage>}
@@ -73,22 +78,16 @@ const Select: React.FC<Props> = ({
         onKeyDown={(e) => handleKeyDown(e)}
         sizing={sizing}
       >
-        <DropdownButton>
+        <DropdownButton sizing={sizing}>
           <CollapseIcon />
         </DropdownButton>
         <DisplayValue sizing={sizing}>
-          {isSelected ? (
-            isSelected
-          ) : initialValue ? (
-            initialValue
-          ) : (
-            <span>{placeholder}</span>
-          )}
+          {isSelected ? isSelected : <span>{placeholder}</span>}
         </DisplayValue>
       </StyledSelect>
       {isOpen && (
         <DropdownListContainer>
-          <DropdownList ref={dropdownRef} role='listbox'>
+          <DropdownList ref={dropdownRef} role='listbox' sizing={sizing}>
             {options &&
               options.map((option, index) => (
                 <ListItem

@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { color } from '../../globalStyles';
+import { color, size } from '../../globalStyles';
 
 const {
   textPrimary,
@@ -24,7 +24,7 @@ export const InputContainer = styled.div<{
       : '15px'};
 `;
 
-export const Label = styled.div<{ sizing?: 'big' }>`
+export const Label = styled.div<{ sizing?: 'big' | 'small' }>`
   text-transform: uppercase;
   color: black;
   font-size: 12px;
@@ -76,7 +76,17 @@ const SizingBig = css`
   font-size: 16px;
 `;
 
-export const StyledInput = styled.input<{ isError: boolean; sizing?: 'big' }>`
+const SizingSmall = css`
+  box-shadow: none;
+  background-color: white;
+  margin-right: 30px;
+  outline: none;
+`;
+
+export const StyledInput = styled.input<{
+  isError: boolean;
+  sizing?: 'big' | 'small';
+}>`
   ${InputBox}
   border: none;
 
@@ -87,19 +97,28 @@ export const StyledInput = styled.input<{ isError: boolean; sizing?: 'big' }>`
 export const SelectContainer = styled.div<{
   marginBottom?: number;
   marginTop?: number;
+  sizing?: 'big' | 'small';
 }>`
-  width: 100%;
+  width: ${({ sizing }) => (sizing === 'small' ? 'auto' : '100%')};
   margin-top: ${(props) => (props.marginTop ? `${props.marginTop}px` : 0)};
   margin-bottom: ${(props) =>
     props.marginBottom ? `${props.marginBottom}px` : '25px'};
+  ${({ sizing }) =>
+    sizing === 'small' &&
+    css`
+      min-width: 100px;
+      @media (max-width: ${size.mobileL}) {
+        display: none;
+      }
+    `}
 `;
 
 export const StyledSelect = styled.div.attrs(() => ({ tabIndex: 0 }))<{
-  sizing?: 'big';
+  sizing?: 'big' | 'small';
 }>`
   ${InputBox}
   ${({ sizing }) => sizing === 'big' && SizingBig}
-
+  ${({ sizing }) => sizing === 'small' && SizingSmall}
   cursor: pointer;
   position: relative;
 `;
@@ -109,7 +128,7 @@ export const InputWrapper = styled.div`
   position: relative;
 `;
 
-export const DisplayValue = styled.p<{ sizing?: 'big' }>`
+export const DisplayValue = styled.p<{ sizing?: 'big' | 'small' }>`
   color: ${textPrimary};
   line-height: 40px;
   ${({ sizing }) =>
@@ -123,12 +142,15 @@ export const DisplayValue = styled.p<{ sizing?: 'big' }>`
   }
 `;
 
-export const DropdownButton = styled.div`
+export const DropdownButton = styled.div<{ sizing?: 'big' | 'small' }>`
   position: absolute;
   top: 50%;
   right: 0;
   transform: translate(-25%, -50%) rotate(-90deg) scale(1.5);
   color: ${bluePrimary};
+  ${({ sizing }) =>
+    sizing === 'small' &&
+    'transform: translate(-25%, -50%) rotate(-90deg) scale(1.1)'}
 `;
 
 export const DropdownListContainer = styled.div<{ ref?: any }>`
@@ -136,8 +158,9 @@ export const DropdownListContainer = styled.div<{ ref?: any }>`
   position: relative;
 `;
 
-export const DropdownList = styled.ul.attrs((props) => ({ tabIndex: -1 }))<{
+export const DropdownList = styled.ul.attrs(() => ({ tabIndex: -1 }))<{
   ref?: any;
+  sizing?: 'big' | 'small';
 }>`
   ${InputBox}
   background-color: rgba(242, 241, 238);
@@ -148,6 +171,8 @@ export const DropdownList = styled.ul.attrs((props) => ({ tabIndex: -1 }))<{
   position: absolute;
   z-index: 30;
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25), -3px 3px 5px rgba(0, 0, 0, 0.25);
+  ${({ sizing }) =>
+    sizing === 'small' && 'background-color: white; outline: none;'}
 `;
 
 export const ListItem = styled.li<{ isActive?: boolean }>`
