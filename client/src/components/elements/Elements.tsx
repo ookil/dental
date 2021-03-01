@@ -131,6 +131,8 @@ export const InputWrapper = styled.div`
 export const DisplayValue = styled.p<{ sizing?: 'big' | 'small' }>`
   color: ${textPrimary};
   line-height: 40px;
+  white-space: nowrap;
+  padding-right: 24px;
   ${({ sizing }) =>
     sizing === 'big' &&
     css`

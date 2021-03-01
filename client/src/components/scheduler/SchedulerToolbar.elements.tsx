@@ -113,10 +113,23 @@ export const FlexibleSpace = ({
 }: DentistSelectorProps) => {
   return (
     <Toolbar.FlexibleSpace {...restProps}>
-      <DentistSelector
+      {/* <DentistSelector
         dentistId={dentistId}
         dentists={dentists}
         handleDentistChange={handleDentistChange}
+      /> */}
+      <CustomSelect
+        options={[{ id: '-1', text: 'All Dentists' }, ...dentists]}
+        fieldName='text'
+        readFrom='id'
+        displayValue='text'
+        handleSelectChange={(_, value) => {
+          console.log(value);
+          handleDentistChange(value);
+        }}
+        sizing='small'
+        marginBottom={5}
+        initialValue='All Dentists'
       />
     </Toolbar.FlexibleSpace>
   );
