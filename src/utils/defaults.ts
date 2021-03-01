@@ -6,3 +6,6 @@ export const DEFAULT_APPOINTMENT_DURATION = 60;
 
 export const DEAFULT_WORK_ON_SATURDAY = false;
 export const DEAFULT_WORK_ON_SUNDAY = false;
+
+export const APPOINTMENTS = 'APPOINTMENTS';
+export const APPOINTMENTS_DELETED = 'APPOINTMENTS_DELETED';

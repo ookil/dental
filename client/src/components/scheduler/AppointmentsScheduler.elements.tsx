@@ -4,7 +4,7 @@ import {
 } from '@devexpress/dx-react-scheduler'; //Appointments
 import {
   Appointments,
-  DateNavigator,
+  DragDropProvider,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import { format, parseISO } from 'date-fns';
 import styled, { css } from 'styled-components';
@@ -43,7 +43,6 @@ export const RootContainer = styled.div`
       height: calc(100% + 51px);
     }
   }
-
 `;
 
 type AppointmentContentProps = Appointments.AppointmentContentProps & {
@@ -225,6 +224,87 @@ export const AppointmentContent = ({
   );
 };
 
+/////////////////////////////////////////////////////////////
+/////                   DRAG & DROP                     /////
+/////////////////////////////////////////////////////////////
+const Box = css`
+  width: 100%;
+  border: 1px solid #fff;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+  font-size: 0.75rem;
+  box-sizing: border-box;
+  font-weight: 400;
+  line-height: 1.66;
+  user-select: none;
+  border-radius: 4px;
+  letter-spacing: 0.03333em;
+  background-clip: padding-box;
+  padding: 2px 8px;
+`;
+
+const StyledSource = styled.div<{
+  status: 'REGISTERED' | 'CONFIRMED';
+  isShaded?: boolean;
+}>`
+  ${Box}
+  opacity: 0.6;
+  background-color: ${({ status, isShaded }) =>
+    status === 'CONFIRMED'
+      ? isShaded
+        ? '#85e48599'
+        : '#85e485'
+      : isShaded
+      ? '#f0ea5699'
+      : yellowUnknow};
+`;
+
+const StyledDraft = styled.div<{ status: 'REGISTERED' | 'CONFIRMED' }>`
+  ${Box};
+  cursor: move;
+  box-shadow: 0px 3px 3px -2px rgb(0 0 0 / 20%),
+    0px 3px 4px 0px rgb(0 0 0 / 14%), 0px 1px 8px 0px rgb(0 0 0 / 12%);
+  background-color: ${({ status }) =>
+    status === 'CONFIRMED' ? '#85e485' : yellowUnknow};
+`;
+
+export const SourceAppointment = ({
+  data,
+  isShaded,
+}: DragDropProvider.SourceAppointmentProps) => (
+  <StyledSource status={data.status} isShaded={isShaded}>
+    <Container>
+      <PatientText>
+        {data.patient.surname + ' ' + data.patient.name}
+      </PatientText>
+      <TreatmentText>{data.treatment}</TreatmentText>
+    </Container>
+  </StyledSource>
+);
+
+export const DraftAppointment = ({
+  data,
+  style,
+}: DragDropProvider.DraftAppointmentProps) => (
+  <StyledDraft style={style} status={data.status}>
+    <Container>
+      <PatientText>
+        {data.patient.surname + ' ' + data.patient.name}
+      </PatientText>
+      <TreatmentText>{data.treatment}</TreatmentText>
+    </Container>
+  </StyledDraft>
+);
+
+export const DragContainer = (props: DragDropProvider.ContainerProps) => (
+  <DragDropProvider.Container {...props} />
+);
+
+/////////////////////////////////////////////////////////////
+/////                   TOOL TIP                        /////
+/////////////////////////////////////////////////////////////
+
 const ContentContainer = styled.div`
   padding: 12px 8px;
   font-size: 0.85rem;
@@ -325,7 +405,7 @@ export const TooltipContent = ({
   );
 };
 
-export const RootNavigator = (props: DateNavigator.RootProps) => {
+/* export const RootNavigator = (props: DateNavigator.RootProps) => {
   return <DateNavigator.Root {...props} />;
 };
 
@@ -339,4 +419,4 @@ export const CustomNavigatorChildren = (
       <DateNavigator.NavigationButton type={'forward'} />
     </>
   );
-};
+}; */

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import { ObjectType, Field, ID, registerEnumType, Int } from 'type-graphql';
+import { Appointment } from './Appointment';
 import { Assistant } from './Assistant';
 import { Dentist } from './Dentist';
 import { Patient } from './Patient';
@@ -54,6 +55,9 @@ export class Clinic {
 
   @Field(() => [Patient], { nullable: true })
   patients?: [Patient] | null;
+
+  @Field(() => [Appointment], { nullable: true })
+  appointments?: [Appointment] | null;
 
   @Field(() => ClinicSettings)
   settings: ClinicSettings;

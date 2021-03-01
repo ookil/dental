@@ -82,7 +82,7 @@ const GlobalStyle = createGlobalStyle`
     }
 
     body {
-      min-height: 100%;
+      min-height: 100%;      
     }
 
 `;

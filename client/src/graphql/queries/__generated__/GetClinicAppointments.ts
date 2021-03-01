@@ -29,7 +29,7 @@ export interface GetClinicAppointments_clinicAppointments {
 }
 
 export interface GetClinicAppointments {
-  clinicAppointments: GetClinicAppointments_clinicAppointments[] | null;
+  clinicAppointments: GetClinicAppointments_clinicAppointments[];
 }
 
 export interface GetClinicAppointmentsVariables {

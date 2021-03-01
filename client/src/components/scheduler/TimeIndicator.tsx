@@ -22,7 +22,7 @@ export const TimeIndicator = ({ top }: CurrentTimeIndicator.IndicatorProps) => {
     if (indicatorRef && indicatorRef.current) {
       indicatorRef.current.scrollIntoView();
     }
-  });
+  }, []);
 
   return (
     <div ref={indicatorRef}>

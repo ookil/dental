@@ -6,12 +6,23 @@ import {
   ApolloProvider,
   createHttpLink,
   gql,
+  split,
 } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
+import { WebSocketLink } from '@apollo/client/link/ws';
 import { cache } from './cache';
+import { getMainDefinition } from '@apollo/client/utilities';
 
 const httpLink = createHttpLink({
   uri: `/graphql`,
+});
+
+const wsLink = new WebSocketLink({
+  uri: 'ws://localhost:5000/graphql',
+  options: {
+    reconnect: true,
+    timeout: 30000,
+  },
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -28,6 +39,21 @@ const authLink = setContext((_, { headers }) => {
   };
 });
 
+const authHttpLink = authLink.concat(httpLink);
+
+//Using this logic, queries and mutations will use HTTP as normal, and subscriptions will use WebSocket.
+const link = split(
+  (operation) => {
+    const definition = getMainDefinition(operation.query);
+    return (
+      definition.kind === 'OperationDefinition' &&
+      definition.operation === 'subscription'
+    );
+  },
+  wsLink,
+  authHttpLink
+);
+
 const typeDefs = gql`
   extend type Dentist {
     nameWithSurname: String
@@ -39,7 +65,7 @@ const typeDefs = gql`
 `;
 
 export const client = new ApolloClient({
-  link: authLink.concat(httpLink),
+  link,
   cache,
   typeDefs,
 });

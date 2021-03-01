@@ -131,8 +131,8 @@ model Appointment {
   endAt     DateTime
   createdAt DateTime          @default(now())
   status    AppointmentStatus @default(REGISTERED)
-  patient   Patient?          @relation(fields: [patientId], references: [id])
-  patientId Int?
+  patient   Patient           @relation(fields: [patientId], references: [id])
+  patientId Int
   dentist   Dentist           @relation(fields: [dentistId], references: [id])
   dentistId Int
   clinic    Clinic            @relation(fields: [clinicId], references: [id])

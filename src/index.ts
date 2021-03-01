@@ -60,7 +60,7 @@ const main = async () => {
     /* context, */
     context: ({ req, connection }) => {
       if (connection) {
-        return connection.context;
+        return { ...connection.context, prisma };
       }
 
       const user: User | null = getUser(req);

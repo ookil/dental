@@ -5,7 +5,10 @@ export const cache = new InMemoryCache({
     Query: {
       fields: {
         clinicAppointments: {
-          keyArgs: ['clinicId'],
+          //keyArgs: ['clinicId'],
+          merge(_, incoming) {
+            return incoming;
+          },
         },
       },
     },

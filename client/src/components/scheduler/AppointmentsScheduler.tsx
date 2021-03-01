@@ -17,6 +17,7 @@ import {
   WeekView,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import {
+  DragDropProvider,
   EditingState,
   GroupingState,
   IntegratedEditing,
@@ -26,7 +27,10 @@ import {
 import {
   AppointmentCell,
   AppointmentContent,
+  DraftAppointment,
+  DragContainer,
   RootContainer,
+  SourceAppointment,
   TooltipContent,
 } from './AppointmentsScheduler.elements';
 import {
@@ -62,8 +66,11 @@ import { GET_APPOINTMENTS } from '../../graphql/queries/clinic';
 import { clinicIdVar } from '../../cache';
 import { BasicLayout } from './AppointmentForm';
 import {
+  APPOINTMENTS_DELETE_SUB,
+  APPOINTMENTS_SUBSCRIPTION,
   CREATE_APPOINTMENT,
   DELETE_APPOINTMENT,
+  UPDATE_APPOINTMENT,
 } from '../../graphql/queries/appointments';
 import {
   DeleteAppointment,
@@ -73,6 +80,12 @@ import {
   CreateAppointment,
   CreateAppointmentVariables,
 } from '../../graphql/queries/__generated__/CreateAppointment';
+import { AppointmentsSubscription } from '../../graphql/queries/__generated__/AppointmentsSubscription';
+import {
+  UpdateAppointment,
+  UpdateAppointmentVariables,
+} from '../../graphql/queries/__generated__/UpdateAppointment';
+import { AppointmentsDeleteSub } from '../../graphql/queries/__generated__/AppointmentsDeleteSub';
 
 const grouping = [
   {
@@ -88,6 +101,14 @@ type SchedulerProps = {
   dentists: GetDentistsGrouping_clinicDentists[];
 };
 
+type SubscriptionData = {
+  data: AppointmentsSubscription;
+};
+
+type SubscriptionDelete = {
+  data: AppointmentsDeleteSub;
+};
+
 const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
   const clinicId = clinicIdVar();
   const [currentDentistId, setCurrentDentistId] = useState<string>('-1'); //default all dentists
@@ -98,7 +119,7 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
     lastDay: Date;
   }>();
 
-  const { data: appointmnetsData, loading } = useQuery<
+  const { data: appointmnetsData, loading, subscribeToMore } = useQuery<
     GetClinicAppointments,
     GetClinicAppointmentsVariables
   >(GET_APPOINTMENTS, {
@@ -110,7 +131,73 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
       },
     },
     skip: daysRange === undefined,
+    fetchPolicy: 'network-only',
   });
+
+  // subscription for appointment delete
+  useEffect(() => {
+    let unsubscribe = subscribeToMore({
+      document: APPOINTMENTS_DELETE_SUB,
+      variables: { clinicId },
+      updateQuery: (
+        prev,
+        { subscriptionData }: { subscriptionData: SubscriptionDelete }
+      ) => {
+        if (!subscriptionData.data) return prev;
+
+        const response = subscriptionData.data.appointmentsDeleteSub;
+
+        const filtered = prev.clinicAppointments.filter(
+          (item) => item.id !== response.content.id
+        );
+
+        const newCache = Object.assign({}, prev, {
+          clinicAppointments: [...filtered],
+        });
+
+        return newCache;
+      },
+    });
+    return () => unsubscribe();
+  }, [clinicId, subscribeToMore]);
+
+  // subscription for new and updated appointments
+  useEffect(() => {
+    let unsubscribe = subscribeToMore({
+      document: APPOINTMENTS_SUBSCRIPTION,
+      variables: { clinicId },
+      updateQuery: (
+        prev,
+        { subscriptionData }: { subscriptionData: SubscriptionData } // I don't like this typing but let it be for now
+      ) => {
+        if (!subscriptionData.data) return prev;
+
+        const response = subscriptionData.data.appointmentsSubscription;
+
+        if (response.mutation === 'ADDED') {
+          const newCache = Object.assign({}, prev, {
+            clinicAppointments: [...prev.clinicAppointments, response.content],
+          });
+
+          return newCache;
+        }
+        if (response.mutation === 'UPDATED') {
+          const filtered = prev.clinicAppointments.filter(
+            (item) => item.id !== response.content.id
+          );
+
+          const newCache = Object.assign({}, prev, {
+            clinicAppointments: [...filtered, response.content],
+          });
+
+          return newCache;
+        }
+
+        return prev;
+      },
+    });
+    return () => unsubscribe();
+  }, [clinicId, subscribeToMore]);
 
   useEffect(() => {
     setDaysRange(getDaysRange(currentDate, currentView));
@@ -157,9 +244,13 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
     CreateAppointmentVariables
   >(CREATE_APPOINTMENT);
 
+  const [updateAppointment] = useMutation<
+    UpdateAppointment,
+    UpdateAppointmentVariables
+  >(UPDATE_APPOINTMENT);
+
   const commitChanges = ({ added, changed, deleted }: any) => {
     if (added) {
-      console.log(added);
       createAppointment({
         variables: {
           appointmentData: {
@@ -170,6 +261,27 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
             startAt: added.startDate,
             endAt: added.endDate,
             status: added.status,
+          },
+        },
+      });
+    }
+    // I'm not a fan of this "changed" object, it requires a lot of unnecessery manipulation
+    if (changed) {
+      const idKey = Object.keys(changed)[0];
+      if (changed[idKey].startDate) {
+        changed[idKey].startAt = changed[idKey].startDate;
+        delete changed[idKey].startDate;
+      }
+      if (changed[idKey].endDate) {
+        changed[idKey].endAt = changed[idKey].endDate;
+        delete changed[idKey].endDate;
+      }
+
+      updateAppointment({
+        variables: {
+          id: idKey,
+          appointmentData: {
+            ...changed[parseInt(idKey)],
           },
         },
       });
@@ -294,7 +406,13 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
             showCloseButton
             showDeleteButton
           />
-
+          <DragDropProvider
+            allowResize={() => false}
+            sourceAppointmentComponent={SourceAppointment}
+            draftAppointmentComponent={DraftAppointment}
+            containerComponent={DragContainer}
+            resizeComponent={() => null}
+          />
           <CurrentTimeIndicator
             shadePreviousCells={true}
             shadePreviousAppointments={true}

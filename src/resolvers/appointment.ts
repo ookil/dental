@@ -1,7 +1,6 @@
 import { Context } from '../index';
 import {
   Arg,
-  Args,
   Authorized,
   Ctx,
   Field,
@@ -14,6 +13,7 @@ import {
   PubSubEngine,
   Query,
   Resolver,
+  ResolverFilterData,
   Root,
   Subscription,
 } from 'type-graphql';
@@ -25,11 +25,11 @@ import {
   AppointmentSubscription,
   WeeklyAppointments,
 } from '../typeDefs/Appointment';
-import { Length } from 'class-validator';
 import { CreatePatientInput } from './patient';
 import { addMinutes, isBefore, setHours, setMinutes } from 'date-fns';
 import { prisma } from '../context';
 import { AppointmentPayload } from 'src/subsciptions/appointments.types';
+import { APPOINTMENTS, APPOINTMENTS_DELETED } from '../utils/defaults';
 
 @InputType({ description: 'New appointment data' })
 export class CreateAppointmentInput implements Partial<Appointment> {
@@ -58,25 +58,25 @@ export class CreateAppointmentInput implements Partial<Appointment> {
 @InputType({ description: 'Update appointment data' })
 export class UpdateAppointmentInput implements Partial<Appointment> {
   @Field({ nullable: true })
-  @Length(1, 30)
-  treatment?: string;
+  treatment: string;
 
   @Field({ nullable: true })
-  @Length(1, 30)
-  startAt?: Date;
+  startAt: Date;
 
   @Field({ nullable: true })
-  @Length(1, 30)
-  endAt?: Date;
+  endAt: Date;
 
   @Field(() => AppointmentStatus, { nullable: true })
-  status?: AppointmentStatus;
+  status: AppointmentStatus;
 
   @Field(() => ID, { nullable: true })
-  patientId?: number | string;
+  patientId: number | string;
 
   @Field(() => ID, { nullable: true })
-  dentistId?: number | string;
+  dentistId: number | string;
+
+  @Field(() => ID, { nullable: true })
+  clinicId: number | string;
 }
 
 @InputType({ description: 'Clinic options' })
@@ -152,6 +152,7 @@ export class AppointmentResolver {
   @Authorized()
   @Mutation(() => Appointment)
   async createAppointment(
+    @PubSub() pubSub: PubSubEngine,
     @Arg('appointmentData') appointmentData: CreateAppointmentInput,
     @Arg('newPatientData', { nullable: true })
     newPatientData: CreatePatientInput,
@@ -193,7 +194,7 @@ export class AppointmentResolver {
       if (typeof newPatientData.dentistId === 'string')
         newPatientData.dentistId = parseInt(newPatientData.dentistId);
 
-      return await prisma.appointment.create({
+      const newAppointment = await prisma.appointment.create({
         data: {
           treatment: appointmentData.treatment,
           startAt: appointmentData.startAt,
@@ -227,14 +228,19 @@ export class AppointmentResolver {
             },
           },
         },
-        include: {
-          patient: true,
-          dentist: true,
-        },
       });
+
+      const payload: AppointmentPayload = {
+        mutation: 'ADDED',
+        content: newAppointment,
+      };
+
+      await pubSub.publish(APPOINTMENTS, payload);
+
+      return newAppointment;
     }
 
-    return await prisma.appointment.create({
+    const newAppointment = await prisma.appointment.create({
       data: {
         treatment: appointmentData.treatment,
         startAt: appointmentData.startAt,
@@ -255,11 +261,18 @@ export class AppointmentResolver {
           },
         },
       },
-      include: {
-        patient: true,
-        dentist: true,
-      },
     });
+
+    const payload: AppointmentPayload = {
+      mutation: 'ADDED',
+      content: {
+        ...newAppointment,
+      },
+    };
+
+    await pubSub.publish(APPOINTMENTS, payload);
+
+    return newAppointment;
   }
 
   @Authorized()
@@ -279,10 +292,10 @@ export class AppointmentResolver {
 
     const payload: AppointmentPayload = {
       mutation: 'DELETED',
-      data: res,
+      content: { ...res },
     };
 
-    await pubSub.publish('ADDED_APPOINTMENT', payload);
+    await pubSub.publish(APPOINTMENTS_DELETED, payload);
 
     return res;
   }
@@ -408,7 +421,8 @@ export class AppointmentResolver {
   async updateAppointment(
     @Arg('id', () => ID) id: number | string,
     @Arg('appointmentData') appointmentData: UpdateAppointmentInput,
-    @Ctx() { prisma }: Context
+    @Ctx() { prisma }: Context,
+    @PubSub() pubSub: PubSubEngine
   ) {
     if (typeof id === 'string') id = parseInt(id);
 
@@ -418,53 +432,145 @@ export class AppointmentResolver {
       },
     });
 
-    if (!appointment) throw new Error('Appointment Not Found');
+    if (!appointment) throw new Error("Appointment doesn't exist");
 
     if (typeof appointmentData.dentistId === 'string')
       appointmentData.dentistId = parseInt(appointmentData.dentistId);
 
-    const appointments = await prisma.appointment.findMany({
-      where: {
-        AND: [
-          {
-            startAt: appointmentData.startAt,
-          },
-          {
-            endAt: appointmentData.endAt,
-          },
-          {
-            dentistId: appointmentData.dentistId,
-          },
-        ],
-      },
-    });
+    if (typeof appointmentData.patientId === 'string')
+      appointmentData.patientId = parseInt(appointmentData.patientId);
 
-    // don't allow to create multiple appointments for dentist at the same time
-    if (appointments.length)
-      throw new Error('Something went wrong, appointment alredy exists!');
+    if (typeof appointmentData.clinicId === 'string')
+      appointmentData.clinicId = parseInt(appointmentData.clinicId);
 
-    return await prisma.appointment.update({
+    if (
+      appointmentData.startAt &&
+      appointmentData.endAt &&
+      appointmentData.dentistId
+    ) {
+      const appointments = await prisma.appointment.findMany({
+        where: {
+          AND: [
+            {
+              startAt: appointmentData.startAt,
+            },
+            {
+              endAt: appointmentData.endAt,
+            },
+            {
+              dentistId: appointmentData.dentistId,
+            },
+          ],
+        },
+      });
+
+      // don't allow to create multiple appointments for dentist at the same time
+      if (appointments.length)
+        throw new Error('Something went wrong, appointment alredy exists!');
+    }
+
+    // this create in the end doesn't make sense I think but will come back to it
+    /* if (!appointment || id === -1) {
+      const newAppointment = await prisma.appointment.create({
+        data: {
+          treatment: appointmentData.treatment,
+          startAt: appointmentData.startAt,
+          endAt: appointmentData.endAt,
+          createdAt: new Date(),
+          status: appointmentData.status || 'REGISTERED',
+          clinic: {
+            connect: {
+              id: appointmentData.clinicId,
+            },
+          },
+          dentist: {
+            connect: { id: appointmentData.dentistId },
+          },
+          patient: {
+            connect: {
+              id: appointmentData.patientId,
+            },
+          },
+        },
+      });
+
+      const payload: AppointmentPayload = {
+        mutation: 'ADDED',
+        content: newAppointment,
+      };
+
+      pubSub.publish(APPOINTMENTS, payload);
+
+      return newAppointment;
+    } */
+
+    const updated = await prisma.appointment.update({
       where: {
         id,
       },
       data: {
-        ...appointmentData,
+        treatment: appointmentData.treatment,
+        createdAt: new Date(),
+        startAt: appointmentData.startAt,
+        endAt: appointmentData.endAt,
+        status: appointmentData.status,
+        patient: {
+          connect: {
+            id: appointmentData.patientId || appointment.patientId,
+          },
+        },
+        dentist: {
+          connect: {
+            id: appointmentData.dentistId || appointment.dentistId,
+          },
+        },
+        clinic: {
+          connect: {
+            id: appointmentData.clinicId || appointment.clinicId,
+          },
+        },
       },
     });
+
+    const payload: AppointmentPayload = {
+      mutation: 'UPDATED',
+      content: updated,
+    };
+
+    pubSub.publish(APPOINTMENTS, payload);
+
+    return updated;
   }
 
   @Subscription(() => AppointmentSubscription, {
-    topics: ['ADDED_APPOINTMENT', 'UPDATED_APPOINTMENT', 'DELETED_APPOINTMETN'],
-    filter: ({ payload, args }) => {
-      return payload.data.clinicId === parseInt(args.clinicId);
+    topics: [APPOINTMENTS_DELETED],
+    filter: ({ payload, args }: ResolverFilterData<AppointmentPayload>) => {
+      return payload.content.clinicId === parseInt(args.clinicId);
+    },
+  })
+  appointmentsDeleteSub(
+    @Root() appointmentPayload: AppointmentPayload,
+    @Arg('clinicId', () => ID) _clinicId: string | number
+  ): AppointmentSubscription {
+    return {
+      mutation: appointmentPayload.mutation,
+      content: appointmentPayload.content,
+    };
+  }
+
+  @Subscription(() => AppointmentSubscription, {
+    topics: [APPOINTMENTS],
+    filter: ({ payload, args }: ResolverFilterData<AppointmentPayload>) => {
+      return payload.content.clinicId === parseInt(args.clinicId);
     },
   })
   appointmentsSubscription(
     @Root() appointmentPayload: AppointmentPayload,
-    @Arg('clinicId', () => ID) clinicId: string | number
-  ) {
+    @Arg('clinicId', () => ID) _clinicId: string | number
+  ): AppointmentSubscription {
     return {
-      ...appointmentPayload,
+      mutation: appointmentPayload.mutation,
+      content: appointmentPayload.content,
     };
   }
 

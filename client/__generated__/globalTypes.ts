@@ -70,6 +70,19 @@ export interface GetAppointmentsInput {
 }
 
 /**
+ * Update appointment data
+ */
+export interface UpdateAppointmentInput {
+  treatment?: string | null;
+  startAt?: any | null;
+  endAt?: any | null;
+  status?: AppointmentStatus | null;
+  patientId?: string | null;
+  dentistId?: string | null;
+  clinicId?: string | null;
+}
+
+/**
  * New selected week
  */
 export interface WeeklyAppointmentsInput {

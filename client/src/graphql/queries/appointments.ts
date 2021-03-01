@@ -81,6 +81,61 @@ export const DELETE_APPOINTMENT = gql`
   }
 `;
 
+export const APPOINTMENTS_DELETE_SUB = gql`
+  subscription AppointmentsDeleteSub($clinicId: ID!) {
+    appointmentsDeleteSub(clinicId: $clinicId) {
+      mutation
+      content {
+        id
+      }
+    }
+  }
+`;
+
+export const APPOINTMENTS_SUBSCRIPTION = gql`
+  subscription AppointmentsSubscription($clinicId: ID!) {
+    appointmentsSubscription(clinicId: $clinicId) {
+      mutation
+      content {
+        id
+        treatment
+        startDate: startAt
+        endDate: endAt
+        status
+        dentistId
+        patient {
+          id
+          name
+          surname
+          nameWithSurname @client
+        }
+      }
+    }
+  }
+`;
+
+export const UPDATE_APPOINTMENT = gql`
+  mutation UpdateAppointment(
+    $appointmentData: UpdateAppointmentInput!
+    $id: ID!
+  ) {
+    updateAppointment(appointmentData: $appointmentData, id: $id) {
+      id
+      treatment
+      startDate: startAt
+      endDate: endAt
+      status
+      patient {
+        id
+        name
+        surname
+        nameWithSurname @client
+      }
+      dentistId
+    }
+  }
+`;
+
 type Patient = {
   id: string | number;
   name: string;

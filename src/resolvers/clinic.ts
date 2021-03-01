@@ -110,7 +110,7 @@ export class ClinicResolver {
   }
 
   @Authorized()
-  @Query(() => [Appointment], { nullable: true })
+  @Query(() => [Appointment])
   async clinicAppointments(
     @Arg('appointmentsData') appointmentsData: GetAppointmentsInput,
     @Ctx() { prisma }: Context
@@ -254,5 +254,16 @@ export class ClinicResolver {
         },
       })
       .settings();
+  }
+
+  @FieldResolver()
+  async appointments(@Root() clinic: Clinic, @Ctx() { prisma }: Context) {
+    return await prisma.clinic
+      .findUnique({
+        where: {
+          id: clinic.id,
+        },
+      })
+      .appointments();
   }
 }
