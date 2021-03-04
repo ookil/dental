@@ -276,7 +276,7 @@ export class AppointmentResolver {
   }
 
   @Authorized()
-  @Mutation(() => Appointment)
+  @Mutation(() => Appointment, { nullable: true })
   async deleteAppointment(
     @Arg('id', () => ID) id: number | string,
     @Ctx() { prisma }: Context,
@@ -542,6 +542,7 @@ export class AppointmentResolver {
     return updated;
   }
 
+  @Authorized()
   @Subscription(() => AppointmentSubscription, {
     topics: [APPOINTMENTS_DELETED],
     filter: ({ payload, args }: ResolverFilterData<AppointmentPayload>) => {
@@ -558,6 +559,7 @@ export class AppointmentResolver {
     };
   }
 
+  @Authorized()
   @Subscription(() => AppointmentSubscription, {
     topics: [APPOINTMENTS],
     filter: ({ payload, args }: ResolverFilterData<AppointmentPayload>) => {

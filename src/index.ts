@@ -53,19 +53,27 @@ const main = async () => {
 
   const prisma = new PrismaClient();
 
-  /*   const context = createContext(); */
-
   const apolloServer = new ApolloServer({
     schema,
-    /* context, */
     context: ({ req, connection }) => {
       if (connection) {
-        return { ...connection.context, prisma };
+        return { prisma };
       }
 
-      const user: User | null = getUser(req);
+      const auth = req.headers.authorization;
+
+      const user: User | null = getUser(auth);
 
       return { prisma, user };
+    },
+    subscriptions: {
+      onConnect: (connectionParams) => {
+        if (connectionParams.authorization) {
+          const user = getUser(connectionParams.authorization);
+          return { user };
+        }
+        throw new Error('Missing auth token!');
+      },
     },
   });
 

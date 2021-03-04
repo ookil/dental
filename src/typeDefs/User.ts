@@ -23,11 +23,11 @@ export class User {
   password: string;
 
   @Authorized('ADMIN')
-  @Field(() => [Role], { nullable: true })
-  roles?: [Role];
+  @Field(() => [Role])
+  roles?: Role[];
 
-  @Field(() => [Clinic])
-  owningClinics: [Clinic];
+  @Field(() => [Clinic], { nullable: true })
+  owningClinics?: Clinic[];
 
   @Field(() => Clinic)
   clinic: Clinic;

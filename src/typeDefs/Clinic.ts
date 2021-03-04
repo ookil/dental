@@ -48,25 +48,25 @@ export class Clinic {
   admin: User;
 
   @Field(() => [Dentist], { nullable: true })
-  dentists?: [Dentist] | null;
+  dentists?: Dentist[];
 
   @Field(() => [Assistant], { nullable: true })
-  assistants?: [Assistant] | null;
+  assistants?: Assistant[];
 
   @Field(() => [Patient], { nullable: true })
-  patients?: [Patient] | null;
+  patients?: Patient[];
 
   @Field(() => [Appointment], { nullable: true })
-  appointments?: [Appointment] | null;
+  appointments?: Appointment[];
 
   @Field(() => ClinicSettings)
-  settings: ClinicSettings;
+  settings?: ClinicSettings;
 
   @Field()
   registeredAt: Date;
 
-  @Field(() => [User])
-  users: [User];
+  @Field(() => [User], { nullable: true })
+  users?: User[];
 }
 
 export enum Role {

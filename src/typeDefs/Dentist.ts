@@ -21,8 +21,8 @@ export class Dentist {
   active: boolean;
 
   @Field(() => [Patient], { nullable: true })
-  patients?: [Patient];
+  patients?: Patient[];
 
   @Field(() => [Appointment], { nullable: true })
-  appointments?: [Appointment];
+  appointments?: Appointment[];
 }

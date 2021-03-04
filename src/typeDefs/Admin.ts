@@ -25,6 +25,6 @@ export class Admin extends User {
   @Length(6, 20)
   password: string;
 
-  @Field(() => [Role])
-  roles: [Role];
+  @Field(() => [Role], { nullable: true })
+  roles: Role[];
 }

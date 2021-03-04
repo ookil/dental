@@ -20,5 +20,5 @@ export class Assistant {
   active: boolean;
 
   @Field(() => [Dentist], { nullable: true })
-  worksWith?: [Dentist];
+  worksWith?: Dentist[];
 }

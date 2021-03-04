@@ -34,7 +34,7 @@ export class Patient {
   dentist?: Dentist;
 
   @Field(() => [Appointment], { nullable: true })
-  appointments?: [Appointment];
+  appointments?: Appointment[];
 
   @Field(() => [ChartRecord], { nullable: true })
   patientChart?: ChartRecord[];

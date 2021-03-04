@@ -22,6 +22,11 @@ const wsLink = new WebSocketLink({
   options: {
     reconnect: true,
     timeout: 30000,
+    connectionParams: {
+      authorization:
+        sessionStorage.getItem('token') ||
+        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoyNCwicm9sZXMiOlsiQURNSU4iXX0sImlhdCI6MTYxMDgwODgxNH0.sT4PL-3W9AqE7NCPddgPWZe0JgS1zksr-UV-k9OK4zc',
+    },
   },
 });
 

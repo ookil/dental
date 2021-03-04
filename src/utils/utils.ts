@@ -7,8 +7,7 @@ export type User = {
   roles: Role[];
 };
 
-export const getUser = (req: any) => {
-  const auth = req.headers.authorization || '';
+export const getUser = (auth: string | undefined) => {
 
   if (!auth) return null;
 
