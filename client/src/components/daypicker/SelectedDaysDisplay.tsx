@@ -1,9 +1,6 @@
 import { format } from 'date-fns';
 import React, { useEffect, useState } from 'react';
-import {
-  WeeklyAppointments,
-  WeeklyAppointmentsData,
-} from '../../graphql/queries/appointments';
+import { GetWeeklyAppointments, GetWeeklyAppointments_weeklyAppointments } from '../../graphql/queries/__generated__/GetWeeklyAppointments';
 import { setAvailableAppointments } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
 import {
@@ -16,7 +13,7 @@ import {
 } from './SelectedDaysDisplay.Elements';
 
 type Props = {
-  availableAppointments?: WeeklyAppointmentsData;
+  availableAppointments?: GetWeeklyAppointments;
   selectedDay?: Date;
 };
 
@@ -27,7 +24,7 @@ const SelectedDaysDisplay: React.FC<Props> = ({
   const dispatch = useAppDispatch();
   const [selected, setSelected] = useState<number>();
 
-  const handleClick = (day: WeeklyAppointments, index: number) => {
+  const handleClick = (day: GetWeeklyAppointments_weeklyAppointments, index: number) => {
     dispatch(setAvailableAppointments(day.appointments));
     setSelected(index);
   };

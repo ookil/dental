@@ -13,7 +13,7 @@ export interface DeleteAppointment_deleteAppointment {
 }
 
 export interface DeleteAppointment {
-  deleteAppointment: DeleteAppointment_deleteAppointment;
+  deleteAppointment: DeleteAppointment_deleteAppointment | null;
 }
 
 export interface DeleteAppointmentVariables {

@@ -12,20 +12,25 @@ import { MainModal, Navbar, Toolbar } from './components';
 import { Gif, GifWrapper } from './components/elements/Elements';
 import { ModalBackground } from './components/modals/Modals.elements';
 import GlobalStyle from './globalStyles';
-import { GET_LOGGED_USER, UserData } from './graphql/queries/user';
+import { GET_LOGGED_USER } from './graphql/queries/user';
 import { Calendar, Dashboard } from './pages';
 import store from './store/store';
 import loadingGif from './images/loading.gif';
-import { ClinicData, ClinicVar, GET_CLINIC } from './graphql/queries/clinic';
+import { GET_CLINIC } from './graphql/queries/clinic';
 import { clinicIdVar } from './cache';
 import MainContainer from './pages/MainContainer';
+import { LoggedUser } from './graphql/queries/__generated__/LoggedUser';
+import {
+  GetClinic,
+  GetClinicVariables,
+} from './graphql/queries/__generated__/GetClinic';
 
 function App() {
-  const { data, loading: userLoading } = useQuery<UserData>(GET_LOGGED_USER);
+  const { data, loading: userLoading } = useQuery<LoggedUser>(GET_LOGGED_USER);
 
   clinicIdVar(data?.loggedUser.clinic.id);
 
-  const { loading } = useQuery<ClinicData, ClinicVar>(GET_CLINIC, {
+  const { loading } = useQuery<GetClinic, GetClinicVariables>(GET_CLINIC, {
     variables: {
       clinicId: data?.loggedUser.clinic.id!,
     },

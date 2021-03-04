@@ -1,20 +1,7 @@
 import { gql } from '@apollo/client';
-import { SettingsData } from './clinic';
-
-export type LoggedUser = {
-  id: string;
-  clinic: {
-    id: string;
-    settings: SettingsData;
-  };
-};
-
-export type UserData = {
-  loggedUser: LoggedUser;
-};
 
 export const GET_LOGGED_USER = gql`
-  query loggedUser {
+  query LoggedUser {
     loggedUser {
       id
       clinic {

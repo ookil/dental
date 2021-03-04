@@ -1,22 +1,8 @@
 import { gql } from '@apollo/client';
 
-export type ClinicDentist = {
-  id: number | string;
-  name: string;
-  surname: string;
-  active: boolean;
-};
-
-export type ClinicDentistsData = {
-  clinicDentists: ClinicDentist[];
-};
-
-export type ClinicDentistVar = {
-  clinicId: number | string;
-};
 
 export const GET_CLINIC_DENTISTS = gql`
-  query GetDentistsQuery($clinicId: ID!) {
+  query GetDentists($clinicId: ID!) {
     clinicDentists(id: $clinicId) {
       id
       name
@@ -28,7 +14,7 @@ export const GET_CLINIC_DENTISTS = gql`
 `;
 
 export const GET_DENTIST = gql`
-  query GetDentistQuery($dentistId: ID!) {
+  query GetDentist($dentistId: ID!) {
     dentist(id: $dentistId) {
       id
       name

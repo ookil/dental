@@ -1,19 +1,5 @@
 import { gql } from '@apollo/client';
 
-export type ClinicPatient = {
-  id: number | string;
-  name: string;
-  surname: string;
-  active: boolean;
-};
-
-export type ClinicPatientData = {
-  clinicPatients: ClinicPatient[];
-};
-
-export type ClinicPatientVar = {
-  clinicId: number | string;
-};
 
 export const GET_CLINIC_PATIENTS = gql`
   query GetPatients($clinicId: ID!) {
@@ -26,14 +12,6 @@ export const GET_CLINIC_PATIENTS = gql`
     }
   }
 `;
-
-export type NewPatientDetails = {
-  name: string;
-  surname: string;
-  email?: string | null;
-  dentistId: number | null;
-  clinicId: number | string;
-};
 
 export const ADD_PATIENT = gql`
   mutation AddPatient($patientData: CreatePatientInput!) {

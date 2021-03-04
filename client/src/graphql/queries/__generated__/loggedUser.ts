@@ -4,20 +4,20 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: loggedUser
+// GraphQL query operation: LoggedUser
 // ====================================================
 
-export interface loggedUser_loggedUser_clinic {
+export interface LoggedUser_loggedUser_clinic {
   __typename: "Clinic";
   id: string;
 }
 
-export interface loggedUser_loggedUser {
+export interface LoggedUser_loggedUser {
   __typename: "User";
   id: string;
-  clinic: loggedUser_loggedUser_clinic;
+  clinic: LoggedUser_loggedUser_clinic;
 }
 
-export interface loggedUser {
-  loggedUser: loggedUser_loggedUser;
+export interface LoggedUser {
+  loggedUser: LoggedUser_loggedUser;
 }

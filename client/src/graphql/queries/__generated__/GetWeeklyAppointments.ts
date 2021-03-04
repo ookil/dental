@@ -6,19 +6,19 @@
 import { WeeklyAppointmentsInput } from "./../../../../__generated__/globalTypes";
 
 // ====================================================
-// GraphQL query operation: GetWeeklyAppointmentsQuery
+// GraphQL query operation: GetWeeklyAppointments
 // ====================================================
 
-export interface GetWeeklyAppointmentsQuery_weeklyAppointments {
+export interface GetWeeklyAppointments_weeklyAppointments {
   __typename: "WeeklyAppointments";
   date: any;
   appointments: any[];
 }
 
-export interface GetWeeklyAppointmentsQuery {
-  weeklyAppointments: GetWeeklyAppointmentsQuery_weeklyAppointments[];
+export interface GetWeeklyAppointments {
+  weeklyAppointments: GetWeeklyAppointments_weeklyAppointments[];
 }
 
-export interface GetWeeklyAppointmentsQueryVariables {
+export interface GetWeeklyAppointmentsVariables {
   appointmentsInput: WeeklyAppointmentsInput;
 }

@@ -2,24 +2,11 @@ import { useMutation, useQuery } from '@apollo/client';
 import { addMinutes } from 'date-fns';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
+import { CREATE_APPOINTMENT } from '../../graphql/queries/appointments';
+import { GET_CLINIC_DENTISTS } from '../../graphql/queries/dentist';
+import { GET_CLINIC_PATIENTS } from '../../graphql/queries/patient';
 import {
-  CreateAppointment,
-  CreateAppointmentInput,
-  CREATE_APPOINTMENT,
-} from '../../graphql/queries/appointments';
-import {
-  ClinicDentistsData,
-  ClinicDentistVar,
-  GET_CLINIC_DENTISTS,
-} from '../../graphql/queries/dentist';
-import {
-  GET_CLINIC_PATIENTS,
-  NewPatientDetails,
-} from '../../graphql/queries/patient';
-import {
-  GET_TREATMENTS,
-  TreatmentCategory,
-  TreatmentData,
+  GET_TREATMENTS
 } from '../../graphql/queries/treatment';
 import {
   openModal,
@@ -41,20 +28,32 @@ import {
 import { PatientFormContent } from './PatientFormContent';
 import loadingGif from '../../images/loading.gif';
 import completedGif from '../../images/completed.gif';
-import {
-  ClinicData,
-  ClinicVar,
-  GET_CLINIC,
-} from '../../graphql/queries/clinic';
+import { GET_CLINIC } from '../../graphql/queries/clinic';
 import { clinicIdVar } from '../../cache';
 import {
   GetPatients,
   GetPatientsVariables,
 } from '../../graphql/queries/__generated__/GetPatients';
+import {
+  GetClinic,
+  GetClinicVariables,
+} from '../../graphql/queries/__generated__/GetClinic';
+import {
+  GetDentists,
+  GetDentistsVariables,
+} from '../../graphql/queries/__generated__/GetDentists';
+import {
+  CreateAppointment,
+  CreateAppointmentVariables,
+} from '../../graphql/queries/__generated__/CreateAppointment';
+import {
+  GetTreatments,
+  GetTreatmentsVariables,
+} from '../../graphql/queries/__generated__/GetTreatments';
 
 type Appointment = {
-  patientId: number | string;
-  dentistId: number | string;
+  patientId: string;
+  dentistId: string;
   treatment: string;
   startAt: string;
   endAt: string;
@@ -71,13 +70,16 @@ const NewAppointmentContent: React.FC = () => {
 
   const clinicId = clinicIdVar();
 
-  const { data: clinicData } = useQuery<ClinicData, ClinicVar>(GET_CLINIC, {
-    variables: {
-      clinicId,
-    },
-  });
+  const { data: clinicData } = useQuery<GetClinic, GetClinicVariables>(
+    GET_CLINIC,
+    {
+      variables: {
+        clinicId,
+      },
+    }
+  );
 
-  const duration = clinicData?.clinic.settings.appointmentDuration;
+  const duration = clinicData?.clinic?.settings.appointmentDuration;
 
   const [isNewPatient, setNewPatient] = useState(false);
   const [patientData, setPatientData] = useState<Patient>({
@@ -85,7 +87,7 @@ const NewAppointmentContent: React.FC = () => {
     surname: '',
     nationalId: null,
     email: null,
-    dentistId: null,
+    dentistId: '',
   });
 
   const [appointmentData, setAppointmentData] = useState<Appointment>({
@@ -114,20 +116,20 @@ const NewAppointmentContent: React.FC = () => {
     loading: dentistLoading,
     data: dentistQuery,
     error: dentistsError,
-  } = useQuery<ClinicDentistsData, ClinicDentistVar>(GET_CLINIC_DENTISTS, {
+  } = useQuery<GetDentists, GetDentistsVariables>(GET_CLINIC_DENTISTS, {
     variables: {
       clinicId,
     },
     skip: clinicId === undefined,
   });
 
-  const dentists = dentistQuery && dentistQuery.clinicDentists;
+  const dentists = dentistQuery?.clinicDentists || [];
 
   const {
     data: treatmentQuery,
     loading: treatmentsLoading,
     error: treatmentsError,
-  } = useQuery<TreatmentData, TreatmentCategory>(GET_TREATMENTS);
+  } = useQuery<GetTreatments, GetTreatmentsVariables>(GET_TREATMENTS);
 
   const treatments = treatmentQuery && treatmentQuery.treatments;
 
@@ -157,22 +159,19 @@ const NewAppointmentContent: React.FC = () => {
   const [
     createAppointment,
     { error: createAppointmentError, loading: loadingCreateAppointment },
-  ] = useMutation<
-    { createAppointment: CreateAppointment },
+  ] = useMutation<CreateAppointment, CreateAppointmentVariables>(
+    CREATE_APPOINTMENT,
     {
-      appointmentData: CreateAppointmentInput;
-      newPatientData?: NewPatientDetails;
+      onCompleted() {
+        setCompleted(true);
+        setTimeout(() => {
+          setCompleted(false);
+          dispatch(openModal(false));
+          dispatch(setAvailableAppointments([]));
+        }, 2000);
+      },
     }
-  >(CREATE_APPOINTMENT, {
-    onCompleted() {
-      setCompleted(true);
-      setTimeout(() => {
-        setCompleted(false);
-        dispatch(openModal(false));
-        dispatch(setAvailableAppointments([]));
-      }, 2000);
-    },
-  });
+  );
 
   if (appointmentData.startAt && duration)
     appointmentData.endAt = addMinutes(

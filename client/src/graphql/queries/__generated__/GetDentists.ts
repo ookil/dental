@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL query operation: GetDentistsQuery
+// GraphQL query operation: GetDentists
 // ====================================================
 
-export interface GetDentistsQuery_clinicDentists {
+export interface GetDentists_clinicDentists {
   __typename: "Dentist";
   id: string;
   name: string;
@@ -16,10 +16,10 @@ export interface GetDentistsQuery_clinicDentists {
   nameWithSurname: string | null;
 }
 
-export interface GetDentistsQuery {
-  clinicDentists: GetDentistsQuery_clinicDentists[] | null;
+export interface GetDentists {
+  clinicDentists: GetDentists_clinicDentists[] | null;
 }
 
-export interface GetDentistsQueryVariables {
+export interface GetDentistsVariables {
   clinicId: string;
 }

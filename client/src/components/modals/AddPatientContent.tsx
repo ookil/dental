@@ -1,14 +1,8 @@
 import { useMutation, useQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react';
-import {
-  ClinicDentistsData,
-  ClinicDentistVar,
-  GET_CLINIC_DENTISTS,
-} from '../../graphql/queries/dentist';
+import { GET_CLINIC_DENTISTS } from '../../graphql/queries/dentist';
 import {
   ADD_PATIENT,
-  ClinicPatient,
-  NewPatientDetails,
 } from '../../graphql/queries/patient';
 import { openModal } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
@@ -18,14 +12,22 @@ import { PatientFormContent } from './PatientFormContent';
 import loadingGif from '../../images/loading.gif';
 import completedGif from '../../images/completed.gif';
 import { clinicIdVar } from '../../cache';
+import {
+  GetDentists,
+  GetDentistsVariables,
+} from '../../graphql/queries/__generated__/GetDentists';
+import {
+  AddPatient,
+  AddPatientVariables,
+} from '../../graphql/queries/__generated__/AddPatient';
 
 export type Patient = {
   [key: string]: string | number | null;
   name: string;
   surname: string;
-  nationalId: number | null;
+  nationalId: string | null;
   email: string | null;
-  dentistId: number | null;
+  dentistId: string;
 };
 
 const AddPatientContent: React.FC = () => {
@@ -37,14 +39,14 @@ const AddPatientContent: React.FC = () => {
     surname: '',
     nationalId: null,
     email: null,
-    dentistId: null,
+    dentistId: '',
   });
 
   const clinicId = clinicIdVar();
 
   const { loading: dentistsLoading, data } = useQuery<
-    ClinicDentistsData,
-    ClinicDentistVar
+    GetDentists,
+    GetDentistsVariables
   >(GET_CLINIC_DENTISTS, {
     variables: {
       clinicId: clinicId,
@@ -52,11 +54,11 @@ const AddPatientContent: React.FC = () => {
     skip: clinicId === undefined,
   });
 
-  const dentists = data && data.clinicDentists;
+  const dentists = data?.clinicDentists || [];
 
   const [addPatient, { error, loading: addPatientLoading }] = useMutation<
-    { createPatient: ClinicPatient },
-    { patientData: NewPatientDetails }
+    AddPatient,
+    AddPatientVariables
   >(ADD_PATIENT, {
     onCompleted() {
       setCompleted(true);

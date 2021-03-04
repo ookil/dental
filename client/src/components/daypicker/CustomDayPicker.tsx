@@ -22,11 +22,10 @@ import {
 import SelectedDaysDisplay from './SelectedDaysDisplay';
 import { useQuery } from '@apollo/client';
 import {
-  GET_WEEKLY_APPOINTMENTS,
-  WeeklyAppointmentsData,
-  WeeklyAppointmentsVars,
+  GET_WEEKLY_APPOINTMENTS
 } from '../../graphql/queries/appointments';
 import { clinicIdVar } from '../../cache';
+import { GetWeeklyAppointments, GetWeeklyAppointmentsVariables } from '../../graphql/queries/__generated__/GetWeeklyAppointments';
 
 function getWeekDays(week: Week) {
   const days = eachDayOfInterval(week);
@@ -47,7 +46,7 @@ type Week = {
 };
 
 type Props = {
-  dentistId: number | string;
+  dentistId: string;
 };
 
 const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
@@ -60,8 +59,8 @@ const CustomDayPicker: React.FC<Props> = ({ dentistId }) => {
   const clinicId = clinicIdVar();
 
   const { data: availableAppointments } = useQuery<
-    WeeklyAppointmentsData,
-    WeeklyAppointmentsVars
+    GetWeeklyAppointments,
+    GetWeeklyAppointmentsVariables
   >(GET_WEEKLY_APPOINTMENTS, {
     variables: {
       appointmentsInput: {

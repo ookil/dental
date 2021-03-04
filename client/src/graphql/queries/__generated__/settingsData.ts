@@ -4,10 +4,10 @@
 // This file was automatically generated and should not be edited.
 
 // ====================================================
-// GraphQL fragment: settingsData
+// GraphQL fragment: SettingsData
 // ====================================================
 
-export interface settingsData {
+export interface SettingsData {
   __typename: "ClinicSettings";
   clinicId: string;
   workOnSaturday: boolean;
