@@ -1,5 +1,5 @@
 import styled, { css } from 'styled-components';
-import { color, size } from '../../globalStyles';
+import { color } from '../../globalStyles';
 
 const {
   textPrimary,
@@ -98,16 +98,17 @@ export const SelectContainer = styled.div<{
   marginBottom?: number;
   marginTop?: number;
   sizing?: 'big' | 'small';
+  hiddenSize?: string;
 }>`
   width: ${({ sizing }) => (sizing === 'small' ? 'auto' : '100%')};
   margin-top: ${(props) => (props.marginTop ? `${props.marginTop}px` : 0)};
   margin-bottom: ${(props) =>
     props.marginBottom ? `${props.marginBottom}px` : '25px'};
-  ${({ sizing }) =>
-    sizing === 'small' &&
+
+  ${({ hiddenSize }) =>
+    hiddenSize &&
     css`
-      min-width: 100px;
-      @media (max-width: ${size.mobileL}) {
+      @media (max-width: ${hiddenSize}) {
         display: none;
       }
     `}
@@ -171,24 +172,39 @@ export const DropdownList = styled.ul.attrs(() => ({ tabIndex: -1 }))<{
   max-height: 160px;
   overflow: auto;
   position: absolute;
+  right: 0;
   z-index: 30;
   box-shadow: 3px 3px 5px rgba(0, 0, 0, 0.25), -3px 3px 5px rgba(0, 0, 0, 0.25);
   ${({ sizing }) =>
-    sizing === 'small' && 'background-color: white; outline: none;'}
+    sizing === 'small' &&
+    'background-color: white; outline: none; min-width: 180px; font-size: 12.5px;'}
 `;
 
-export const ListItem = styled.li<{ isActive?: boolean }>`
+export const ListItem = styled.li<{
+  isActive?: boolean;
+  sizing?: 'small' | 'big';
+}>`
   list-style: none;
   padding-left: 8px;
   width: 100%;
   line-height: 40px;
   cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
   background-color: ${(props) => (props.isActive ? blueSecondary : 'inherit')};
   color: ${(props) => (props.isActive ? 'white' : 'inherit')};
 
   &:hover {
     background-color: ${blueSecondary};
     color: white;
+  }
+
+  &::after {
+    content: '';
+    background: #dfdfdf;
+    display: block;
+    width: 90%;
+    height: 1px;
   }
 `;
 

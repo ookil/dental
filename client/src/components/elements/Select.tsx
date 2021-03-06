@@ -27,6 +27,8 @@ type Props = {
   initialValue?: string;
   sizing?: 'big' | 'small';
   handleSelectChange: (key: string, value: any) => void;
+  renderOverride?: () => JSX.Element;
+  hiddenSize?: string;
 };
 
 const Select: React.FC<Props> = ({
@@ -43,6 +45,8 @@ const Select: React.FC<Props> = ({
   initialValue,
   sizing,
   handleSelectChange,
+  renderOverride,
+  hiddenSize,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>();
 
@@ -68,6 +72,7 @@ const Select: React.FC<Props> = ({
       marginBottom={marginBottom}
       marginTop={marginTop}
       sizing={sizing}
+      hiddenSize={hiddenSize}
     >
       <Label sizing={sizing}>
         {label}
@@ -81,9 +86,13 @@ const Select: React.FC<Props> = ({
         <DropdownButton sizing={sizing}>
           <CollapseIcon />
         </DropdownButton>
-        <DisplayValue sizing={sizing}>
-          {isSelected ? isSelected : <span>{placeholder}</span>}
-        </DisplayValue>
+        {renderOverride ? (
+          renderOverride()
+        ) : (
+          <DisplayValue sizing={sizing}>
+            {isSelected ? isSelected : <span>{placeholder}</span>}
+          </DisplayValue>
+        )}
       </StyledSelect>
       {isOpen && (
         <DropdownListContainer>

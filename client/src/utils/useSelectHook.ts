@@ -10,16 +10,23 @@ export const useSelectHook = (
   initialValue?: string,
   filteredOptions?: any[] | null
 ) => {
-  const initialIndex = options?.findIndex((option) => {
-    if (displayValue) {
-      return option[displayValue] === initialValue;
-    }
-    return option === initialValue;
-  });
+  // if we provide initial value we have to finds it's index nad in situation when it was not found
+  // index is '-1', meaning nothiing is selected from the dropdown
+  let initialIndex;
+  if (options) {
+    initialIndex = options.findIndex((option) => {
+      if (displayValue) {
+        return option[displayValue] === initialValue;
+      }
+      return option === initialValue;
+    });
+  } else {
+    initialIndex = -1;
+  }
 
   const [isOpen, setIsOpen] = useState(false);
   const [isSelected, setSelected] = useState(initialValue);
-  const [selectedIndex, setSelectedIndex] = useState(initialIndex || -1);
+  const [selectedIndex, setSelectedIndex] = useState(initialIndex);
 
   const handleDropdown = () => setIsOpen(!isOpen);
   const handleSelect = useCallback(

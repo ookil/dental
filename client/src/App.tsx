@@ -19,11 +19,11 @@ import loadingGif from './images/loading.gif';
 import { GET_CLINIC } from './graphql/queries/clinic';
 import { clinicIdVar } from './cache';
 import MainContainer from './pages/MainContainer';
-import { LoggedUser } from './graphql/queries/__generated__/LoggedUser';
 import {
   GetClinic,
   GetClinicVariables,
 } from './graphql/queries/__generated__/GetClinic';
+import { LoggedUser } from './graphql/queries/__generated__/loggedUser';
 
 function App() {
   const { data, loading: userLoading } = useQuery<LoggedUser>(GET_LOGGED_USER);
