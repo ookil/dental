@@ -23,6 +23,15 @@ export enum TreatmentCategory {
 }
 
 /**
+ * Variables for appointments list
+ */
+export interface AppointmentsListInput {
+  clinicId: string;
+  dentistId: string;
+  date: any;
+}
+
+/**
  * Clinic options
  */
 export interface ClinicAppointmentsOptions {

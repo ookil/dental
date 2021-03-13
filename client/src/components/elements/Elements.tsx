@@ -35,7 +35,7 @@ export const Label = styled.div<{ sizing?: 'big' | 'small' }>`
   ${({ sizing }) =>
     sizing === 'big' &&
     css`
-      font-size: 15px;
+      font-size: 14px;
       text-transform: none;
       font-weight: 600;
     `}
@@ -70,10 +70,10 @@ const InputBox = css`
 `;
 
 const SizingBig = css`
-  height: 55px;
+  height: 45px;
   box-shadow: none;
   border-bottom: 1px solid ${bluePrimary};
-  font-size: 16px;
+  font-size: 14px;
 `;
 
 const SizingSmall = css`
@@ -137,7 +137,7 @@ export const DisplayValue = styled.p<{ sizing?: 'big' | 'small' }>`
   ${({ sizing }) =>
     sizing === 'big' &&
     css`
-      line-height: 55px;
+      line-height: 45px;
     `}
 
   span {

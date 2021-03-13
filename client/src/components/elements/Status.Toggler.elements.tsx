@@ -16,8 +16,8 @@ const SVG = styled.svg`
 
 const ConfirmSvg = ({ color, active }: { color: string; active: boolean }) => (
   <SVG
-    width='30'
-    height='30'
+    width='25'
+    height='25'
     viewBox='0 0 30 30'
     fill='none'
     xmlns='http://www.w3.org/2000/svg'
@@ -40,8 +40,8 @@ const ConfirmSvg = ({ color, active }: { color: string; active: boolean }) => (
 );
 
 const ButtonBox = styled.div<{ color: string; active: boolean }>`
-  width: 30px;
-  height: 30px;
+  width: 25px;
+  height: 25px;
   border-radius: 5px;
   background: ${({ color, active }) => (active ? color : '#ffffff')};
   box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.25);

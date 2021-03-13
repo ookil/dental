@@ -1,4 +1,5 @@
 import { InMemoryCache, makeVar, ReactiveVar } from '@apollo/client';
+import { GetAppointmentsList_appointmentsList } from './graphql/queries/__generated__/GetAppointmentsList';
 
 export const cache = new InMemoryCache({
   typePolicies: {
@@ -8,6 +9,23 @@ export const cache = new InMemoryCache({
           //keyArgs: ['clinicId'],
           merge(_, incoming) {
             return incoming;
+          },
+        },
+        appointmentsList: {
+          read(existing) {
+            if (existing) {
+              const dateMap = existing
+                .slice()
+                .map((appointment: GetAppointmentsList_appointmentsList) => {
+                  return {
+                    ...appointment,
+                    startAt: new Date(appointment.startAt),
+                    endAt: new Date(appointment.endAt),
+                  };
+                });
+              return dateMap;
+            }
+            return existing;
           },
         },
       },
@@ -32,6 +50,22 @@ export const cache = new InMemoryCache({
             const surname = readField('surname');
 
             return `${name} ${surname}`;
+          },
+        },
+      },
+    },
+    // servers returns info about appointment type as a date string, which creates some probles witch schedulers since it always expects to receive Date
+    // so after the appointment was fetched Apollo Client will handle creating Date object, that will be available across app
+    Appointment: {
+      fields: {
+        startAt: {
+          read: (startAt: string) => {
+            return new Date(startAt);
+          },
+        },
+        endAt: {
+          read: (endAt: string) => {
+            return new Date(endAt);
           },
         },
       },

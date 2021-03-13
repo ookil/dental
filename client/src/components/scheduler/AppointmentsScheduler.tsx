@@ -64,7 +64,7 @@ import {
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_APPOINTMENTS } from '../../graphql/queries/clinic';
 import { clinicIdVar } from '../../cache';
-import { BasicLayout } from './AppointmentForm';
+import { BasicLayout, Overlay } from './form/AppointmentForm';
 import {
   APPOINTMENTS_DELETE_SUB,
   APPOINTMENTS_SUBSCRIPTION,
@@ -426,8 +426,10 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
                 appointmentData={
                   props.appointmentData as GetClinicAppointments_clinicAppointments
                 }
+                currentDate={currentDate}
               />
             )}
+            overlayComponent={Overlay}
             booleanEditorComponent={() => null}
             textEditorComponent={() => null}
             dateEditorComponent={() => null}

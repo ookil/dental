@@ -1,9 +1,7 @@
 import { gql } from '@apollo/client';
 
 export const GET_WEEKLY_APPOINTMENTS = gql`
-  query GetWeeklyAppointments(
-    $appointmentsInput: WeeklyAppointmentsInput!
-  ) {
+  query GetWeeklyAppointments($appointmentsInput: WeeklyAppointmentsInput!) {
     weeklyAppointments(weeklyAppointmentsData: $appointmentsInput) {
       date
       appointments
@@ -86,6 +84,17 @@ export const UPDATE_APPOINTMENT = gql`
         nameWithSurname @client
       }
       dentistId
+    }
+  }
+`;
+
+export const GET_APPOINTMENTS_LIST = gql`
+  query GetAppointmentsList($searchData: AppointmentsListInput!) {
+    appointmentsList(searchData: $searchData) {
+      startAt
+      endAt
+      working
+      busy
     }
   }
 `;

@@ -21,12 +21,19 @@ import {
 import { Patient } from '../typeDefs/Patient';
 import {
   Appointment,
+  AppointmentsList,
   AppointmentStatus,
   AppointmentSubscription,
   WeeklyAppointments,
 } from '../typeDefs/Appointment';
 import { CreatePatientInput } from './patient';
-import { addMinutes, isBefore, setHours, setMinutes } from 'date-fns';
+import {
+  addMinutes,
+  areIntervalsOverlapping,
+  isBefore,
+  setHours,
+  setMinutes,
+} from 'date-fns';
 import { prisma } from '../context';
 import { AppointmentPayload } from 'src/subsciptions/appointments.types';
 import { APPOINTMENTS, APPOINTMENTS_DELETED } from '../utils/defaults';
@@ -119,6 +126,18 @@ export class WeeklyAppointmentsInput {
 
   @Field(() => ClinicAppointmentsOptions, { nullable: true })
   options?: ClinicAppointmentsOptions;
+}
+
+@InputType({ description: 'Variables for appointments list' })
+export class AppointmentsListInput {
+  @Field(() => ID)
+  clinicId: string | number;
+
+  @Field(() => ID)
+  dentistId: string | number;
+
+  @Field()
+  date: Date;
 }
 
 @Resolver(Appointment)
@@ -414,6 +433,120 @@ export class AppointmentResolver {
     }
     // this is the only setup that work, whatever else I tried to filter out past dates was problematioc because of timezones
     return results;
+  }
+
+  @Authorized()
+  @Query(() => [AppointmentsList])
+  async appointmentsList(
+    @Arg('searchData') searchData: AppointmentsListInput,
+    @Ctx() { prisma }: Context
+  ) {
+    if (typeof searchData.clinicId === 'string')
+      searchData.clinicId = parseInt(searchData.clinicId);
+
+    if (typeof searchData.dentistId === 'string')
+      searchData.dentistId = parseInt(searchData.dentistId);
+
+    const settings = await prisma.clinicSettings.findFirst({
+      where: {
+        clinicId: searchData.clinicId,
+      },
+    });
+
+    if (!settings) throw new Error('Missing clinic settings.');
+
+    const { date, dentistId } = searchData;
+
+    const {
+      appointmentDuration,
+      workStartHour,
+      workStartMinutes,
+      workEndHour,
+      workEndMinutes,
+    } = settings;
+
+    const startTime = setMinutes(
+      setHours(date, workStartHour),
+      workStartMinutes
+    );
+    const endTime = setMinutes(setHours(date, workEndHour), workEndMinutes);
+
+    const takenAppointments = await prisma.appointment.findMany({
+      where: {
+        AND: [
+          {
+            dentistId,
+          },
+          {
+            startAt: {
+              gte: startTime,
+            },
+          },
+          {
+            endAt: {
+              lte: endTime,
+            },
+          },
+        ],
+      },
+    });
+
+    let appointments: AppointmentsList[] = [
+      {
+        startAt: startTime,
+        endAt: setMinutes(startTime, appointmentDuration),
+        working: true,
+        busy: false,
+      },
+    ];
+
+    function addAppointmentDuration(
+      hourStart: Date,
+      hourEnd: Date,
+      durration: number,
+      appointmentsArr: AppointmentsList[]
+    ) {
+      const nextAppointment = addMinutes(hourStart, durration);
+
+      if (isBefore(nextAppointment, hourEnd)) {
+        appointmentsArr.push({
+          startAt: nextAppointment,
+          endAt: addMinutes(nextAppointment, durration),
+          working: true,
+          busy: false,
+        });
+        addAppointmentDuration(
+          nextAppointment,
+          hourEnd,
+          durration,
+          appointmentsArr
+        );
+      }
+    }
+
+    addAppointmentDuration(
+      startTime,
+      endTime,
+      appointmentDuration,
+      appointments
+    );
+
+    const applyBusy = appointments.map((item) => {
+      const { startAt, endAt } = item;
+
+      if (
+        takenAppointments.some(({ startAt: start2, endAt: end2 }) =>
+          areIntervalsOverlapping(
+            { start: startAt, end: endAt },
+            { start: start2, end: end2 }
+          )
+        )
+      )
+        return { ...item, busy: true };
+      else return item;
+    });
+
+    return applyBusy;
   }
 
   @Authorized()

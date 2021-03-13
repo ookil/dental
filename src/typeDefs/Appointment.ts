@@ -53,7 +53,6 @@ export class WeeklyAppointments {
   appointments: Date[];
 }
 
-
 @ObjectType()
 export class AppointmentSubscription {
   @Field()
@@ -61,4 +60,19 @@ export class AppointmentSubscription {
 
   @Field(() => Appointment)
   content: Appointment;
+}
+
+@ObjectType()
+export class AppointmentsList {
+  @Field()
+  startAt: Date;
+
+  @Field()
+  endAt: Date;
+
+  @Field()
+  working: boolean;
+
+  @Field()
+  busy: boolean;
 }

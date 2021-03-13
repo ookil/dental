@@ -72,7 +72,7 @@ const GlobalStyle = createGlobalStyle`
 
         &::-webkit-scrollbar-thumb {
           border-radius: 10px;
-          background-color: ${color.textSecondary};
+          background-color: #8db5f2;
         }
     }
 

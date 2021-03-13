@@ -50,7 +50,7 @@ export const ToolbarMenu = styled.div<{ isCollapsed: boolean }>`
   box-shadow: 4px 0px 4px rgba(0, 0, 0, 0.25);
   padding-top: 25px;
   transition: left 0.5s ease-in-out;
-  z-index: 9980;
+  z-index: 1290;
 
   &:hover ${CollapseButton} {
     opacity: 1;
