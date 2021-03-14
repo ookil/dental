@@ -33,6 +33,8 @@ import {
   GetAppointmentsList,
   GetAppointmentsListVariables,
 } from '../../../graphql/queries/__generated__/GetAppointmentsList';
+import { Gif, GifWrapper } from '../../elements/Elements';
+import loadingGif from '../../../images/loading.gif';
 
 export const Overlay = ({
   visible,
@@ -88,14 +90,21 @@ export const BasicLayout = ({
         date: currentDay,
       },
     },
+    fetchPolicy: 'network-only',
   });
 
   const dispatch = useAppDispatch();
   if (patientData?.clinicPatients)
     dispatch(setPatients(patientData.clinicPatients));
 
-  const onCustomChange = (key: string, value: string | number) =>
+  const onCustomChange = (key: string, value: string | number) => {
     onFieldChange({ [key]: value });
+  };
+
+  const onDentistChange = (key: string, value: string | number) => {
+    onFieldChange({ [key]: value });
+    setDentistId(value);
+  };
 
   return (
     <StyledLayout
@@ -134,7 +143,7 @@ export const BasicLayout = ({
             displayValue='text'
             options={resources[0].instances}
             initialValue={appointmentResources[0].text}
-            handleSelectChange={onCustomChange}
+            handleSelectChange={onDentistChange}
             sizing='big'
           />
           <StatusToggler
@@ -155,6 +164,11 @@ export const BasicLayout = ({
           />
         </LeftCol>
         <RightCol>
+          {loading && (
+            <GifWrapper>
+              <Gif src={loadingGif} />
+            </GifWrapper>
+          )}
           {timesData?.appointmentsList && (
             <HoursList
               startDate={appointmentData.startDate}

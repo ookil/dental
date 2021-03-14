@@ -31,8 +31,12 @@ import {
   addMinutes,
   areIntervalsOverlapping,
   isBefore,
+  parseISO,
+  set,
   setHours,
+  setMilliseconds,
   setMinutes,
+  setSeconds,
 } from 'date-fns';
 import { prisma } from '../context';
 import { AppointmentPayload } from 'src/subsciptions/appointments.types';
@@ -465,11 +469,18 @@ export class AppointmentResolver {
       workEndMinutes,
     } = settings;
 
-    const startTime = setMinutes(
-      setHours(date, workStartHour),
-      workStartMinutes
-    );
-    const endTime = setMinutes(setHours(date, workEndHour), workEndMinutes);
+    const startTime = set(date, {
+      hours: workStartHour,
+      minutes: workStartMinutes,
+      seconds: 0,
+      milliseconds: 0,
+    });
+    const endTime = set(date, {
+      hours: workEndHour,
+      minutes: workEndMinutes,
+      seconds: 0,
+      milliseconds: 0,
+    });
 
     const takenAppointments = await prisma.appointment.findMany({
       where: {
@@ -533,14 +544,22 @@ export class AppointmentResolver {
 
     const applyBusy = appointments.map((item) => {
       const { startAt, endAt } = item;
+      const roundedStart = set(startAt, { seconds: 0, milliseconds: 0 });
+      const roundedEnd = set(endAt, { seconds: 0, milliseconds: 0 });
 
       if (
-        takenAppointments.some(({ startAt: start2, endAt: end2 }) =>
-          areIntervalsOverlapping(
-            { start: startAt, end: endAt },
-            { start: start2, end: end2 }
-          )
-        )
+        takenAppointments.some(({ startAt: start2, endAt: end2 }) => {
+          const roundedStartTaken = set(start2, {
+            seconds: 0,
+            milliseconds: 0,
+          });
+          const roundedEndTaken = set(end2, { seconds: 0, milliseconds: 0 });
+
+          return areIntervalsOverlapping(
+            { start: roundedStart, end: roundedEnd },
+            { start: roundedStartTaken, end: roundedEndTaken }
+          );
+        })
       )
         return { ...item, busy: true };
       else return item;

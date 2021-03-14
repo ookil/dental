@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import Modal from 'styled-react-modal';
 import { color } from '../../../globalStyles';
 
-const { bgSecondary, bluePrimary, pinkCancel } = color;
+const { bgSecondary, bluePrimary} = color;
 
 export const ModalForm = Modal.styled`
   height: 80%;

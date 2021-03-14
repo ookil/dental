@@ -15,9 +15,9 @@ import {
   Toolbar,
   ViewSwitcher,
   WeekView,
+  DragDropProvider,
 } from '@devexpress/dx-react-scheduler-material-ui';
 import {
-  DragDropProvider,
   EditingState,
   GroupingState,
   IntegratedEditing,
@@ -407,11 +407,10 @@ const AppointmentsScheduler = ({ dentists }: SchedulerProps) => {
             showDeleteButton
           />
           <DragDropProvider
-            allowResize={() => false}
+            allowResize={() => true}
             sourceAppointmentComponent={SourceAppointment}
             draftAppointmentComponent={DraftAppointment}
             containerComponent={DragContainer}
-            resizeComponent={() => null}
           />
           <CurrentTimeIndicator
             shadePreviousCells={true}

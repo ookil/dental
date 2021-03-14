@@ -191,7 +191,7 @@ export const AppointmentCell = ({
     return (
       <MonthAppointmentCell
         data={data.appointmentsList}
-        onClick={() => handleClick(parseISO(data.startDate))}
+        onClick={() => handleClick(data.startDate)}
         isShaded={isShaded}
       />
     );

@@ -199,13 +199,17 @@ export const ListItem = styled.li<{
     color: white;
   }
 
-  &::after {
-    content: '';
-    background: #dfdfdf;
-    display: block;
-    width: 90%;
-    height: 1px;
-  }
+  ${({ sizing }) =>
+    sizing === 'small' &&
+    `
+      &::after {
+        content: '';
+        background: #dfdfdf;
+        display: block;
+        width: 90%;
+        height: 1px;
+      }
+  `}
 `;
 
 export const Button = styled.button<{ primary?: boolean }>`

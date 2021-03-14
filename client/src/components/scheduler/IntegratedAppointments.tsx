@@ -36,9 +36,7 @@ const sortAppointments = (
 ) => {
   return timeTableAppointments
     .slice()
-    .sort((a, b) =>
-      compareAsc(parseISO(a.dataItem.startDate), parseISO(b.dataItem.startDate))
-    );
+    .sort((a, b) => compareAsc(a.dataItem.startDate, b.dataItem.startDate));
 };
 
 const groupBySameDay = (appointments: TimeTableAppointmentProps[]) => {
@@ -70,8 +68,8 @@ const groupBySameDay = (appointments: TimeTableAppointmentProps[]) => {
     for (let index = 1; index < appointments.length; index++) {
       if (
         isSameDay(
-          parseISO(currentDay.dataItem.startDate),
-          parseISO(appointments[index].dataItem.startDate)
+          currentDay.dataItem.startDate,
+          appointments[index].dataItem.startDate
         )
       ) {
         day.dataItem.appointmentsList = [
@@ -109,6 +107,7 @@ const sliceAppointments = ({
   if (currentView.type !== 'month') return timeTableAppointments;
 
   const sortedAppointments = timeTableAppointments.map(sortAppointments);
+
   const groupedAppointments = sortedAppointments.map(groupBySameDay);
 
   return groupedAppointments;
