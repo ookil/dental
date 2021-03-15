@@ -28,7 +28,7 @@ export const ModalBackground = styled.div`
 export const StyledModal: any = Modal.styled`
   height: auto;
 /*   max-height: 96%; */
-  width: 400px;
+  width: 450px;
   max-width: 90%;
   border-radius: 15px;
   padding: 20px;

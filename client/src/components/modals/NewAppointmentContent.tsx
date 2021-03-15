@@ -5,9 +5,7 @@ import { useSelector } from 'react-redux';
 import { CREATE_APPOINTMENT } from '../../graphql/queries/appointments';
 import { GET_CLINIC_DENTISTS } from '../../graphql/queries/dentist';
 import { GET_CLINIC_PATIENTS } from '../../graphql/queries/patient';
-import {
-  GET_TREATMENTS
-} from '../../graphql/queries/treatment';
+import { GET_TREATMENTS } from '../../graphql/queries/treatment';
 import {
   openModal,
   setAvailableAppointments,
@@ -136,7 +134,7 @@ const NewAppointmentContent: React.FC = () => {
   const handleNewPatient = () => setNewPatient(!isNewPatient);
 
   //handles new patient inputs
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handlePatientChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPatientData({
       ...patientData,
       [e.target.name]: e.target.value,
@@ -180,6 +178,7 @@ const NewAppointmentContent: React.FC = () => {
     ).toISOString();
 
   const handleSubmit = (e: React.SyntheticEvent) => {
+    setErrors([]);
     e.preventDefault();
     if (appointmentData.dentistId === '')
       setErrors((errors) => [...errors, 'dentist']);
@@ -199,6 +198,7 @@ const NewAppointmentContent: React.FC = () => {
         : false;
 
     if (isNewPatient) {
+      console.log('newPatient');
       if (patientData.name === '') setErrors((errors) => [...errors, 'name']);
       if (patientData.surname === '')
         setErrors((errors) => [...errors, 'surname']);
@@ -213,6 +213,7 @@ const NewAppointmentContent: React.FC = () => {
         patientData.dentistId &&
         isAppointmentData
       ) {
+        console.log('create');
         createAppointment({
           variables: {
             appointmentData: { ...appointmentData, clinicId },
@@ -221,7 +222,7 @@ const NewAppointmentContent: React.FC = () => {
         });
       }
     } else {
-      if (isAppointmentData) {
+      if (appointmentData.patientId && isAppointmentData) {
         createAppointment({
           variables: {
             appointmentData: { ...appointmentData, clinicId },
@@ -284,9 +285,15 @@ const NewAppointmentContent: React.FC = () => {
 
         {isNewPatient && (
           <PatientFormContent
-            handleChange={handleChange}
-            handleSelectChange={handleSelectChange}
+            handleChange={handlePatientChange}
+            handleSelectChange={(key: string, value: number | string) => {
+              setPatientData((prevState) => ({
+                ...prevState,
+                [key]: value,
+              }));
+            }}
             options={dentists}
+            errors={errors}
           />
         )}
         <MoreOptionButton onClick={handleNewPatient}>

@@ -24,22 +24,20 @@ export const PatientFormContent = ({
       label='name'
       name='name'
       type='text'
-      required
       minLength={3}
       maxLength={30}
       isError={errors?.includes('name')}
-      errorMsg='Must be shorther than or equal 10 characters'
+      errorMsg='Please provide name shorther than or equal 30 characters'
       onChange={(e) => handleChange(e)}
     />
     <Input
       label='surname'
       name='surname'
       type='text'
-      required
       minLength={3}
       maxLength={30}
       isError={errors?.includes('surname')}
-      errorMsg='Must be shorther than or equal 10 characters'
+      errorMsg='Please provide surname shorther than or equal 30 characters'
       onChange={(e) => handleChange(e)}
     />
     <Input
@@ -47,11 +45,10 @@ export const PatientFormContent = ({
       name='nationalId'
       type='text'
       pattern='[0-9]*'
-      required
       minLength={3}
       maxLength={30}
       isError={errors?.includes('nationalId')}
-      errorMsg='Must be shorther than or equal 10 characters'
+      errorMsg='Please provide ID number shorther than or equal 30 characters'
       onChange={(e) => handleChange(e)}
     />
     <Input
