@@ -135,6 +135,9 @@ const AddPatientContent: React.FC = () => {
     );
   }
 
+  console.log('render');
+
+
   return (
     <>
       <ModalTitle>Add Patient</ModalTitle>

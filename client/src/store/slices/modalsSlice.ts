@@ -4,7 +4,6 @@ import { GetPatients_clinicPatients } from '../../graphql/queries/__generated__/
 
 type ModalsName = 'NEW_APPOINTMENT' | 'ADD_PATIENT' | false;
 
-
 type AvailableAppointment = {
   dateString: Date;
   formatedDate: string;

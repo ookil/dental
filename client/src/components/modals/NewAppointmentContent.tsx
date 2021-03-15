@@ -1,12 +1,13 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { addMinutes } from 'date-fns';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { CREATE_APPOINTMENT } from '../../graphql/queries/appointments';
 import { GET_CLINIC_DENTISTS } from '../../graphql/queries/dentist';
 import { GET_CLINIC_PATIENTS } from '../../graphql/queries/patient';
 import { GET_TREATMENTS } from '../../graphql/queries/treatment';
 import {
+  clearFilteredPatients,
   openModal,
   setAvailableAppointments,
   setPatients,
@@ -108,7 +109,13 @@ const NewAppointmentContent: React.FC = () => {
   });
 
   const patients = (patientQuery && patientQuery.clinicPatients) || undefined;
-  if (patients) dispatch(setPatients(patients));
+
+  useEffect(() => {
+    if (patients) {
+      dispatch(clearFilteredPatients());
+      dispatch(setPatients(patients));
+    }
+  }, [patients, dispatch]);
 
   const {
     loading: dentistLoading,

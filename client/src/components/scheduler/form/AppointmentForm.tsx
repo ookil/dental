@@ -14,10 +14,13 @@ import {
 } from '../../../graphql/queries/__generated__/GetTreatments';
 import Select from '../../elements/Select';
 import SelectWithInput from '../../elements/SelectWithInput';
-import { setPatients } from '../../../store/slices/modalsSlice';
+import {
+  clearFilteredPatients,
+  setPatients,
+} from '../../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../../store/store';
 import StatusToggler from '../../elements/StatusToggler';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Box,
   LeftCol,
@@ -94,8 +97,15 @@ export const BasicLayout = ({
   });
 
   const dispatch = useAppDispatch();
-  if (patientData?.clinicPatients)
-    dispatch(setPatients(patientData.clinicPatients));
+
+  const patients = (patientData && patientData.clinicPatients) || undefined;
+
+  useEffect(() => {
+    if (patients) {
+      dispatch(clearFilteredPatients());
+      dispatch(setPatients(patients));
+    }
+  }, [patients, dispatch]);
 
   const onCustomChange = (key: string, value: string | number) => {
     onFieldChange({ [key]: value });
@@ -119,7 +129,7 @@ export const BasicLayout = ({
         fieldName='patientId'
         readFrom='id'
         displayValue='nameWithSurname'
-        options={patientData?.clinicPatients || []}
+        options={patients}
         initialValue={appointmentData?.patient?.nameWithSurname || ''}
         handleSelectChange={onCustomChange}
         sizing='big'
