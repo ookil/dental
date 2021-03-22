@@ -6,6 +6,7 @@ export const color = {
   bluePrimary: '#337AE3',
   blueSecondary: '#7EBFFB',
   blueTetriary: '#BCCEE8',
+  blueHover: 'rgba(222,235,255,0.9)',
   blueLight: '#d6e7ff',
   greenConfirm: '#63b448',
   lightGreen: '#86e986',
@@ -64,9 +65,10 @@ const GlobalStyle = createGlobalStyle`
         font-family: 'Montserrat', sans-serif;
         scrollbar-color: ${color.textSecondary} transparent;
         scrollbar-width: thin;
+        font-size: 15px;
 
         &::-webkit-scrollbar {
-          width: 3px;
+          width: 5px;
           height: 5px;
         }
 

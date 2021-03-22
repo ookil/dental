@@ -6,6 +6,7 @@ const {
   textSecondary,
   bluePrimary,
   blueSecondary,
+  bgPrimary,
   bgSecondary,
   greenConfirm,
   pinkCancel,
@@ -250,4 +251,29 @@ export const Gif = styled.img`
   height: 60%;
   max-width: 100px;
   max-height: 100px;
+`;
+
+///////////////////////////////////////////////////
+/////                  FORM                   /////
+///////////////////////////////////////////////////
+
+export const Form = styled.form`
+  height: 55%;
+`;
+
+export const StyledSearch = styled.input`
+  border-radius: 5px;
+  width: 250px;
+  height: 100%;
+  color: ${textPrimary};
+  border: 1px solid ${bgSecondary};
+  padding-left: 0.4em;
+
+  &:focus {
+    color: #495057;
+    background-color: #fff;
+    border-color: #80bdff;
+    outline: 0;
+    box-shadow: 0 0 0 0.2rem rgb(0 123 255 / 25%);
+  }
 `;
