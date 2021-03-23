@@ -75,19 +75,33 @@ model Assistant {
 }
 
 model Patient {
-  id           Int           @id @default(autoincrement())
+  id           Int             @id @default(autoincrement())
   name         String
   surname      String
-  email        String?       @unique
-  nationalId   String?       @unique
-  active       Boolean       @default(true) // false - means he's archived
-  dentist      Dentist?      @relation(fields: [dentistId], references: [id])
+  nationalId   String?         @unique
+  bday         DateTime?
+  email        String?         @unique
+  mobile       String?
+  phone        String?
+  address      PatientAddress?
+  active       Boolean         @default(true) // false - means he's archived
+  dentist      Dentist?        @relation(fields: [dentistId], references: [id])
   dentistId    Int?
   appointments Appointment[]
-  clinic       Clinic?       @relation(fields: [clinicId], references: [id])
+  clinic       Clinic?         @relation(fields: [clinicId], references: [id])
   clinicId     Int?
   patientChart ChartRecord[]
   patientTeeth Teeth[]
+}
+
+model PatientAddress {
+  patient   Patient @relation(fields: [patientId], references: [id])
+  patientId Int     @id
+  street    String?
+  houseNum  String?
+  city      String?
+  zipCode   String?
+  country   String?
 }
 
 model Teeth {

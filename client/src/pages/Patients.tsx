@@ -14,7 +14,7 @@ const Patients: React.FC = () => {
   return (
     <div style={{ height: '100%' }}>
       <Header>
-        <PatientCount count={0} />
+        <PatientCount count={100} />
         <Separator />
         <AddPatientButton />
         <Separator />
@@ -25,7 +25,7 @@ const Patients: React.FC = () => {
           placeholder='Search...'
         />
       </Header>
-      <PatientsGrid searchQuery={searchQuery} />
+      <PatientsGrid searchQuery={searchQuery} totalCount={100} />
     </div>
   );
 };

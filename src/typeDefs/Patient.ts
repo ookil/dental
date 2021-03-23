@@ -1,9 +1,32 @@
 import 'reflect-metadata';
-import { ObjectType, Field, ID } from 'type-graphql';
+import { ObjectType, Field, ID, registerEnumType } from 'type-graphql';
 import { IsEmail, Length } from 'class-validator';
 import { Dentist } from './Dentist';
 import { Appointment } from './Appointment';
 import { ChartRecord } from './ChartRecord';
+
+@ObjectType()
+class PatientAddress {
+  @Field({ nullable: true })
+  @Length(3, 100)
+  street?: string;
+
+  @Field({ nullable: true })
+  @Length(1, 100)
+  houseNum: string;
+
+  @Field({ nullable: true })
+  @Length(1, 100)
+  city: string;
+
+  @Field({ nullable: true })
+  @Length(1, 100)
+  zipCode: string;
+
+  @Field({ nullable: true })
+  @Length(1, 100)
+  country: string;
+}
 
 @ObjectType()
 export class Patient {
@@ -19,13 +42,27 @@ export class Patient {
   surname: string;
 
   @Field(() => String, { nullable: true })
+  @Length(3, 30)
+  nationalId?: string | null;
+
+  @Field(() => Date, { nullable: true })
+  bday?: Date | null;
+
+  @Field(() => String, { nullable: true })
   @IsEmail()
   @Length(3, 30)
   email?: string | null;
 
   @Field(() => String, { nullable: true })
-  @Length(3, 30)
-  nationalId?: string | null;
+  @Length(3, 100)
+  mobile?: string | null;
+
+  @Field(() => String, { nullable: true })
+  @Length(3, 100)
+  phone?: string | null;
+
+  @Field(() => PatientAddress)
+  address?: PatientAddress;
 
   @Field()
   active: boolean;
@@ -39,3 +76,23 @@ export class Patient {
   @Field(() => [ChartRecord], { nullable: true })
   patientChart?: ChartRecord[];
 }
+
+export enum Sort {
+  asc = 'asc',
+  desc = 'desc',
+}
+
+registerEnumType(Sort, { name: 'Sort' });
+
+/* @ObjectType()
+export class PatientsConnection {
+  @Field(() => String, { nullable: true })
+  cursor?: string;
+
+  @Field()
+  hasMore: boolean;
+
+  @Field(() => [Patient])
+  patients: Patient[];
+}
+ */

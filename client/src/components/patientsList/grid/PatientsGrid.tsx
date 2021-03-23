@@ -8,7 +8,7 @@ import {
 } from '@devexpress/dx-react-grid-material-ui';
 import {
   IntegratedFiltering,
-  IntegratedPaging,
+  CustomPaging,
   IntegratedSelection,
   IntegratedSorting,
   PagingState,
@@ -20,150 +20,22 @@ import {
   Cell,
   Header,
   HeaderSelectionCell,
+  LoadingWrapper,
   Root,
   Row,
   SelectionCell,
 } from './Grid.elements';
 import MoreButton from '../../elements/MoreButton';
-
-const data = [
-  {
-    id: '1',
-    name: 'Zbyszek',
-    surname: 'Kowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: '23/12/2021',
-  },
-  {
-    id: '2',
-    name: 'Zbyszek',
-    surname: 'Aaaowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: '12 / 03 / 2021',
-  },
-  {
-    id: '3',
-    name: 'Zbyszek',
-    surname: 'Znweiwalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '4',
-    name: 'Zbyszek',
-    surname: 'Malkwalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '5',
-    name: 'Zbyszek',
-    surname: 'Wifdkalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '6',
-    name: 'Zbyszek',
-    surname: 'Zaifdlski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '7',
-    name: 'Zbyszek',
-    surname: 'Gudski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '8',
-    name: 'Zbyszek',
-    surname: 'Kowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '9',
-    name: 'Zbyszek',
-    surname: 'Kowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '10',
-    name: 'Zbyszek',
-    surname: 'Kowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '11',
-    name: 'Zbyszek',
-    surname: 'Kowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '12',
-    name: 'Zbyszek',
-    surname: 'Kowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '13',
-    name: 'Zbyszek',
-    surname: 'Kowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '14',
-    name: 'Zbyszek',
-    surname: 'Kowalski',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '15',
-    name: 'Zbyszek',
-    surname: 'Akjfg',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '16',
-    name: 'Zbyszek',
-    surname: 'Hjdsu',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: 'Mon 23',
-  },
-  {
-    id: '17',
-    name: 'Zbyszek',
-    surname: 'Ziaj',
-    number: '435 654 356',
-    nextApt: '1',
-    lastApt: '23/12/2021',
-  },
-];
+import { useQuery } from '@apollo/client';
+import { GET_OFFSET_PATIENTS } from '../../../graphql/queries/patient';
+import {
+  GetOffsetPatients,
+  GetOffsetPatientsVariables,
+} from '../../../graphql/queries/__generated__/GetOffsetPatients';
+import { clinicIdVar } from '../../../cache';
+import { format } from 'date-fns';
+import { Gif } from '../../elements/Elements';
+import loadingGif from '../../../images/loading.gif';
 
 type ColumnExtensionsType = {
   columnName: string;
@@ -172,51 +44,90 @@ type ColumnExtensionsType = {
 };
 
 const tableColumnExtensions: ColumnExtensionsType[] = [
-  { columnName: 'lastApt', width: '160px', align: 'center' },
+  { columnName: 'appointments', width: '160px', align: 'center' },
   { columnName: 'id', width: '60px', align: 'center' },
+];
+
+const sortingColumns = [
+  { columnName: 'name', sortingEnabled: true },
+  { columnName: 'surname', sortingEnabled: true },
+  { columnName: 'bday', sortingEnabled: true },
+  { columnName: 'appointments', sortingEnabled: true },
 ];
 
 type Props = {
   searchQuery: string;
+  totalCount: number;
 };
 
-const PatientsGrid = ({ searchQuery }: Props) => {
+const PatientsGrid = ({ searchQuery, totalCount }: Props) => {
   const [columns] = useState([
     { name: 'surname', title: 'Last Name' },
     { name: 'name', title: 'First Name' },
-    { name: 'number', title: 'Phone Number' },
+    { name: 'mobile', title: 'Phone Number' },
     { name: 'bday', title: 'Birth Date' },
-    { name: 'lastApt', title: 'Recent visit' },
+    {
+      name: 'appointments',
+      title: 'Recent visit',
+      getCellValue: (row: any) =>
+        format(row.appointments[0].endAt, 'dd/MM/yyyy'),
+    },
     { name: 'id', title: ' ', getCellValue: () => <MoreButton /> },
   ]);
-  const [rows] = useState(data);
-  const [currentPage, setCurrentPage] = useState(1);
+
+  const [currentPage, setCurrentPage] = useState(0);
+  const [pageSize] = useState(20);
+
+  const [sorting, setSorting] = useState<
+    { columnName: string; direction: 'asc' | 'desc' }[]
+  >([{ columnName: 'surname', direction: 'asc' }]);
+
   const [selection, setSelection] = useState<(string | number)[] | undefined>(
     []
   );
+
+  const clinicId = clinicIdVar();
+
+  const { data, loading } = useQuery<
+    GetOffsetPatients,
+    GetOffsetPatientsVariables
+  >(GET_OFFSET_PATIENTS, {
+    variables: {
+      patientsVar: {
+        clinicId,
+        currentPage,
+        pageSize,
+        orderBy: { [sorting[0].columnName]: sorting[0].direction },
+      },
+    },
+  });
+
+  const rows = data?.getOffsetPatients || [];
 
   return (
     <Root>
       <Grid columns={columns} rows={rows}>
         <SortingState
-          defaultSorting={[{ columnName: 'surname', direction: 'asc' }]}
+          sorting={sorting}
+          onSortingChange={setSorting}
+          columnSortingEnabled={false}
+          columnExtensions={sortingColumns}
         />
         <IntegratedSorting />
 
         <SearchState value={searchQuery} />
-        <IntegratedFiltering />
 
         <PagingState
           currentPage={currentPage}
           onCurrentPageChange={setCurrentPage}
-          pageSize={20}
+          pageSize={pageSize}
         />
         <SelectionState
           selection={selection}
           onSelectionChange={setSelection}
         />
 
-        <IntegratedPaging />
+        <CustomPaging totalCount={totalCount} />
         <IntegratedSelection />
 
         <Table
@@ -234,6 +145,11 @@ const PatientsGrid = ({ searchQuery }: Props) => {
 
         <PagingPanel />
       </Grid>
+      {loading && (
+        <LoadingWrapper>
+          <Gif src={loadingGif} />
+        </LoadingWrapper>
+      )}
     </Root>
   );
 };

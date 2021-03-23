@@ -31,12 +31,9 @@ import {
   addMinutes,
   areIntervalsOverlapping,
   isBefore,
-  parseISO,
   set,
   setHours,
-  setMilliseconds,
   setMinutes,
-  setSeconds,
 } from 'date-fns';
 import { prisma } from '../context';
 import { AppointmentPayload } from 'src/subsciptions/appointments.types';

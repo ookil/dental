@@ -2,12 +2,14 @@ import { Table, TableSelection } from '@devexpress/dx-react-grid-material-ui';
 import { Link, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { color } from '../../../globalStyles';
+import { GifWrapper } from '../../elements/Elements';
 
 const { bluePrimary, blueHover } = color;
 
 export const Root = styled.div`
   height: calc(100% - 55px);
   width: 100%;
+  position: relative;
 
   div[class*='RootBase-root'] {
     height: 100%;
@@ -109,6 +111,7 @@ export const Cell = (props: Table.DataCellProps) => {
 const StyledSelection = styled(TableSelection.Cell)`
   && {
     border-bottom: none;
+    border-right: 1px solid rgba(224, 224, 224, 1);
 
     span {
       color: ${({ selected }) => selected && bluePrimary};
@@ -131,3 +134,9 @@ export const SelectionCell = (props: TableSelection.CellProps) => (
 export const HeaderSelectionCell = (props: TableSelection.HeaderCellProps) => (
   <StyledHeaderCell {...props} />
 );
+
+export const LoadingWrapper = styled(GifWrapper)`
+  position: absolute;
+  top: 0;
+  background: rgb(171 171 171 / 31%);
+`;

@@ -79,6 +79,26 @@ export interface GetAppointmentsInput {
 }
 
 /**
+ * Get paginnated & sorted patients
+ */
+export interface GetPatientsInput {
+  clinicId: string;
+  pageSize: number;
+  currentPage: number;
+  orderBy: PatientsOrderBy;
+}
+
+/**
+ * Sorting patients
+ */
+export interface PatientsOrderBy {
+  name?: string | null;
+  surname?: string | null;
+  bday?: string | null;
+  appointments?: string | null;
+}
+
+/**
  * Update appointment data
  */
 export interface UpdateAppointmentInput {

@@ -23,3 +23,19 @@ export const ADD_PATIENT = gql`
     }
   }
 `;
+
+export const GET_OFFSET_PATIENTS = gql`
+  query GetOffsetPatients($patientsVar: GetPatientsInput!) {
+  getOffsetPatients(patientsVar: $patientsVar) {
+      id
+      name
+      surname
+      bday
+      mobile
+      appointments {
+        id
+        endAt
+      }
+    }
+  }
+` 
