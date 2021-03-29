@@ -305,7 +305,12 @@ export class PatientResolver {
       take: pageSize,
     });
 
-    const patientCount = allPatients.length;
+    const patientCount = await prisma.patient.count({
+      where: {
+        ...where,
+        clinicId: parseInt(clinicId),
+      },
+    });
 
     return {
       patients: allPatients,

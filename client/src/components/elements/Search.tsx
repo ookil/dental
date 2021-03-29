@@ -1,19 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, StyledSearch } from './Elements';
 
 interface Props extends React.InputHTMLAttributes<HTMLInputElement> {
-  onEnter: () => void;
+  onEnter: (value: any) => void;
 }
 
-const Search: React.FC<Props> = ({ onEnter, ...inputProps }) => {
+const Search: React.FC<Props> = ({ onEnter}) => {
+  const [value, setValue] = useState('');
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    onEnter()
+    onEnter(value);
   };
 
   return (
     <Form onSubmit={handleSubmit}>
-      <StyledSearch {...inputProps} />
+      <StyledSearch value={value} onChange={(e) => setValue(e.target.value)} />
     </Form>
   );
 };

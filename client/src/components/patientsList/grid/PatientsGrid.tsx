@@ -25,13 +25,9 @@ import {
   SelectionCell,
 } from './Grid.elements';
 import MoreButton from '../../elements/MoreButton';
-import { useQuery } from '@apollo/client';
-import { GET_OFFSET_PATIENTS } from '../../../graphql/queries/patient';
 import {
-  GetOffsetPatients,
-  GetOffsetPatientsVariables,
+  GetOffsetPatients_getOffsetPatients_patients,
 } from '../../../graphql/queries/__generated__/GetOffsetPatients';
-import { clinicIdVar } from '../../../cache';
 import { format } from 'date-fns';
 import { Gif } from '../../elements/Elements';
 import loadingGif from '../../../images/loading.gif';
@@ -57,9 +53,38 @@ const sortingColumns = [
 type Props = {
   searchQuery: string;
   totalCount: number;
+  paging: {
+    currentPage: number;
+    setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  };
+  pageSize: number;
+  sort: {
+    sorting: {
+      columnName: string;
+      direction: 'asc' | 'desc';
+    }[];
+    setSorting: React.Dispatch<
+      React.SetStateAction<
+        {
+          columnName: string;
+          direction: 'asc' | 'desc';
+        }[]
+      >
+    >;
+  };
+  rows: GetOffsetPatients_getOffsetPatients_patients[];
+  loading: boolean;
 };
 
-const PatientsGrid = ({ searchQuery, totalCount }: Props) => {
+const PatientsGrid = ({
+  searchQuery,
+  totalCount,
+  pageSize,
+  rows,
+  paging: { currentPage, setCurrentPage },
+  sort: { setSorting, sorting },
+  loading,
+}: Props) => {
   const [columns] = useState([
     { name: 'surname', title: 'Last Name' },
     { name: 'name', title: 'First Name' },
@@ -76,35 +101,9 @@ const PatientsGrid = ({ searchQuery, totalCount }: Props) => {
     { name: 'id', title: ' ', getCellValue: () => <MoreButton /> },
   ]);
 
-  const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(20);
-
-  const [sorting, setSorting] = useState<
-    { columnName: string; direction: 'asc' | 'desc' }[]
-  >([{ columnName: 'surname', direction: 'asc' }]);
-
   const [selection, setSelection] = useState<(string | number)[] | undefined>(
     []
   );
-
-  const clinicId = clinicIdVar();
-
-  const { data, loading } = useQuery<
-    GetOffsetPatients,
-    GetOffsetPatientsVariables
-  >(GET_OFFSET_PATIENTS, {
-    variables: {
-      patientsVar: {
-        clinicId,
-        currentPage,
-        pageSize,
-        orderBy: { [sorting[0].columnName]: sorting[0].direction },
-        search: '',
-      },
-    },
-  });
-
-  const rows = data?.getOffsetPatients || [];
 
   return (
     <Root>

@@ -86,7 +86,7 @@ registerEnumType(Sort, { name: 'Sort' });
 
 @ObjectType()
 export class PatientsList {
-  @Field()
+  @Field(() => [Patient])
   patients: Patient[];
 
   @Field()

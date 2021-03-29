@@ -1,5 +1,5 @@
 import { Table, TableSelection } from '@devexpress/dx-react-grid-material-ui';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { color } from '../../../globalStyles';
 import { GifWrapper } from '../../elements/Elements';
@@ -92,7 +92,6 @@ const VisitCell = styled(StyledCell)`
 
 export const Cell = (props: Table.DataCellProps) => {
   const { column, row } = props;
-  console.log(row);
   const history = useHistory();
   if (column.name === 'appointments' && row.appointments.length > 0) {
     return <VisitCell {...props} onClick={() => alert('vist')} />;

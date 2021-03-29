@@ -86,7 +86,7 @@ export interface GetPatientsInput {
   pageSize: number;
   currentPage: number;
   orderBy: PatientsOrderBy;
-  search: string;
+  search?: string | null;
 }
 
 /**

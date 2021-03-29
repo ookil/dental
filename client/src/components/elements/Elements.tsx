@@ -259,11 +259,13 @@ export const Gif = styled.img`
 
 export const Form = styled.form`
   height: 55%;
+  width: 100%;
 `;
 
 export const StyledSearch = styled.input`
   border-radius: 5px;
-  width: 250px;
+  width: 100%;
+  max-width: 250px;
   height: 100%;
   color: ${textPrimary};
   border: 1px solid ${bgSecondary};

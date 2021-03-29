@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import { color } from '../../globalStyles';
 import { Wrapper, Text } from './Patients.elements';
+import { size } from '../../globalStyles';
 
 const { bluePrimary } = color;
 
@@ -26,6 +27,10 @@ const ButtonWrapper = styled(Wrapper)`
     background-color: white;
     border: 1px solid ${bluePrimary};
   }
+
+  @media (max-width: ${size.mobileL}) {
+    display: none;
+  };
 `;
 
 const AddPatientButton = () => {
