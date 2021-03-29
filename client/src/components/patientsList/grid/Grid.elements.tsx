@@ -92,10 +92,9 @@ const VisitCell = styled(StyledCell)`
 
 export const Cell = (props: Table.DataCellProps) => {
   const { column, row } = props;
-
+  console.log(row);
   const history = useHistory();
-
-  if (column.name === 'lastApt') {
+  if (column.name === 'appointments' && row.appointments.length > 0) {
     return <VisitCell {...props} onClick={() => alert('vist')} />;
   }
 

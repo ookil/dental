@@ -9,10 +9,14 @@ type AvailableAppointment = {
   formatedDate: string;
 };
 
+interface GetPatients extends GetPatients_clinicPatients {
+  [key: string]: any;
+}
+
 type SliceState = {
   isOpenModal: ModalsName;
-  patients: Array<GetPatients_clinicPatients> | null;
-  filteredPatients: Array<GetPatients_clinicPatients> | null;
+  patients: Array<GetPatients> | null;
+  filteredPatients: Array<GetPatients> | null;
   availableAppointments: AvailableAppointment[];
 };
 
@@ -32,7 +36,7 @@ const modalsSlice = createSlice({
     },
     setPatients: (
       state,
-      action: PayloadAction<GetPatients_clinicPatients[]>
+      action: PayloadAction<GetPatients[]>
     ) => {
       state.patients = action.payload;
     },

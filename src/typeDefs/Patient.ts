@@ -84,6 +84,15 @@ export enum Sort {
 
 registerEnumType(Sort, { name: 'Sort' });
 
+@ObjectType()
+export class PatientsList {
+  @Field()
+  patients: Patient[];
+
+  @Field()
+  totalCount: number;
+}
+
 /* @ObjectType()
 export class PatientsConnection {
   @Field(() => String, { nullable: true })

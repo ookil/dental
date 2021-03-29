@@ -7,7 +7,6 @@ import {
   TableSelection,
 } from '@devexpress/dx-react-grid-material-ui';
 import {
-  IntegratedFiltering,
   CustomPaging,
   IntegratedSelection,
   IntegratedSorting,
@@ -70,7 +69,9 @@ const PatientsGrid = ({ searchQuery, totalCount }: Props) => {
       name: 'appointments',
       title: 'Recent visit',
       getCellValue: (row: any) =>
-        format(row.appointments[0].endAt, 'dd/MM/yyyy'),
+        row.appointments[0]
+          ? format(row.appointments[0].endAt, 'dd/MM/yyyy')
+          : null,
     },
     { name: 'id', title: ' ', getCellValue: () => <MoreButton /> },
   ]);
@@ -98,6 +99,7 @@ const PatientsGrid = ({ searchQuery, totalCount }: Props) => {
         currentPage,
         pageSize,
         orderBy: { [sorting[0].columnName]: sorting[0].direction },
+        search: '',
       },
     },
   });

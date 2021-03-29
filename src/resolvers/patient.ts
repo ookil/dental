@@ -1,4 +1,4 @@
-import { Context } from '../context';
+import { Context, prisma } from '../context';
 import {
   Arg,
   Authorized,
@@ -15,7 +15,8 @@ import {
 } from 'type-graphql';
 
 import { Length, IsEmail } from 'class-validator';
-import { Patient, Sort } from '../typeDefs/Patient';
+import { Patient, PatientsList, Sort } from '../typeDefs/Patient';
+import { Prisma } from '@prisma/client';
 
 @InputType({ description: 'New patient data' })
 export class CreatePatientInput implements Partial<Patient> {
@@ -92,6 +93,9 @@ export class GetPatientsInput {
 
   @Field()
   orderBy: PatientsOrderBy;
+
+  @Field({ nullable: true })
+  search?: string;
 }
 
 @Resolver(Patient)
@@ -122,15 +126,170 @@ export class PatientResolver {
 
   @Authorized()
   @Query(() => [Patient])
+  async searchPatients(@Arg('searchQuery') searchQuery: string) {
+    const searchWords = searchQuery.split(' ');
+
+    let where: Prisma.PatientWhereInput | undefined;
+
+    if (searchWords.length === 1) {
+      where = {
+        OR: [
+          {
+            name: {
+              contains: searchWords[0],
+              mode: 'insensitive',
+            },
+          },
+          {
+            surname: {
+              contains: searchWords[0],
+              mode: 'insensitive',
+            },
+          },
+          {
+            mobile: {
+              contains: searchWords[0],
+              mode: 'insensitive',
+            },
+          },
+        ],
+      };
+    } else if (searchWords.length > 1) {
+      where = {
+        OR: [
+          {
+            AND: [
+              {
+                name: {
+                  contains: searchWords[0],
+                  mode: 'insensitive',
+                },
+              },
+              {
+                surname: {
+                  contains: searchWords[1],
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          },
+          {
+            AND: [
+              {
+                name: {
+                  contains: searchWords[1],
+                  mode: 'insensitive',
+                },
+              },
+              {
+                surname: {
+                  contains: searchWords[0],
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          },
+        ],
+      };
+    } else {
+      where = {};
+    }
+
+    const res = await prisma.patient.findMany({
+      where,
+      include: {
+        appointments: {
+          orderBy: {
+            endAt: 'desc',
+          },
+          take: 1,
+        },
+      },
+    });
+
+    return res;
+  }
+
+  @Authorized()
+  @Query(() => PatientsList)
   async getOffsetPatients(
     @Arg('patientsVar')
-    { clinicId, pageSize, currentPage, orderBy }: GetPatientsInput,
+    { clinicId, pageSize, currentPage, orderBy, search }: GetPatientsInput,
     @Ctx() { prisma }: Context
   ) {
     const sorting = orderBy.appointments ? {} : orderBy;
 
+    const searchWords = search?.split(' ') || [];
+
+    let where: Prisma.PatientWhereInput | undefined;
+
+    if (searchWords.length === 1) {
+      where = {
+        OR: [
+          {
+            name: {
+              contains: searchWords[0],
+              mode: 'insensitive',
+            },
+          },
+          {
+            surname: {
+              contains: searchWords[0],
+              mode: 'insensitive',
+            },
+          },
+          {
+            mobile: {
+              contains: searchWords[0],
+              mode: 'insensitive',
+            },
+          },
+        ],
+      };
+    } else if (searchWords.length > 1) {
+      where = {
+        OR: [
+          {
+            AND: [
+              {
+                name: {
+                  contains: searchWords[0],
+                  mode: 'insensitive',
+                },
+              },
+              {
+                surname: {
+                  contains: searchWords[1],
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          },
+          {
+            AND: [
+              {
+                name: {
+                  contains: searchWords[1],
+                  mode: 'insensitive',
+                },
+              },
+              {
+                surname: {
+                  contains: searchWords[0],
+                  mode: 'insensitive',
+                },
+              },
+            ],
+          },
+        ],
+      };
+    } else {
+      where = {};
+    }
+
     const allPatients = await prisma.patient.findMany({
       where: {
+        ...where,
         clinicId: parseInt(clinicId),
       },
       orderBy: sorting,
@@ -143,10 +302,15 @@ export class PatientResolver {
         },
       },
       skip: currentPage * pageSize,
-      take: pageSize
+      take: pageSize,
     });
-    
-    return allPatients
+
+    const patientCount = allPatients.length;
+
+    return {
+      patients: allPatients,
+      totalCount: patientCount,
+    };
   }
 
   /* @Authorized()

@@ -1,6 +1,5 @@
 import { gql } from '@apollo/client';
 
-
 export const GET_CLINIC_PATIENTS = gql`
   query GetPatients($clinicId: ID!) {
     clinicPatients(id: $clinicId) {
@@ -26,7 +25,7 @@ export const ADD_PATIENT = gql`
 
 export const GET_OFFSET_PATIENTS = gql`
   query GetOffsetPatients($patientsVar: GetPatientsInput!) {
-  getOffsetPatients(patientsVar: $patientsVar) {
+    getOffsetPatients(patientsVar: $patientsVar) {
       id
       name
       surname
@@ -38,4 +37,5 @@ export const GET_OFFSET_PATIENTS = gql`
       }
     }
   }
-` 
+`;
+
