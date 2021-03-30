@@ -15,8 +15,14 @@ import {
 } from 'type-graphql';
 
 import { Length, IsEmail } from 'class-validator';
-import { Patient, PatientsList, Sort } from '../typeDefs/Patient';
+import {
+  Patient,
+  PatientsConnection,
+  PatientsList,
+  Sort,
+} from '../typeDefs/Patient';
 import { Prisma } from '@prisma/client';
+import { paginateResults } from '../utils/utils';
 
 @InputType({ description: 'New patient data' })
 export class CreatePatientInput implements Partial<Patient> {
@@ -96,6 +102,21 @@ export class GetPatientsInput {
 
   @Field({ nullable: true })
   search?: string;
+}
+
+@InputType({ description: 'Get paginnated with cursor & sorted patients' })
+export class GetScrollPatientsInput {
+  @Field(() => ID)
+  clinicId: string;
+
+  @Field()
+  pageSize: number;
+
+  @Field({ nullable: true })
+  after?: string;
+
+  @Field({ nullable: true })
+  firstLetter?: string;
 }
 
 @Resolver(Patient)
@@ -318,31 +339,37 @@ export class PatientResolver {
     };
   }
 
-  /* @Authorized()
+  @Authorized()
   @Query(() => PatientsConnection)
-  async getPatients(
+  async getScrollPatients(
     @Arg('patientsVar')
-    { clinicId, pageSize, after, orderBy }: GetPatientsInput,
+    { clinicId, pageSize, after, firstLetter }: GetScrollPatientsInput,
     @Ctx() { prisma }: Context
   ) {
-    const sorting = orderBy.appointments ? {} : orderBy;
+    const where = firstLetter
+      ? {
+          OR: [
+            {
+              surname: {
+                startsWith: firstLetter.toUpperCase(),
+              },
+            },
+            {
+              surname: {
+                startsWith: firstLetter.toLowerCase(),
+              },
+            },
+          ],
+        }
+      : {};
 
     const allPatients = await prisma.patient.findMany({
       where: {
+        ...where,
         clinicId: parseInt(clinicId),
       },
-      orderBy: sorting,
-      include: {
-        appointments: {
-          orderBy: {
-            endAt: 'desc',
-          },
-          take: 1,
-        },
-      },
+      orderBy: { surname: 'asc' },
     });
-
-    console.log(allPatients);
 
     const paginatedPatients = paginateResults({
       after,
@@ -360,7 +387,7 @@ export class PatientResolver {
         : false,
       patients: paginatedPatients,
     };
-  } */
+  }
 
   @Authorized()
   @Mutation(() => Patient)

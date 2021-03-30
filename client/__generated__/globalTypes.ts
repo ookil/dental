@@ -90,6 +90,16 @@ export interface GetPatientsInput {
 }
 
 /**
+ * Get paginnated with cursor & sorted patients
+ */
+export interface GetScrollPatientsInput {
+  clinicId: string;
+  pageSize: number;
+  after?: string | null;
+  firstLetter?: string | null;
+}
+
+/**
  * Sorting patients
  */
 export interface PatientsOrderBy {

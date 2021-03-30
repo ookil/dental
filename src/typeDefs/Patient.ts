@@ -93,7 +93,7 @@ export class PatientsList {
   totalCount: number;
 }
 
-/* @ObjectType()
+@ObjectType()
 export class PatientsConnection {
   @Field(() => String, { nullable: true })
   cursor?: string;
@@ -104,4 +104,3 @@ export class PatientsConnection {
   @Field(() => [Patient])
   patients: Patient[];
 }
- */

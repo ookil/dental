@@ -21,7 +21,7 @@ const Patients: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
 
   const [currentPage, setCurrentPage] = useState(0);
-  const [pageSize] = useState(20);
+  const [pageSize] = useState(10);
 
   const [sorting, setSorting] = useState<
     { columnName: string; direction: 'asc' | 'desc' }[]
@@ -33,6 +33,7 @@ const Patients: React.FC = () => {
   >(GET_OFFSET_PATIENTS);
 
   useEffect(() => {
+    /* if (window.screen.width > 425) */
     getPatients({
       variables: {
         patientsVar: {
@@ -63,7 +64,7 @@ const Patients: React.FC = () => {
           placeholder='Search...'
         />
       </Header>
-      {/* <PatientsGrid
+      <PatientsGrid
         searchQuery={searchQuery}
         totalCount={totalCount}
         paging={{ currentPage, setCurrentPage }}
@@ -71,8 +72,8 @@ const Patients: React.FC = () => {
         sort={{ sorting, setSorting }}
         rows={data?.getOffsetPatients.patients || []}
         loading={loading}
-      /> */}
-      <PatientsMobile patients={data?.getOffsetPatients.patients || []} />
+      />
+      <PatientsMobile />
     </div>
   );
 };

@@ -28,6 +28,34 @@ export const cache = new InMemoryCache({
             return existing;
           },
         },
+        getScrollPatients: {
+          keyArgs: ['clinicId'],
+          merge(existing, incoming, { args }) {
+            if (existing === undefined) {
+              //for initial messages
+              return incoming;
+            }
+
+            if (
+              args &&
+              args.patientsVar.firstLetter !== '' &&
+              args.patientsVar.after
+            ) {
+              return Object.assign({}, incoming, {
+                patients: [...existing.patients, ...incoming.patients],
+              });
+            } else if (
+              (args && args.patientsVar.firstLetter !== '') ||
+              args?.patientsVar.firstLetter === null
+            ) {
+              return Object.assign({}, incoming);
+            } else {
+              return Object.assign({}, incoming, {
+                patients: [...existing.patients, ...incoming.patients],
+              });
+            }
+          },
+        },
       },
     },
     Dentist: {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
-import { GetOffsetPatients_getOffsetPatients_patients } from '../../../graphql/queries/__generated__/GetOffsetPatients';
+import { GetScrollPatients_getScrollPatients_patients } from '../../../graphql/queries/__generated__/GetScrollPatients';
 
 const Item = styled.li`
   height: 50px;
@@ -40,7 +40,7 @@ export const LinkItem = styled(Link)`
 `;
 
 type Props = {
-  patient: GetOffsetPatients_getOffsetPatients_patients;
+  patient: GetScrollPatients_getScrollPatients_patients;
   firstLetter?: boolean;
 };
 

@@ -14,6 +14,10 @@ export const Root = styled.div`
   div[class*='RootBase-root'] {
     height: 100%;
   }
+
+  @media (max-width: 425px) {
+    display: none;
+  }
 `;
 
 /////////////////////////////////////////////////////////////////////////

@@ -41,3 +41,17 @@ export const GET_OFFSET_PATIENTS = gql`
     }
   }
 `;
+
+export const GET_SCROLL_PATIENTS = gql`
+  query GetScrollPatients($patientsVar: GetScrollPatientsInput!) {
+    getScrollPatients(patientsVar: $patientsVar) {
+      hasMore
+      cursor
+      patients {
+        id
+        name
+        surname
+      }
+    }
+  }
+`;

@@ -28,7 +28,7 @@ type PaginateProps = {
 
 export const paginateResults = ({
   after: cursor,
-  pageSize = 30,
+  pageSize = 20,
   results,
 }: PaginateProps) => {
   if (pageSize < 1) return [];
@@ -40,7 +40,7 @@ export const paginateResults = ({
   });
 
   return cursorIndex >= 0
-    ? cursorIndex === results.length - 1
+    ? cursorIndex === results.length - 1  // if cursor index is the last el in arr returns empty arr
       ? []
       : results.slice(
           cursorIndex + 1,
