@@ -94,3 +94,20 @@ export const ResetButton = ({ handleClick }: { handleClick: () => void }) => (
     <UpIcon />
   </ResetButtonWrapper>
 );
+
+export const Letter = styled.p`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+`;
+
+export const NoDataText = styled.div`
+  height: 50px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`;
+
+export const NoDataNotification = styled.div``

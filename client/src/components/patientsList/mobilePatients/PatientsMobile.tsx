@@ -8,7 +8,7 @@ import {
   GetScrollPatientsVariables,
 } from '../../../graphql/queries/__generated__/GetScrollPatients';
 import AlphabetList from './AlphabetList';
-import { AddPatientButton, ResetButton } from './elements';
+import { AddPatientButton, Letter, NoDataText, ResetButton } from './elements';
 import PatientsList from './PatientsList';
 
 const Container = styled.div`
@@ -76,13 +76,21 @@ const PatientsMobile = () => {
     });
   };
 
+
   return (
     <Container>
-      <PatientsList
-        loading={loading}
-        patients={patients}
-        handleScroll={handleScroll}
-      />
+      {loading === false && patients.length === 0 ? (
+        <>
+          {searchLetter && <Letter>{searchLetter.toUpperCase()}</Letter>}
+          <NoDataText>No patients found</NoDataText>
+        </>
+      ) : (
+        <PatientsList
+          loading={loading}
+          patients={patients}
+          handleScroll={handleScroll}
+        />
+      )}
 
       <AlphabetList handleRefetch={handleRefetch} />
       {searchLetter && <ResetButton handleClick={() => handleRefetch(null)} />}

@@ -26,11 +26,15 @@ import {
 } from './Grid.elements';
 import MoreButton from '../../elements/MoreButton';
 import {
-  GetOffsetPatients_getOffsetPatients_patients,
+  GetOffsetPatients,
+  GetOffsetPatientsVariables,
 } from '../../../graphql/queries/__generated__/GetOffsetPatients';
 import { format } from 'date-fns';
 import { Gif } from '../../elements/Elements';
 import loadingGif from '../../../images/loading.gif';
+import { useQuery } from '@apollo/client';
+import { GET_OFFSET_PATIENTS } from '../../../graphql/queries/patient';
+import { clinicIdVar } from '../../../cache';
 
 type ColumnExtensionsType = {
   columnName: string;
@@ -53,37 +57,18 @@ const sortingColumns = [
 type Props = {
   searchQuery: string;
   totalCount: number;
+  setTotalCount: React.Dispatch<React.SetStateAction<number>>;
   paging: {
     currentPage: number;
     setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
   };
-  pageSize: number;
-  sort: {
-    sorting: {
-      columnName: string;
-      direction: 'asc' | 'desc';
-    }[];
-    setSorting: React.Dispatch<
-      React.SetStateAction<
-        {
-          columnName: string;
-          direction: 'asc' | 'desc';
-        }[]
-      >
-    >;
-  };
-  rows: GetOffsetPatients_getOffsetPatients_patients[];
-  loading: boolean;
 };
 
 const PatientsGrid = ({
   searchQuery,
   totalCount,
-  pageSize,
-  rows,
+  setTotalCount,
   paging: { currentPage, setCurrentPage },
-  sort: { setSorting, sorting },
-  loading,
 }: Props) => {
   const [columns] = useState([
     { name: 'surname', title: 'Last Name' },
@@ -104,6 +89,34 @@ const PatientsGrid = ({
   const [selection, setSelection] = useState<(string | number)[] | undefined>(
     []
   );
+
+  const [pageSize] = useState(20);
+
+  const [sorting, setSorting] = useState<
+    { columnName: string; direction: 'asc' | 'desc' }[]
+  >([{ columnName: 'surname', direction: 'asc' }]);
+
+  const clinicId = clinicIdVar();
+
+  const { data, loading } = useQuery<
+    GetOffsetPatients,
+    GetOffsetPatientsVariables
+  >(GET_OFFSET_PATIENTS, {
+    variables: {
+      patientsVar: {
+        clinicId,
+        currentPage,
+        pageSize,
+        search: searchQuery,
+        orderBy: { [sorting[0].columnName]: sorting[0].direction },
+      },
+    },
+    onCompleted(data) {
+      setTotalCount(data.getOffsetPatients.totalCount);
+    },
+  });
+
+  const rows = data?.getOffsetPatients.patients || [];
 
   return (
     <Root>

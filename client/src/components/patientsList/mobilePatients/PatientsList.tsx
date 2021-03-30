@@ -14,16 +14,6 @@ const PatientsList = ({ patients, handleScroll, loading }: Props) => {
   return (
     <>
       <List onScroll={(e) => handleScroll(e)}>
-        {/* <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li>
-        <li style={{ height: '60px' }}>asd</li> */}
         {patients.map((patient, index) => {
           const prevPatient = patients[index - 1];
           if (
@@ -49,6 +39,13 @@ const PatientsList = ({ patients, handleScroll, loading }: Props) => {
               />
             );
           }
+          return (
+            <PatientItem
+              key={patient.id}
+              patient={patient}
+              firstLetter={false}
+            />
+          );
         })}
       </List>
       {loading && <LoadingDots />}
