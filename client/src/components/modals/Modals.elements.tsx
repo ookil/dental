@@ -27,18 +27,27 @@ export const ModalBackground = styled.div`
 
 export const StyledModal: any = Modal.styled`
   height: auto;
-/*   max-height: 96%; */
-  width: 450px;
+  max-height: 96%;
+  width: 600px;
   max-width: 90%;
-  border-radius: 15px;
-  padding: 20px;
+  border-radius: 10px;
+  padding: .2em;
+  outline: 0;
   background-color: white;
   box-shadow: 5px 4px 5px rgba(0, 0, 0, 0.25);
   opacity: ${(props: { opacity: number }) => props.opacity};
   transform: translate(0,0) scale(${(props: { scale: number }) => props.scale});
   transition: all ease-in-out 300ms ;
-  z-index: 999;
+  z-index: 998;
   margin: auto;
+`;
+
+export const StyledResponseModal = styled(StyledModal)`
+  width: auto;
+  min-width: 250px;
+  min-height: 100px;
+  z-index: 999;
+  padding: 20px;
 `;
 
 export const ModalContainer = styled.div`
@@ -46,18 +55,26 @@ export const ModalContainer = styled.div`
   height: 100%;
 `;
 
-
-
-export const ModalTitle = styled.h3`
+export const ModalTitle = styled.div`
   font-weight: bold;
+  padding: 12px 20px 15px 14px;
   color: ${bluePrimary};
-  margin-bottom: 20px;
+`;
+
+export const PatientInformation = styled.div<{ height?: number }>`
+  width: auto;
+  min-height: 0px;
+  max-height: 680px;
+  height: ${({ height }) => height && `${height - 200}px`};
+  padding: 0.5em 1em;
+  overflow: auto;
 `;
 
 export const ButtonsWrapper = styled.div`
   display: flex;
   width: 100%;
   justify-content: space-around;
+  padding: 0.3em 1em 0.9em 0.4em;
   margin-top: 20px;
   margin-bottom: 5px;
 `;
@@ -75,4 +92,42 @@ export const MoreOptionButton = styled.div`
   ${MoreOption}
   text-decoration: underline;
   cursor: pointer;
+`;
+
+const Box = styled.div`
+  border: 1px solid #cdcdcd;
+  padding: 20px 10px;
+  padding-top: 30px;
+  position: relative;
+  margin-top: 20px;
+
+  &:nth-child(1) {
+    margin-top: 0;
+  }
+`;
+
+const Label = styled.label`
+  position: absolute;
+  padding: 0 5px;
+  font-size: 10px;
+  top: 0;
+  left: 5px;
+  transform: translateY(-50%);
+  background-color: white;
+`;
+
+export const InfoBox = ({ label, children }: any) => (
+  <Box>
+    <Label>{label}</Label>
+    <>{children}</>
+  </Box>
+);
+
+export const Message = styled.p`
+  font-weight: 500;
+  margin-bottom: 0.9em;
+`;
+
+export const Countdown = styled.p`
+  margin-bottom: 20px;
 `;

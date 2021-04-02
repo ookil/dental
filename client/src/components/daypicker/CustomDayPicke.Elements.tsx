@@ -58,6 +58,7 @@ export const StyledDayPicker = styled(DayPicker)<{ ref?: any }>`
 
   .DayPicker-wrapper {
     background-color: white;
+    outline: none;
   }
 
   .DayPicker-Body {
@@ -68,4 +69,3 @@ export const StyledDayPicker = styled(DayPicker)<{ ref?: any }>`
     background-color: ${bluePrimary};
   }
 `;
-

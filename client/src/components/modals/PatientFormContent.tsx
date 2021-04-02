@@ -1,6 +1,7 @@
 import React from 'react';
+import DayPickerInput from '../dayPickerInput/DayPickerInput';
 import Input from '../elements/Input';
-import Select from '../elements/Select';
+import { InfoBox } from './Modals.elements';
 
 interface PatientFormProps
   extends React.DetailedHTMLProps<
@@ -16,61 +17,128 @@ interface PatientFormProps
 export const PatientFormContent = ({
   handleChange,
   handleSelectChange,
-  options,
   errors,
 }: PatientFormProps) => (
   <>
-    <Input
-      label='name'
-      name='name'
-      type='text'
-      minLength={3}
-      maxLength={30}
-      isError={errors?.includes('name')}
-      errorMsg='Please provide name shorther than or equal 30 characters'
-      onChange={(e) => handleChange(e)}
-    />
-    <Input
-      label='surname'
-      name='surname'
-      type='text'
-      minLength={3}
-      maxLength={30}
-      isError={errors?.includes('surname')}
-      errorMsg='Please provide surname shorther than or equal 30 characters'
-      onChange={(e) => handleChange(e)}
-    />
-    <Input
-      label='id number'
-      name='nationalId'
-      type='text'
-      pattern='[0-9]*'
-      minLength={3}
-      maxLength={30}
-      isError={errors?.includes('nationalId')}
-      errorMsg='Please provide ID number shorther than or equal 30 characters'
-      onChange={(e) => handleChange(e)}
-    />
-    <Input
-      label='email'
-      name='email'
-      type='email'
-      minLength={3}
-      maxLength={30}
-      isError={errors?.includes('email')}
-      errorMsg='Must be a valid email adress'
-      onChange={(e) => handleChange(e)}
-    />
-    <Select
-      label='dentist'
-      fieldName='dentistId'
-      displayValue='nameWithSurname'
-      readFrom='id'
-      placeholder='Please select dentist'
-      isError={errors?.includes('dentistId')}
-      errorMsg='Dentist not selected'
-      options={options}
-      handleSelectChange={handleSelectChange}
-    />
+    <InfoBox label='Personal information'>
+      <Input
+        label='name'
+        name='name'
+        type='text'
+        minLength={3}
+        maxLength={30}
+        isError={errors?.includes('name')}
+        errorMsg='Please provide name shorther than or equal 30 characters'
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+      <Input
+        label='surname'
+        name='surname'
+        type='text'
+        minLength={3}
+        maxLength={30}
+        isError={errors?.includes('surname')}
+        errorMsg='Please provide surname shorther than or equal 30 characters'
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+      <Input
+        label='ID number'
+        name='nationalId'
+        type='text'
+        pattern='[0-9]*'
+        minLength={3}
+        maxLength={30}
+        isError={errors?.includes('nationalId')}
+        errorMsg='Please provide ID number shorther than or equal 30 characters'
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+
+      <DayPickerInput handleDayChange={handleSelectChange} />
+    </InfoBox>
+
+    <InfoBox label='Contact Information'>
+      <Input
+        label='mobile'
+        name='mobile'
+        type='string'
+        minLength={3}
+        maxLength={30}
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+
+      <Input
+        label='phone'
+        name='phone'
+        type='string'
+        minLength={3}
+        maxLength={30}
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+
+      <Input
+        label='email'
+        name='email'
+        type='email'
+        minLength={3}
+        maxLength={30}
+        isError={errors?.includes('email')}
+        errorMsg='Must be a valid email adress'
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+    </InfoBox>
+
+    <InfoBox label='Address'>
+      <Input
+        label='street'
+        name='street'
+        type='string'
+        minLength={3}
+        maxLength={30}
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+      <Input
+        label='House Number / Flat'
+        name='houseNum'
+        type='string'
+        minLength={3}
+        maxLength={30}
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+      <Input
+        label='City'
+        name='city'
+        type='string'
+        minLength={3}
+        maxLength={30}
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+      <Input
+        label='Zip Code'
+        name='zipCode'
+        type='string'
+        minLength={3}
+        maxLength={30}
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+      <Input
+        label='Country'
+        name='country'
+        type='string'
+        minLength={3}
+        maxLength={30}
+        onChange={(e) => handleChange(e)}
+        layout='primary'
+      />
+    </InfoBox>
   </>
 );

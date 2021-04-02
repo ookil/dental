@@ -65,7 +65,7 @@ const GlobalStyle = createGlobalStyle`
         font-family: 'Montserrat', sans-serif;
         scrollbar-color: ${color.textSecondary} transparent;
         scrollbar-width: thin;
-        font-size: 15px;
+        font-size: 14px;
 
         &::-webkit-scrollbar {
           width: 5px;

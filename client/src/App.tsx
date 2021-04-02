@@ -24,6 +24,7 @@ import {
   GetClinicVariables,
 } from './graphql/queries/__generated__/GetClinic';
 import { LoggedUser } from './graphql/queries/__generated__/loggedUser';
+import ResponseModal from './components/modals/responseModals/ResponseModal';
 
 function App() {
   const { data, loading: userLoading } = useQuery<LoggedUser>(GET_LOGGED_USER);
@@ -50,7 +51,6 @@ function App() {
         <GlobalStyle />
         <Router>
           <ModalProvider backgroundComponent={ModalBackground}>
-            <MainModal />
             <Redirect from='/' to='/dashboard' />
             <Navbar />
             <Toolbar />
@@ -61,6 +61,8 @@ function App() {
                 <Route exact path='/patients' component={Patients} />
               </MainContainer>
             </Switch>
+            <MainModal />
+            <ResponseModal />
           </ModalProvider>
         </Router>
       </Provider>

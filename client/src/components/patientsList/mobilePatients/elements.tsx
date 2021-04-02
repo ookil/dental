@@ -83,8 +83,12 @@ const UpIcon = () => (
   </svg>
 );
 
-export const AddPatientButton = () => (
-  <PatientButtonWrapper>
+type ButtonProps = {
+  handleClick: () => void;
+};
+
+export const AddPatientButton = ({ handleClick }: ButtonProps) => (
+  <PatientButtonWrapper onClick={handleClick}>
     <PlusIcon />
   </PatientButtonWrapper>
 );
@@ -110,4 +114,4 @@ export const NoDataText = styled.div`
   justify-content: center;
 `;
 
-export const NoDataNotification = styled.div``
+export const NoDataNotification = styled.div``;

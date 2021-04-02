@@ -11,7 +11,8 @@ interface Props
   marginTop?: number;
   isError?: boolean;
   errorMsg?: string;
-  sizing?: 'big';
+  sizing?: 'small' | 'big';
+  layout?: 'primary' | 'secondary';
 }
 
 const Input: React.FC<Props> = ({
@@ -20,11 +21,16 @@ const Input: React.FC<Props> = ({
   marginTop,
   isError,
   errorMsg,
+  layout,
   ...inputProps
 }) => {
   return (
-    <InputContainer marginBottom={marginBottom} marginTop={marginTop}>
-      <Label>
+    <InputContainer
+      marginBottom={marginBottom}
+      marginTop={marginTop}
+      layout={layout}
+    >
+      <Label layout={layout}>
         {label}
         {inputProps.required && <span> *</span>}
         {isError && <ErrorMessage>{errorMsg}</ErrorMessage>}

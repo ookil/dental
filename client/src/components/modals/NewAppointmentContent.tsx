@@ -17,7 +17,6 @@ import CustomDayPicker from '../daypicker/CustomDayPicker';
 import { BigErrorMessage, Button, Gif, GifWrapper } from '../elements/Elements';
 import Select from '../elements/Select';
 import SelectWithInput from '../elements/SelectWithInput';
-import { Patient } from './AddPatientContent';
 import {
   ButtonsWrapper,
   ModalTitle,
@@ -81,12 +80,10 @@ const NewAppointmentContent: React.FC = () => {
   const duration = clinicData?.clinic?.settings.appointmentDuration;
 
   const [isNewPatient, setNewPatient] = useState(false);
-  const [patientData, setPatientData] = useState<Patient>({
+  const [patientData, setPatientData] = useState({
     name: '',
     surname: '',
-    nationalId: null,
-    email: null,
-    dentistId: '',
+    mobile: '',
   });
 
   const [appointmentData, setAppointmentData] = useState<Appointment>({
@@ -209,15 +206,9 @@ const NewAppointmentContent: React.FC = () => {
       if (patientData.name === '') setErrors((errors) => [...errors, 'name']);
       if (patientData.surname === '')
         setErrors((errors) => [...errors, 'surname']);
-      if (patientData.nationalId === null)
-        setErrors((errors) => [...errors, 'nationalId']);
-      if (patientData.dentistId === null)
-        setErrors((errors) => [...errors, 'dentistId']);
       if (
         patientData.name &&
         patientData.surname &&
-        patientData.nationalId &&
-        patientData.dentistId &&
         isAppointmentData
       ) {
         console.log('create');

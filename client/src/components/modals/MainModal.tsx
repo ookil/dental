@@ -30,10 +30,10 @@ const MainModal: React.FC = () => {
     }, 10);
   }
 
-  function beforeClose() {
+  function afterClose() {
     return new Promise((resolve) => {
-      setScale(0.3);
       setOpacity(0);
+      setScale(0.3);
       setTimeout(resolve, 200);
     });
   }
@@ -54,7 +54,7 @@ const MainModal: React.FC = () => {
     <StyledModal
       isOpen={isOpenModal ? true : false}
       beforeOpen={beforeOpen}
-      beforeClose={beforeClose}
+      afterClose={afterClose}
       opacity={opacity}
       scale={scale}
       onEscapeKeydown={handleClose}

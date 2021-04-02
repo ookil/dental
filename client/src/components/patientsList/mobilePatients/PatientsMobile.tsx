@@ -22,7 +22,11 @@ const Container = styled.div`
 
 const pageSize = 20;
 
-const PatientsMobile = () => {
+type MobileProps = {
+  handleClick: () => void;
+};
+
+const PatientsMobile = ({ handleClick }: MobileProps) => {
   const clinicId = clinicIdVar();
 
   const [searchLetter, setLetter] = useState<string | null>('');
@@ -76,7 +80,6 @@ const PatientsMobile = () => {
     });
   };
 
-
   return (
     <Container>
       {loading === false && patients.length === 0 ? (
@@ -94,7 +97,7 @@ const PatientsMobile = () => {
 
       <AlphabetList handleRefetch={handleRefetch} />
       {searchLetter && <ResetButton handleClick={() => handleRefetch(null)} />}
-      <AddPatientButton />
+      <AddPatientButton handleClick={handleClick} />
     </Container>
   );
 };

@@ -65,8 +65,15 @@ export interface CreatePatientInput {
   surname: string;
   email?: string | null;
   nationalId?: string | null;
+  bday?: any | null;
+  mobile?: string | null;
+  phone?: string | null;
+  street?: string | null;
+  houseNum?: string | null;
+  city?: string | null;
+  zipCode?: string | null;
+  country?: string | null;
   clinicId: string;
-  dentistId: string;
 }
 
 /**

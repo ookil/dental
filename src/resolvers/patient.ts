@@ -42,11 +42,37 @@ export class CreatePatientInput implements Partial<Patient> {
   @Length(3, 30)
   nationalId?: string | null;
 
-  @Field(() => ID)
-  clinicId: number | string;
+  @Field(() => Date, { nullable: true })
+  bday?: Date | null;
+
+  @Field(() => String, { nullable: true })
+  mobile?: string | null;
+
+  @Field(() => String, { nullable: true })
+  phone?: string | null;
+
+  @Field({ nullable: true })
+  @Length(3, 100)
+  street?: string;
+
+  @Field({ nullable: true })
+  @Length(1, 100)
+  houseNum: string;
+
+  @Field({ nullable: true })
+  @Length(1, 100)
+  city: string;
+
+  @Field({ nullable: true })
+  @Length(1, 100)
+  zipCode: string;
+
+  @Field({ nullable: true })
+  @Length(1, 100)
+  country: string;
 
   @Field(() => ID)
-  dentistId: number | string;
+  clinicId: number | string;
 }
 
 @InputType({ description: 'Update patient data' })
@@ -433,18 +459,21 @@ export class PatientResolver {
 
     if (patient.length) throw new Error('Patient already exists!');
 
-    if (typeof patientData.dentistId === 'string')
-      patientData.dentistId = parseInt(patientData.dentistId);
-
     return await prisma.patient.create({
       data: {
         name: patientData.name,
         surname: patientData.surname,
         email: patientData.email,
         nationalId: patientData.nationalId,
-        dentist: {
-          connect: {
-            id: patientData.dentistId,
+        mobile: patientData.mobile,
+        phone: patientData.phone,
+        address: {
+          create: {
+            street: patientData.street,
+            houseNum: patientData.houseNum,
+            city: patientData.city,
+            zipCode: patientData.zipCode,
+            country: patientData.country,
           },
         },
         clinic: {

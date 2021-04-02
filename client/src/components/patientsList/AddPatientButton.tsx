@@ -30,12 +30,16 @@ const ButtonWrapper = styled(Wrapper)`
 
   @media (max-width: ${size.mobileL}) {
     display: none;
-  };
+  } ;
 `;
 
-const AddPatientButton = () => {
+type ButtonProps = {
+  handleClick: () => void;
+};
+
+const AddPatientButton = ({ handleClick }: ButtonProps) => {
   return (
-    <ButtonWrapper>
+    <ButtonWrapper onClick={handleClick}>
       <Icon>+</Icon>
       <Text>Add patient</Text>
     </ButtonWrapper>

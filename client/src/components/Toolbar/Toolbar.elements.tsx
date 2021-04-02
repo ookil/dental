@@ -95,7 +95,7 @@ export const ToolbarLink = styled(Link)<LinkProps>`
 
 export const LinkTitle = styled.p`
   margin-left: 10px;
-  font-size: 14px;
+  font-size: 0.95em;
   font-weight: 500;
 `;
 

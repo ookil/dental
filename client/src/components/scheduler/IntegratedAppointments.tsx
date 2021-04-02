@@ -1,5 +1,5 @@
 import { Plugin, Getter } from '@devexpress/dx-react-core';
-import { compareAsc, isSameDay, parseISO } from 'date-fns';
+import { compareAsc, isSameDay} from 'date-fns';
 import { GetClinicAppointments_clinicAppointments } from '../../graphql/queries/__generated__/GetClinicAppointments';
 
 // this plugin is created in order to make month view more readable and useful.

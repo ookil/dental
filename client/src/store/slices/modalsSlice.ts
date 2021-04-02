@@ -4,6 +4,13 @@ import { GetPatients_clinicPatients } from '../../graphql/queries/__generated__/
 
 type ModalsName = 'NEW_APPOINTMENT' | 'ADD_PATIENT' | false;
 
+export type ResponseStatus = 'CONFIRMATION' | 'CANCELATION' | 'ERROR' | false;
+
+type ResponseModal = {
+  status: ResponseStatus;
+  message: string | null;
+};
+
 type AvailableAppointment = {
   dateString: Date;
   formatedDate: string;
@@ -15,6 +22,7 @@ interface GetPatients extends GetPatients_clinicPatients {
 
 type SliceState = {
   isOpenModal: ModalsName;
+  isResponseModal: ResponseModal;
   patients: Array<GetPatients> | null;
   filteredPatients: Array<GetPatients> | null;
   availableAppointments: AvailableAppointment[];
@@ -22,6 +30,10 @@ type SliceState = {
 
 const initialState: SliceState = {
   isOpenModal: false,
+  isResponseModal: {
+    status: false,
+    message: null,
+  },
   patients: null,
   filteredPatients: null,
   availableAppointments: [],
@@ -34,10 +46,11 @@ const modalsSlice = createSlice({
     openModal: (state, action: PayloadAction<ModalsName>) => {
       state.isOpenModal = action.payload;
     },
-    setPatients: (
-      state,
-      action: PayloadAction<GetPatients[]>
-    ) => {
+    changeResponseModal: (state, action: PayloadAction<ResponseModal>) => {
+      state.isResponseModal.status = action.payload.status;
+      state.isResponseModal.message = action.payload.message;
+    },
+    setPatients: (state, action: PayloadAction<GetPatients[]>) => {
       state.patients = action.payload;
     },
     filterPatients: (state, action: PayloadAction<string>) => {
@@ -71,6 +84,7 @@ const modalsSlice = createSlice({
 
 export const {
   openModal,
+  changeResponseModal,
   setPatients,
   filterPatients,
   clearFilteredPatients,

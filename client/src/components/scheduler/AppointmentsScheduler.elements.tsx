@@ -6,7 +6,7 @@ import {
   Appointments,
   DragDropProvider,
 } from '@devexpress/dx-react-scheduler-material-ui';
-import { format, parseISO } from 'date-fns';
+import { format } from 'date-fns';
 import styled, { css } from 'styled-components';
 import { color, size } from '../../globalStyles';
 import ScheduleRoundedIcon from '@material-ui/icons/ScheduleRounded';

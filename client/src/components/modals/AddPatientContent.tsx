@@ -1,103 +1,93 @@
-import { useMutation, useQuery } from '@apollo/client';
-import React, { useEffect, useState } from 'react';
-import { GET_CLINIC_DENTISTS } from '../../graphql/queries/dentist';
-import {
-  ADD_PATIENT,
-} from '../../graphql/queries/patient';
-import { openModal } from '../../store/slices/modalsSlice';
+import { useMutation } from '@apollo/client';
+import React, { useCallback, useEffect, useState } from 'react';
+import { ADD_PATIENT } from '../../graphql/queries/patient';
+import { changeResponseModal, openModal } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
 import { Button, Gif, GifWrapper } from '../elements/Elements';
-import { ButtonsWrapper, ModalTitle } from './Modals.elements';
-import { PatientFormContent } from './PatientFormContent';
-import loadingGif from '../../images/loading.gif';
-import completedGif from '../../images/completed.gif';
-import { clinicIdVar } from '../../cache';
 import {
-  GetDentists,
-  GetDentistsVariables,
-} from '../../graphql/queries/__generated__/GetDentists';
+  ButtonsWrapper,
+  ModalTitle,
+  PatientInformation,
+} from './Modals.elements';
+import { PatientFormContent } from './PatientFormContent';
+import { clinicIdVar } from '../../cache';
 import {
   AddPatient,
   AddPatientVariables,
 } from '../../graphql/queries/__generated__/AddPatient';
-
-export type Patient = {
-  [key: string]: string | number | null;
-  name: string;
-  surname: string;
-  nationalId: string | null;
-  email: string | null;
-  dentistId: string;
-};
+import { CreatePatientInput } from '../../../__generated__/globalTypes';
+import { useHistory } from 'react-router';
+import loadingGif from '../../images/loading.gif';
 
 const AddPatientContent: React.FC = () => {
-  const [errors, setErrors] = useState<string[]>([]);
-  const [isCompleted, setCompleted] = useState(false);
+  const [height, setHeight] = useState<number>();
 
-  const [patientData, setPatientData] = useState<Patient>({
-    name: '',
-    surname: '',
-    nationalId: null,
-    email: null,
-    dentistId: '',
-  });
+  const history = useHistory();
+
+  useEffect(() => {
+    const windowHeight = window.screen.height;
+    setHeight(windowHeight);
+  }, []);
 
   const clinicId = clinicIdVar();
 
-  const { loading: dentistsLoading, data } = useQuery<
-    GetDentists,
-    GetDentistsVariables
-  >(GET_CLINIC_DENTISTS, {
-    variables: {
-      clinicId: clinicId,
-    },
-    skip: clinicId === undefined,
+  const [patientData, setPatientData] = useState<CreatePatientInput>({
+    name: '',
+    surname: '',
+    nationalId: null,
+    bday: null,
+    mobile: null,
+    phone: null,
+    email: null,
+    street: null,
+    houseNum: null,
+    city: null,
+    zipCode: null,
+    country: null,
+    clinicId,
   });
 
-  const dentists = data?.clinicDentists || [];
-
-  const [addPatient, { error, loading: addPatientLoading }] = useMutation<
+  const [addPatient, { loading: addPatientLoading }] = useMutation<
     AddPatient,
     AddPatientVariables
   >(ADD_PATIENT, {
-    onCompleted() {
-      setCompleted(true);
-      setTimeout(() => {
-        setCompleted(false);
-        dispatch(openModal(false));
-      }, 2000);
+    onCompleted(data) {
+      dispatch(
+        changeResponseModal({
+          status: 'CONFIRMATION',
+          message: 'Patient successfully added.',
+        })
+      );
+      dispatch(openModal(false));
+
+      history.push(`/patient/${data.createPatient.id}`);
+    },
+    onError() {
+      dispatch(
+        changeResponseModal({
+          status: 'ERROR',
+          message: 'Something went wrong, please try again.',
+        })
+      );
     },
   });
 
-  const validationErrors =
-    error?.graphQLErrors[0].extensions?.exception?.validationErrors || null;
-
-  useEffect(() => {
-    if (validationErrors) {
-      validationErrors.forEach((validationError: any) => {
-        setErrors((errors) => [...errors, validationError.property]);
-        console.log(validationError.property);
-      });
-    }
-  }, [validationErrors]);
-
   const handleAddPatientSubmit = (e: React.SyntheticEvent) => {
     e.preventDefault();
-    if (patientData.dentistId === null) {
-      setErrors((errors) => [...errors, 'dentistId']);
+    if (patientData.name === '' || patientData.surname === '') {
+      dispatch(
+        changeResponseModal({
+          status: 'ERROR',
+          message: 'Please provide name and surname.',
+        })
+      );
     }
-    if (
-      patientData.name &&
-      patientData.surname &&
-      patientData.nationalId &&
-      patientData.dentistId &&
-      clinicId
-    ) {
+
+    if (patientData.name && patientData.surname && clinicId) {
       addPatient({
         variables: {
           patientData: {
             ...patientData,
-            clinicId,
           },
         },
       });
@@ -113,42 +103,34 @@ const AddPatientContent: React.FC = () => {
     }));
   };
 
-  const handleSelectChange = (key: string, value: number | string) => {
-    setPatientData((prevState) => ({
-      ...prevState,
-      [key]: value,
-    }));
-  };
-
-  if (dentistsLoading || addPatientLoading)
+  const handleSelectChange = useCallback(
+    (key: string, value: number | string) => {
+      setPatientData((prevState) => ({
+        ...prevState,
+        [key]: value,
+      }));
+    },
+    []
+  );
+  if (addPatientLoading) {
     return (
       <GifWrapper>
-        <Gif src={loadingGif} />;
-      </GifWrapper>
-    );
-
-  if (isCompleted) {
-    return (
-      <GifWrapper>
-        <Gif src={completedGif} />
+        <Gif src={loadingGif} />
       </GifWrapper>
     );
   }
 
-  console.log('render');
-
-
   return (
     <>
       <ModalTitle>Add Patient</ModalTitle>
-      <form id='patientForm' onSubmit={handleAddPatientSubmit}>
-        <PatientFormContent
-          handleChange={handleChange}
-          handleSelectChange={handleSelectChange}
-          options={dentists}
-          errors={errors}
-        />
-      </form>
+      <PatientInformation height={height}>
+        <form id='patientForm' onSubmit={handleAddPatientSubmit}>
+          <PatientFormContent
+            handleChange={handleChange}
+            handleSelectChange={handleSelectChange}
+          />
+        </form>
+      </PatientInformation>
       <ButtonsWrapper>
         <Button onClick={() => dispatch(openModal(false))}>Cancel</Button>
         <Button primary type='submit' form='patientForm'>

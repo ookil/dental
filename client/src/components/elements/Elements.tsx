@@ -6,7 +6,6 @@ const {
   textSecondary,
   bluePrimary,
   blueSecondary,
-  bgPrimary,
   bgSecondary,
   greenConfirm,
   pinkCancel,
@@ -15,7 +14,14 @@ const {
 export const InputContainer = styled.div<{
   marginBottom?: number;
   marginTop?: number;
+  layout?: 'primary' | 'secondary';
 }>`
+  ${({ layout }) =>
+    layout === 'primary' &&
+    css`
+      position: relative;
+    `}
+
   margin-top: ${(props) => (props.marginTop ? `${props.marginTop}px` : 0)};
   margin-bottom: ${(props) =>
     props.marginBottom
@@ -23,15 +29,33 @@ export const InputContainer = styled.div<{
         ? props.marginBottom
         : `${props.marginBottom}px`
       : '15px'};
+
+  &:last-of-type {
+    margin-bottom: 0;
+  }
 `;
 
-export const Label = styled.div<{ sizing?: 'big' | 'small' }>`
-  text-transform: uppercase;
-  color: black;
-  font-size: 12px;
-  line-height: 15px;
+export const Label = styled.div<{
+  sizing?: 'big' | 'small';
+  layout?: 'primary' | 'secondary';
+}>`
+  text-transform: capitalize;
+  color: ${textPrimary};
+  font-size: 10px;
+  line-height: 10px;
   margin-bottom: 5px;
   font-weight: 500;
+
+  ${({ layout }) =>
+    layout === 'primary' &&
+    css`
+      position: absolute;
+      top: 0;
+      left: 5px;
+      transform: translateY(-50%);
+      background-color: white;
+      color: ${bluePrimary};
+    `}
 
   ${({ sizing }) =>
     sizing === 'big' &&
@@ -54,11 +78,11 @@ export const ErrorMessage = styled.small`
 `;
 
 const InputBox = css`
-  border-radius: 5px;
+  border-radius: 3px;
   width: 100%;
   height: 40px;
   box-shadow: rgb(15 15 15 / 10%) 0px 0px 0px 1px inset;
-  background-color: rgba(242, 241, 238, 0.6);
+  background-color: rgb(244 244 244 / 60%);
   color: ${textPrimary};
   font-weight: 500;
   font-family: 'Montserrat';
@@ -213,10 +237,10 @@ export const ListItem = styled.li<{
   `}
 `;
 
-export const Button = styled.button<{ primary?: boolean }>`
+export const Button = styled.button<{ primary?: boolean;}>`
   border: none;
   cursor: pointer;
-  border-radius: 15px;
+  border-radius: 10px;
   padding: 0.5em 1em;
   font-weight: 500;
   box-shadow: 0 3px 6px 0px #777777;
