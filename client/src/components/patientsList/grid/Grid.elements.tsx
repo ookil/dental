@@ -6,8 +6,8 @@ import { GifWrapper } from '../../elements/Elements';
 
 const { bluePrimary, blueHover } = color;
 
-export const Root = styled.div`
-  height: calc(100% - 55px);
+export const Root = styled.div<{ searchOnly: boolean }>`
+  height: ${({searchOnly}) => searchOnly ? '100%' : 'calc(100% - 55px)' } ;
   width: 100%;
   position: relative;
 

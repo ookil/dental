@@ -4,11 +4,7 @@ import { ADD_PATIENT } from '../../graphql/queries/patient';
 import { changeResponseModal, openModal } from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
 import { Button, Gif, GifWrapper } from '../elements/Elements';
-import {
-  ButtonsWrapper,
-  ModalTitle,
-  PatientInformation,
-} from './Modals.elements';
+import { ButtonsWrapper, ModalTitle, ScrollBox } from './Modals.elements';
 import { PatientFormContent } from './PatientFormContent';
 import { clinicIdVar } from '../../cache';
 import {
@@ -123,14 +119,14 @@ const AddPatientContent: React.FC = () => {
   return (
     <>
       <ModalTitle>Add Patient</ModalTitle>
-      <PatientInformation height={height}>
+      <ScrollBox height={height}>
         <form id='patientForm' onSubmit={handleAddPatientSubmit}>
           <PatientFormContent
             handleChange={handleChange}
             handleSelectChange={handleSelectChange}
           />
         </form>
-      </PatientInformation>
+      </ScrollBox>
       <ButtonsWrapper>
         <Button onClick={() => dispatch(openModal(false))}>Cancel</Button>
         <Button primary type='submit' form='patientForm'>

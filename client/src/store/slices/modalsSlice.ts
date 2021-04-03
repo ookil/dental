@@ -2,7 +2,13 @@ import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { format } from 'date-fns';
 import { GetPatients_clinicPatients } from '../../graphql/queries/__generated__/GetPatients';
 
-type ModalsName = 'NEW_APPOINTMENT' | 'ADD_PATIENT' | false;
+type ModalsName =
+  | 'NEW_APPOINTMENT'
+  | 'NEW_PATIENT_VISIT'
+  | 'PATIENT_VISIT'
+  | 'FIND_PATIENT'
+  | 'ADD_PATIENT'
+  | false;
 
 export type ResponseStatus = 'CONFIRMATION' | 'CANCELATION' | 'ERROR' | false;
 

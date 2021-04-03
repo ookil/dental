@@ -32,7 +32,11 @@ const MobileNavbar: React.FC<MobileNavProps> = ({ isOpen }) => {
           <QuickMenuIcon src={AddPatient} />
           <QuickMenuTitle>Add Patient</QuickMenuTitle>
         </QuickMenuItem>
-        <QuickMenuItem>
+        <QuickMenuItem
+          onClick={() => {
+            dispatch(openModal('FIND_PATIENT'));
+          }}
+        >
           <QuickMenuIcon src={Search} />
           <QuickMenuTitle>Search</QuickMenuTitle>
         </QuickMenuItem>

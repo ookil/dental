@@ -44,7 +44,6 @@ const ResponseModal = () => {
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (status ? true : false) {
-      console.log('open');
 
       if (countdown < 1) {
         handleClose();

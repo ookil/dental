@@ -86,7 +86,11 @@ const Navbar: React.FC = () => {
               <Text>Add Patient</Text>
             </QuickMenuItem>
 
-            <QuickMenuItem>
+            <QuickMenuItem
+              onClick={() => {
+                dispatch(openModal('FIND_PATIENT'));
+              }}
+            >
               <Text>Find Patient</Text>
             </QuickMenuItem>
           </QuickMenu>

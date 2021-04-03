@@ -45,6 +45,7 @@ export const Label = styled.div<{
   line-height: 10px;
   margin-bottom: 5px;
   font-weight: 500;
+  z-index: 1;
 
   ${({ layout }) =>
     layout === 'primary' &&
@@ -124,6 +125,7 @@ export const SelectContainer = styled.div<{
   marginTop?: number;
   sizing?: 'big' | 'small';
   hiddenSize?: string;
+  layout?: 'primary';
 }>`
   width: ${({ sizing }) => (sizing === 'small' ? 'auto' : '100%')};
   margin-top: ${(props) => (props.marginTop ? `${props.marginTop}px` : 0)};
@@ -136,6 +138,12 @@ export const SelectContainer = styled.div<{
       @media (max-width: ${hiddenSize}) {
         display: none;
       }
+    `}
+
+  ${({ layout }) =>
+    layout === 'primary' &&
+    css`
+      position: relative;
     `}
 `;
 
@@ -159,14 +167,17 @@ export const DisplayValue = styled.p<{ sizing?: 'big' | 'small' }>`
   line-height: 40px;
   white-space: nowrap;
   padding-right: 24px;
+  font-size: 0.9em;
   ${({ sizing }) =>
     sizing === 'big' &&
     css`
       line-height: 45px;
+      font-size: 1em;
     `}
 
   span {
     color: ${textSecondary};
+    font-size: 0.9em;
   }
 `;
 
@@ -216,6 +227,7 @@ export const ListItem = styled.li<{
   cursor: pointer;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-size: 0.9em;
   background-color: ${(props) => (props.isActive ? blueSecondary : 'inherit')};
   color: ${(props) => (props.isActive ? 'white' : 'inherit')};
 
@@ -237,23 +249,75 @@ export const ListItem = styled.li<{
   `}
 `;
 
-export const Button = styled.button<{ primary?: boolean;}>`
+export const Button = styled.button<{
+  search?: boolean;
+  primary?: boolean;
+  secondary?: boolean;
+  width?: string;
+}>`
+  width: ${({ width }) => (width ? width : 'auto')};
   border: none;
   cursor: pointer;
   border-radius: 10px;
   padding: 0.5em 1em;
   font-weight: 500;
-  box-shadow: 0 3px 6px 0px #777777;
-  background-color: ${(props) => (props.primary ? bluePrimary : bgSecondary)};
-  color: ${(props) => (props.primary ? 'white' : bluePrimary)};
+  box-shadow: 0 1px 4.8px 0px #777777;
+
+  ${({ primary, secondary, search }) => {
+    if (primary) {
+      return css`
+        background-color: ${bluePrimary};
+        color: white;
+
+        &:hover {
+          background-color: ${greenConfirm};
+          color: white;
+        }
+      `;
+    }
+
+    if (secondary) {
+      return css`
+        background-color: ${bluePrimary};
+        color: white;
+
+        &:hover {
+          background-color: white;
+          color: ${bluePrimary};
+        }
+      `;
+    }
+    if (search) {
+      return css`
+        box-shadow: 0 1px 4.8px 0px #777777;
+        background-color: ${bluePrimary};
+        color: white;
+
+        &:hover {
+          background-color: white;
+          color: ${bluePrimary};
+        }
+
+        @media (max-width: 426px) {
+          display: none;
+        }
+      `;
+    } else {
+      return css`
+        background-color: ${bgSecondary};
+        color: ${bluePrimary};
+        padding: 0.39em 1em;
+
+        &:hover {
+          background-color: ${bgSecondary};
+          color: ${pinkCancel};
+        }
+      `;
+    }
+  }}
 
   &:focus {
     outline: none;
-  }
-
-  &:hover {
-    background-color: ${(props) => props.primary && greenConfirm};
-    color: ${(props) => (props.primary ? 'white' : pinkCancel)};
   }
 `;
 
@@ -283,7 +347,8 @@ export const Gif = styled.img`
 
 export const Form = styled.form`
   height: 55%;
-  width: 100%;
+  display: flex;
+  flex-grow: 1;
 `;
 
 export const StyledSearch = styled.input`

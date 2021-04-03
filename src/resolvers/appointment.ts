@@ -211,9 +211,6 @@ export class AppointmentResolver {
       if (typeof newPatientData.clinicId === 'string')
         newPatientData.clinicId = parseInt(newPatientData.clinicId);
 
-      if (typeof newPatientData.dentistId === 'string')
-        newPatientData.dentistId = parseInt(newPatientData.dentistId);
-
       const newAppointment = await prisma.appointment.create({
         data: {
           treatment: appointmentData.treatment,
@@ -233,16 +230,10 @@ export class AppointmentResolver {
             create: {
               name: newPatientData.name,
               surname: newPatientData.surname,
-              email: newPatientData.email,
-              nationalId: newPatientData.nationalId,
+              mobile: newPatientData.mobile,
               clinic: {
                 connect: {
                   id: newPatientData.clinicId,
-                },
-              },
-              dentist: {
-                connect: {
-                  id: newPatientData.dentistId,
                 },
               },
             },

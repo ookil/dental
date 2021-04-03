@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import {
-
-  ModalContainer,
-  StyledModal,
-} from './Modals.elements';
+import { ModalContainer, StyledModal } from './Modals.elements';
 import { RootState, useAppDispatch } from '../../store/store';
 import { openModal } from '../../store/slices/modalsSlice';
 import AddPatientContent from './AddPatientContent';
 import NewAppointmentContent from './NewAppointmentContent';
+import PatientVisit from './PatientVisit';
+import FindPatient from './FindPatient';
 
 const MainModal: React.FC = () => {
   const [opacity, setOpacity] = useState(0);
@@ -38,14 +36,16 @@ const MainModal: React.FC = () => {
     });
   }
 
-
   let content;
 
-  
   if (isOpenModal === 'NEW_APPOINTMENT') {
     content = <NewAppointmentContent />;
   } else if (isOpenModal === 'ADD_PATIENT') {
     content = <AddPatientContent />;
+  } else if (isOpenModal === 'NEW_PATIENT_VISIT') {
+    content = <PatientVisit />;
+  } else if (isOpenModal === 'FIND_PATIENT') {
+    content = <FindPatient />;
   } else {
     content = null;
   }

@@ -29,6 +29,7 @@ type Props = {
   handleSelectChange: (key: string, value: any) => void;
   renderOverride?: () => JSX.Element;
   hiddenSize?: string;
+  layout?: 'primary';
 };
 
 const Select: React.FC<Props> = ({
@@ -47,6 +48,7 @@ const Select: React.FC<Props> = ({
   handleSelectChange,
   renderOverride,
   hiddenSize,
+  layout,
 }) => {
   const dropdownRef = useRef<HTMLDivElement>();
 
@@ -73,8 +75,9 @@ const Select: React.FC<Props> = ({
       marginTop={marginTop}
       sizing={sizing}
       hiddenSize={hiddenSize}
+      layout={layout}
     >
-      <Label sizing={sizing}>
+      <Label sizing={sizing} layout={layout}>
         {label}
         {isError && <ErrorMessage>{errorMsg}</ErrorMessage>}
       </Label>

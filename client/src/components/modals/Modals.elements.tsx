@@ -61,12 +61,15 @@ export const ModalTitle = styled.div`
   color: ${bluePrimary};
 `;
 
-export const PatientInformation = styled.div<{ height?: number }>`
+export const ScrollBox = styled.div<{
+  height?: number;
+  padding?: string;
+}>`
   width: auto;
   min-height: 0px;
   max-height: 680px;
   height: ${({ height }) => height && `${height - 200}px`};
-  padding: 0.5em 1em;
+  padding: ${({ padding }) => (padding ? padding : '0.5em 1em')};
   overflow: auto;
 `;
 

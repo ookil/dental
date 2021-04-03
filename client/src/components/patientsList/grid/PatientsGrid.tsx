@@ -54,7 +54,35 @@ const sortingColumns = [
   { columnName: 'appointments', sortingEnabled: true },
 ];
 
+const getColumns = (searchOnly: boolean) => {
+  if (searchOnly) {
+    return [
+      { name: 'surname', title: 'Last Name' },
+      { name: 'name', title: 'First Name' },
+      { name: 'mobile', title: 'Phone Number' },
+      { name: 'bday', title: 'Birth Date' },
+    ];
+  } else {
+    return [
+      { name: 'surname', title: 'Last Name' },
+      { name: 'name', title: 'First Name' },
+      { name: 'mobile', title: 'Phone Number' },
+      { name: 'bday', title: 'Birth Date' },
+      {
+        name: 'appointments',
+        title: 'Recent visit',
+        getCellValue: (row: any) =>
+          row.appointments[0]
+            ? format(row.appointments[0].endAt, 'dd/MM/yyyy')
+            : null,
+      },
+      { name: 'id', title: ' ', getCellValue: () => <MoreButton /> },
+    ];
+  }
+};
+
 type Props = {
+  searchOnly?: boolean;
   searchQuery: string;
   totalCount: number;
   setTotalCount: React.Dispatch<React.SetStateAction<number>>;
@@ -65,26 +93,13 @@ type Props = {
 };
 
 const PatientsGrid = ({
+  searchOnly = false,
   searchQuery,
   totalCount,
   setTotalCount,
   paging: { currentPage, setCurrentPage },
 }: Props) => {
-  const [columns] = useState([
-    { name: 'surname', title: 'Last Name' },
-    { name: 'name', title: 'First Name' },
-    { name: 'mobile', title: 'Phone Number' },
-    { name: 'bday', title: 'Birth Date' },
-    {
-      name: 'appointments',
-      title: 'Recent visit',
-      getCellValue: (row: any) =>
-        row.appointments[0]
-          ? format(row.appointments[0].endAt, 'dd/MM/yyyy')
-          : null,
-    },
-    { name: 'id', title: ' ', getCellValue: () => <MoreButton /> },
-  ]);
+  const [columns, setColumns] = useState(getColumns(searchOnly));
 
   const [selection, setSelection] = useState<(string | number)[] | undefined>(
     []
@@ -116,10 +131,19 @@ const PatientsGrid = ({
     },
   });
 
-  const rows = data?.getOffsetPatients.patients || [];
+  let rows: any[] = [];
+  if (searchOnly) {
+    if (searchQuery === '') {
+      rows = [];
+    } else {
+      rows = data?.getOffsetPatients.patients || [];
+    }
+  } else {
+    rows = data?.getOffsetPatients.patients || [];
+  }
 
   return (
-    <Root>
+    <Root searchOnly={searchOnly}>
       <Grid columns={columns} rows={rows}>
         <SortingState
           sorting={sorting}
@@ -151,11 +175,13 @@ const PatientsGrid = ({
           columnExtensions={tableColumnExtensions}
         />
         <TableHeaderRow showSortingControls />
-        <TableSelection
-          headerCellComponent={HeaderSelectionCell}
-          cellComponent={SelectionCell}
-          showSelectAll
-        />
+        {!searchOnly && (
+          <TableSelection
+            headerCellComponent={HeaderSelectionCell}
+            cellComponent={SelectionCell}
+            showSelectAll
+          />
+        )}
 
         <PagingPanel />
       </Grid>
