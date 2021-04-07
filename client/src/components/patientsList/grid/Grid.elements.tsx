@@ -2,12 +2,17 @@ import { Table, TableSelection } from '@devexpress/dx-react-grid-material-ui';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import { color } from '../../../globalStyles';
+import {
+  openModal,
+  patientForAppointment,
+} from '../../../store/slices/modalsSlice';
+import { useAppDispatch } from '../../../store/store';
 import { GifWrapper } from '../../elements/Elements';
 
 const { bluePrimary, blueHover } = color;
 
 export const Root = styled.div<{ searchOnly: boolean }>`
-  height: ${({searchOnly}) => searchOnly ? '100%' : 'calc(100% - 55px)' } ;
+  height: ${({ searchOnly }) => (searchOnly ? '100%' : 'calc(100% - 55px)')};
   width: 100%;
   position: relative;
 
@@ -94,15 +99,33 @@ const VisitCell = styled(StyledCell)`
   }
 `;
 
-export const Cell = (props: Table.DataCellProps) => {
-  const { column, row } = props;
+interface ICell extends Table.DataCellProps {
+  selectingPatientForAppointment: boolean;
+}
+
+export const Cell = (props: ICell) => {
+  const { column, row, selectingPatientForAppointment, ...restProps } = props;
+  const dispatch = useAppDispatch();
+
   const history = useHistory();
   if (column.name === 'appointments' && row.appointments.length > 0) {
     return <VisitCell {...props} onClick={() => alert('vist')} />;
   }
 
   return (
-    <StyledCell {...props} onClick={() => history.push(`/patient/${row.id}`)} />
+    <StyledCell
+      {...restProps}
+      column={column}
+      row={row}
+      onClick={() => {
+        if (selectingPatientForAppointment) {
+          dispatch(patientForAppointment(row.id));
+        } else {
+          history.push(`/patient/${row.id}`);
+          dispatch(openModal(false));
+        }
+      }}
+    />
   );
 };
 

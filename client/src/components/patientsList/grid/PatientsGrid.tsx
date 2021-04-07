@@ -35,6 +35,8 @@ import loadingGif from '../../../images/loading.gif';
 import { useQuery } from '@apollo/client';
 import { GET_OFFSET_PATIENTS } from '../../../graphql/queries/patient';
 import { clinicIdVar } from '../../../cache';
+import { RootState } from '../../../store/store';
+import { useSelector } from 'react-redux';
 
 type ColumnExtensionsType = {
   columnName: string;
@@ -99,7 +101,7 @@ const PatientsGrid = ({
   setTotalCount,
   paging: { currentPage, setCurrentPage },
 }: Props) => {
-  const [columns, setColumns] = useState(getColumns(searchOnly));
+  const [columns] = useState(getColumns(searchOnly));
 
   const [selection, setSelection] = useState<(string | number)[] | undefined>(
     []
@@ -142,6 +144,10 @@ const PatientsGrid = ({
     rows = data?.getOffsetPatients.patients || [];
   }
 
+  const selectingPatientForAppointment = useSelector(
+    (state: RootState) => state.modal.selectingPatientForAppointment
+  );
+
   return (
     <Root searchOnly={searchOnly}>
       <Grid columns={columns} rows={rows}>
@@ -170,7 +176,12 @@ const PatientsGrid = ({
 
         <Table
           headComponent={Header}
-          cellComponent={Cell}
+          cellComponent={(props) => (
+            <Cell
+              {...props}
+              selectingPatientForAppointment={selectingPatientForAppointment}
+            />
+          )}
           rowComponent={Row}
           columnExtensions={tableColumnExtensions}
         />

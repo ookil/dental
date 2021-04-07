@@ -1,19 +1,19 @@
 import { useMutation, useQuery } from '@apollo/client';
 import { addMinutes } from 'date-fns';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { CREATE_APPOINTMENT } from '../../graphql/queries/appointments';
 import { GET_CLINIC_DENTISTS } from '../../graphql/queries/dentist';
-import { GET_CLINIC_PATIENTS } from '../../graphql/queries/patient';
 import { GET_TREATMENTS } from '../../graphql/queries/treatment';
 import {
   changeResponseModal,
   openModal,
+  patientSelector,
   setAvailableAppointments,
 } from '../../store/slices/modalsSlice';
 import { useAppDispatch, RootState } from '../../store/store';
 import CustomDayPicker from '../daypicker/CustomDayPicker';
-import { BigErrorMessage, Button, Gif, GifWrapper } from '../elements/Elements';
+import { Button, Gif, GifWrapper } from '../elements/Elements';
 import Select from '../elements/Select';
 import {
   ButtonsWrapper,
@@ -23,7 +23,6 @@ import {
   ScrollBox,
 } from './Modals.elements';
 import loadingGif from '../../images/loading.gif';
-import completedGif from '../../images/completed.gif';
 import { GET_CLINIC } from '../../graphql/queries/clinic';
 import { clinicIdVar } from '../../cache';
 import {
@@ -43,6 +42,11 @@ import {
   GetTreatmentsVariables,
 } from '../../graphql/queries/__generated__/GetTreatments';
 import Input from '../elements/Input';
+import { SELECTED_PATIENT } from '../../graphql/queries/patient';
+import {
+  SelectedPatient,
+  SelectedPatientVariables,
+} from '../../graphql/queries/__generated__/SelectedPatient';
 
 type Appointment = {
   patientId: string;
@@ -54,20 +58,31 @@ type Appointment = {
 
 const PatientVisit: React.FC = () => {
   const dispatch = useAppDispatch();
-  const [isCompleted, setCompleted] = useState(false);
-  const [errors, setErrors] = useState<string[]>([]);
-  const [height, setHeight] = useState<number>();
+
+  /*   const [height, setHeight] = useState<number>();
 
   useEffect(() => {
     const windowHeight = window.screen.height;
     setHeight(windowHeight);
-  }, []);
+  }, []); */
+
+  const { isNewPatient, patientId } = useSelector(patientSelector);
 
   const availableAppointments = useSelector(
     (state: RootState) => state.modal.availableAppointments
   );
 
   const clinicId = clinicIdVar();
+
+  const { data: selectedPatient } = useQuery<
+    SelectedPatient,
+    SelectedPatientVariables
+  >(SELECTED_PATIENT, {
+    variables: {
+      patientId,
+    },
+    skip: patientId === '' ? true : false,
+  });
 
   const { data: clinicData } = useQuery<GetClinic, GetClinicVariables>(
     GET_CLINIC,
@@ -80,7 +95,6 @@ const PatientVisit: React.FC = () => {
 
   const duration = clinicData?.clinic?.settings.appointmentDuration;
 
-  const [isNewPatient, setNewPatient] = useState(true);
   const [patientData, setPatientData] = useState({
     name: '',
     surname: '',
@@ -89,17 +103,16 @@ const PatientVisit: React.FC = () => {
 
   const [appointmentData, setAppointmentData] = useState<Appointment>({
     dentistId: '',
-    patientId: '',
+    patientId,
     startAt: '',
     endAt: '',
     treatment: '',
   });
 
-  const {
-    loading: dentistLoading,
-    data: dentistQuery,
-    error: dentistsError,
-  } = useQuery<GetDentists, GetDentistsVariables>(GET_CLINIC_DENTISTS, {
+  const { loading: dentistLoading, data: dentistQuery } = useQuery<
+    GetDentists,
+    GetDentistsVariables
+  >(GET_CLINIC_DENTISTS, {
     variables: {
       clinicId,
     },
@@ -108,11 +121,10 @@ const PatientVisit: React.FC = () => {
 
   const dentists = dentistQuery?.clinicDentists || [];
 
-  const {
-    data: treatmentQuery,
-    loading: treatmentsLoading,
-    error: treatmentsError,
-  } = useQuery<GetTreatments, GetTreatmentsVariables>(GET_TREATMENTS);
+  const { data: treatmentQuery, loading: treatmentsLoading } = useQuery<
+    GetTreatments,
+    GetTreatmentsVariables
+  >(GET_TREATMENTS);
 
   const treatments = treatmentQuery && treatmentQuery.treatments;
 
@@ -139,7 +151,7 @@ const PatientVisit: React.FC = () => {
 
   const [
     createAppointment,
-    { error: createAppointmentError, loading: loadingCreateAppointment },
+    { loading: loadingCreateAppointment },
   ] = useMutation<CreateAppointment, CreateAppointmentVariables>(
     CREATE_APPOINTMENT,
     {
@@ -171,7 +183,6 @@ const PatientVisit: React.FC = () => {
     ).toISOString();
 
   const handleSubmit = (e: React.SyntheticEvent) => {
-    setErrors([]);
     e.preventDefault();
     if (appointmentData.dentistId === '') {
       dispatch(
@@ -189,8 +200,6 @@ const PatientVisit: React.FC = () => {
         })
       );
     }
-    if (appointmentData.patientId === '')
-      setErrors((errors) => [...errors, 'patient']);
 
     const isAppointmentData =
       appointmentData.dentistId &&
@@ -228,21 +237,6 @@ const PatientVisit: React.FC = () => {
     }
   };
 
-  if (dentistsError || treatmentsError || createAppointmentError) {
-    setTimeout(() => dispatch(openModal(false)), 2000);
-    return (
-      <BigErrorMessage>Something went wrong, please try again</BigErrorMessage>
-    );
-  }
-
-  if (isCompleted) {
-    return (
-      <GifWrapper>
-        <Gif src={completedGif} />
-      </GifWrapper>
-    );
-  }
-
   if (dentistLoading || treatmentsLoading || loadingCreateAppointment) {
     return (
       <GifWrapper>
@@ -265,6 +259,8 @@ const PatientVisit: React.FC = () => {
               maxLength={30}
               onChange={(e) => handlePatientChange(e)}
               layout='primary'
+              readOnly={!isNewPatient}
+              value={selectedPatient?.patient?.name}
             />
             <Input
               label='surname'
@@ -272,10 +268,10 @@ const PatientVisit: React.FC = () => {
               type='text'
               minLength={3}
               maxLength={30}
-              isError={errors?.includes('surname')}
-              errorMsg='Please provide surname shorther than or equal 30 characters'
               onChange={(e) => handlePatientChange(e)}
               layout='primary'
+              readOnly={!isNewPatient}
+              value={selectedPatient?.patient?.surname}
             />
             <Input
               label='mobile'
@@ -285,6 +281,8 @@ const PatientVisit: React.FC = () => {
               maxLength={30}
               onChange={(e) => handlePatientChange(e)}
               layout='primary'
+              readOnly={!isNewPatient}
+              value={selectedPatient?.patient?.mobile || ''}
             />
           </InfoBox>
 
@@ -318,8 +316,6 @@ const PatientVisit: React.FC = () => {
               <Select
                 fieldName='startAt'
                 readFrom='dateString'
-                isError={errors.includes('startAt')}
-                errorMsg='Please select time'
                 displayValue='formatedDate'
                 placeholder='Select time'
                 options={availableAppointments}

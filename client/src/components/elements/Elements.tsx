@@ -118,6 +118,13 @@ export const StyledInput = styled.input<{
 
   ${({ sizing }) => sizing === 'big' && SizingBig}
   box-shadow: ${({ isError }) => isError && '#e3339d7d 0px 0px 0px 1px inset'};
+
+  ${({ readOnly }) =>
+    readOnly &&
+    `
+    outline: none;
+    cursor: default;
+  `}
 `;
 
 export const SelectContainer = styled.div<{

@@ -5,6 +5,12 @@ export const cache = new InMemoryCache({
   typePolicies: {
     Query: {
       fields: {
+        patient(_, { args, toReference }) {
+          return toReference({
+            __typename: 'Patient',
+            id: args?.id,
+          });
+        },
         clinicAppointments: {
           //keyArgs: ['clinicId'],
           merge(_, incoming) {

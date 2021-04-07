@@ -1,6 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
-import { openModal } from '../../store/slices/modalsSlice';
+import {
+  changeSelectingPatientForAppointment,
+  openModal,
+  patientForAppointment,
+} from '../../store/slices/modalsSlice';
 import { useAppDispatch } from '../../store/store';
 import { Button } from '../elements/Elements';
 
@@ -21,6 +25,7 @@ const NewAppointmentContent = () => {
         secondary
         width={'100%'}
         onClick={() => {
+          dispatch(changeSelectingPatientForAppointment(true));
           dispatch(openModal('FIND_PATIENT'));
         }}
       >
@@ -30,7 +35,7 @@ const NewAppointmentContent = () => {
         secondary
         width={'100%'}
         onClick={() => {
-          dispatch(openModal('NEW_PATIENT_VISIT'));
+          dispatch(patientForAppointment(''));
         }}
       >
         New Patient
