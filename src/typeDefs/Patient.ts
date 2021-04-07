@@ -61,7 +61,7 @@ export class Patient {
   @Length(3, 100)
   phone?: string | null;
 
-  @Field(() => PatientAddress)
+  @Field(() => PatientAddress, { nullable: true })
   address?: PatientAddress;
 
   @Field()

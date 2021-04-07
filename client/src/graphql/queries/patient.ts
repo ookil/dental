@@ -11,6 +11,41 @@ export const SELECTED_PATIENT = gql`
   }
 `;
 
+export const GET_FULL_PATIENT = gql`
+  query GetFullPatient($patientId: ID!) {
+    patient(id: $patientId) {
+      id
+      name
+      surname
+      nationalId
+      bday
+      email
+      mobile
+      phone
+      address {
+        street
+        houseNum
+        city
+        zipCode
+        country
+      }
+      active
+      appointments {
+        treatment
+        startAt
+        endAt
+        createdAt
+        status
+        dentist {
+          id
+          name
+          surname
+        }
+      }
+    }
+  }
+`;
+
 export const GET_CLINIC_PATIENTS = gql`
   query GetPatients($clinicId: ID!) {
     clinicPatients(id: $clinicId) {

@@ -13,7 +13,7 @@ import { Gif, GifWrapper } from './components/elements/Elements';
 import { ModalBackground } from './components/modals/Modals.elements';
 import GlobalStyle from './globalStyles';
 import { GET_LOGGED_USER } from './graphql/queries/user';
-import { Calendar, Dashboard, Patients } from './pages';
+import { Calendar, Dashboard, Patient, Patients } from './pages';
 import store from './store/store';
 import loadingGif from './images/loading.gif';
 import { GET_CLINIC } from './graphql/queries/clinic';
@@ -59,6 +59,7 @@ function App() {
                 <Route exact path='/dashboard' component={Dashboard} />
                 <Route exact path='/calendar' component={Calendar} />
                 <Route exact path='/patients' component={Patients} />
+                <Route exact path='/patient/:id' component={Patient} />
               </MainContainer>
             </Switch>
             <MainModal />
