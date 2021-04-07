@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { openModal } from '../../store/slices/modalsSlice';
-import { useAppDispatch } from '../../store/store';
+import { useSelector } from 'react-redux';
+import { patientForAppointment } from '../../store/slices/modalsSlice';
+import { RootState, useAppDispatch } from '../../store/store';
 import { Button } from '../elements/Elements';
 import Search from '../elements/Search';
 import PatientsGrid from '../patientsList/grid/PatientsGrid';
@@ -16,6 +17,10 @@ const FindPatient = () => {
 
   const dispatch = useAppDispatch();
 
+  const selectingPatientForAppointment = useSelector(
+    (state: RootState) => state.modal.selectingPatientForAppointment
+  );
+
   return (
     <>
       <ModalTitle>Find Patient</ModalTitle>
@@ -24,9 +29,15 @@ const FindPatient = () => {
           placeholder='Search...'
           onEnter={(value) => setSearchQuery(value)}
         />
-        <Button onClick={() => dispatch(openModal('NEW_PATIENT_VISIT'))}>
-          New Patient
-        </Button>
+        {selectingPatientForAppointment && (
+          <Button
+            onClick={() => {
+              dispatch(patientForAppointment(''));
+            }}
+          >
+            New Patient
+          </Button>
+        )}
       </Header>
       <ScrollBox height={600} padding={'0.5em 0em'}>
         <PatientsGrid

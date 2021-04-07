@@ -2,7 +2,10 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { ModalContainer, StyledModal } from './Modals.elements';
 import { RootState, useAppDispatch } from '../../store/store';
-import { openModal } from '../../store/slices/modalsSlice';
+import {
+  changeSelectingPatientForAppointment,
+  openModal,
+} from '../../store/slices/modalsSlice';
 import AddPatientContent from './AddPatientContent';
 import NewAppointmentContent from './NewAppointmentContent';
 import PatientVisit from './PatientVisit';
@@ -19,6 +22,7 @@ const MainModal: React.FC = () => {
 
   const handleClose = () => {
     dispatch(openModal(false));
+    dispatch(changeSelectingPatientForAppointment(false));
   };
 
   function beforeOpen() {

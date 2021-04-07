@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { format } from 'date-fns';
 import { GetPatients_clinicPatients } from '../../graphql/queries/__generated__/GetPatients';
+import { RootState } from '../store';
 
 type ModalsName =
   | 'NEW_APPOINTMENT'
@@ -27,6 +28,9 @@ interface GetPatients extends GetPatients_clinicPatients {
 }
 
 type SliceState = {
+  isNewPatient: boolean;
+  patientId: string;
+  selectingPatientForAppointment: boolean;
   isOpenModal: ModalsName;
   isResponseModal: ResponseModal;
   patients: Array<GetPatients> | null;
@@ -35,6 +39,9 @@ type SliceState = {
 };
 
 const initialState: SliceState = {
+  isNewPatient: true,
+  patientId: '',
+  selectingPatientForAppointment: false,
   isOpenModal: false,
   isResponseModal: {
     status: false,
@@ -51,6 +58,25 @@ const modalsSlice = createSlice({
   reducers: {
     openModal: (state, action: PayloadAction<ModalsName>) => {
       state.isOpenModal = action.payload;
+    },
+    changeSelectingPatientForAppointment: (
+      state,
+      action: PayloadAction<boolean>
+    ) => {
+      state.selectingPatientForAppointment = action.payload;
+    },
+    setPatientForAppointment: (
+      state,
+      action: PayloadAction<string | false>
+    ) => {
+      if (action.payload) {
+        state.patientId = action.payload;
+        state.isNewPatient = false;
+        state.selectingPatientForAppointment = false;
+      } else {
+        state.patientId = '';
+        state.isNewPatient = true;
+      }
     },
     changeResponseModal: (state, action: PayloadAction<ResponseModal>) => {
       state.isResponseModal.status = action.payload.status;
@@ -88,13 +114,30 @@ const modalsSlice = createSlice({
   },
 });
 
+export const patientSelector = (state: RootState) => {
+  const isNewPatient = state.modal.isNewPatient;
+  const patientId = state.modal.patientId;
+
+  return { isNewPatient, patientId };
+};
+
 export const {
   openModal,
   changeResponseModal,
+  changeSelectingPatientForAppointment,
   setPatients,
+  setPatientForAppointment,
   filterPatients,
   clearFilteredPatients,
   setAvailableAppointments,
 } = modalsSlice.actions;
+
+// correct types??
+export const patientForAppointment = (patientId: string) => {
+  return (dispatch: any) => {
+    dispatch(openModal('NEW_PATIENT_VISIT'));
+    dispatch(setPatientForAppointment(patientId));
+  };
+};
 
 export default modalsSlice.reducer;
