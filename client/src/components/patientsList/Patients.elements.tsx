@@ -47,14 +47,28 @@ export const TitlePatient = styled(Link)`
 export const PatientContainer = styled.div`
   display: flex;
   width: 100%;
+  overflow: auto;
+  height: 100%;
   padding: 20px 25px;
+  position: relative;
+
+  @media (max-width: ${size.mobileL}) {
+    flex-wrap: wrap;
+    padding: 20px 15px 10px 15px;
+  }
 `;
 
-export const Col = styled.div`
+export const Col = styled.div<{ col?: string }>`
   flex-basis: 50%;
+  margin-left: ${({ col }) => (col === 'second' ? '20px' : 0)};
 
-  &:last-of-type {
-    margin-left: 20px;
+  @media (max-width: ${size.mobileL}) {
+    flex-basis: 100%;
+
+    &:nth-child(2) {
+      margin-left: 0;
+      margin-top: 20px;
+    }
   }
 `;
 
@@ -81,5 +95,13 @@ export const BookmarkButton = styled.button<{ isActive?: boolean }>`
 
 export const TabWrapper = styled.div`
   width: 100%;
-  height: 100%;
+  height: calc(100% - 55px);
+`;
+
+export const MutationButtons = styled.div`
+  position: sticky;
+  z-index: 5;
+  padding: 10px 20px;
+  display: flex;
+  justify-content: space-between;
 `;

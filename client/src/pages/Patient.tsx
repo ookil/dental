@@ -63,7 +63,7 @@ const Patient = () => {
   ];
 
   return (
-    <div>
+    <div style={{height: '100%'}}>
       <Header>
         <TitlePatient to={`/patient/${id}`}>
           {patient?.name + ' ' + patient?.surname}
@@ -85,6 +85,8 @@ const Patient = () => {
       {tabList.map((tab) => {
         if (tab.tabName === currentTab) {
           return <TabWrapper key={tab.tabName}>{tab.content}</TabWrapper>;
+        } else {
+          return null;
         }
       })}
     </div>

@@ -10,13 +10,11 @@ interface PatientFormProps
   > {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange: (key: string, value: string | number) => void;
-  hide?: string[];
 }
 
 export const PatientFormContent = ({
   handleChange,
   handleSelectChange,
-  hide,
 }: PatientFormProps) => (
   <>
     <InfoBox label='Personal information'>
