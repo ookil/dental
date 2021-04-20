@@ -33,6 +33,7 @@ const Toolbar: React.FC = () => {
     <ToolbarMenu isCollapsed={isCollapsed}>
       <ToolbarWrapper>
         <ToolbarLink
+          data-testid='btn-dashboard'
           to='/dashboard'
           id='dashboard'
           selected={button}
@@ -45,6 +46,7 @@ const Toolbar: React.FC = () => {
           <LinkTitle>Dashboard</LinkTitle>
         </ToolbarLink>
         <ToolbarLink
+          data-testid='btn-calendar'
           to='/calendar'
           id='calendar'
           selected={button}
@@ -57,6 +59,7 @@ const Toolbar: React.FC = () => {
           <LinkTitle>Calendar</LinkTitle>
         </ToolbarLink>
         <ToolbarLink
+          data-testid='btn-pateints'
           to='/patients'
           id='patients'
           selected={button}
@@ -69,6 +72,7 @@ const Toolbar: React.FC = () => {
           <LinkTitle>Patients List</LinkTitle>
         </ToolbarLink>
         <ToolbarLink
+          data-testid='btn-settings'
           to='/settings'
           id='settings'
           selected={button}

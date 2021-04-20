@@ -66,7 +66,7 @@ const MainModal: React.FC = () => {
         window.screen.width < 940 ? dispatch(openModal(false)) : null
       }
     >
-      <ModalContainer>{content}</ModalContainer>
+      <ModalContainer data-testid='modal-content'>{content}</ModalContainer>
     </StyledModal>
   );
 };

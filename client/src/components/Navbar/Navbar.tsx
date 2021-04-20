@@ -60,7 +60,7 @@ const Navbar: React.FC = () => {
                 <SettingsIcon />
               )}
             </CurrentPageIcon>
-            <CurrentPageTitle>
+            <CurrentPageTitle data-testid='current-page'>
               {page === 'dashboard'
                 ? 'Clinic Overview'
                 : page === 'calendar'
@@ -77,16 +77,21 @@ const Navbar: React.FC = () => {
 
           <QuickMenu>
             <QuickMenuItem
+              data-testid='btn-newAppointment'
               onClick={() => dispatch(openModal('NEW_APPOINTMENT'))}
             >
               <Text>New Appointment</Text>
             </QuickMenuItem>
 
-            <QuickMenuItem onClick={() => dispatch(openModal('ADD_PATIENT'))}>
+            <QuickMenuItem
+              data-testid='btn-addPatient'
+              onClick={() => dispatch(openModal('ADD_PATIENT'))}
+            >
               <Text>Add Patient</Text>
             </QuickMenuItem>
 
             <QuickMenuItem
+              data-testid='btn-findPatient'
               onClick={() => {
                 dispatch(openModal('FIND_PATIENT'));
               }}

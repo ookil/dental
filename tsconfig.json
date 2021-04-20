@@ -24,5 +24,6 @@
       "baseUrl": "."
     },
     "exclude": ["node_modules", "prisma", "src/tests"],
-    "include": ["./src/**/*.tsx", "./src/**/*.ts"]
+    "include": ["./src/**/*.tsx", "./src/**/*.ts"],
+    "types": ["node", "jest", "@testing-library/jest-dom"],
   }

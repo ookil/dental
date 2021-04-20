@@ -41,7 +41,7 @@ function App() {
   if (loading || userLoading)
     return (
       <GifWrapper>
-        <Gif src={loadingGif} />
+        <Gif src={loadingGif} alt='loading' />
       </GifWrapper>
     );
 

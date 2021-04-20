@@ -1,11 +1,11 @@
-import { Link } from 'react-router-dom';
+import { Link, LinkProps } from 'react-router-dom';
 import styled from 'styled-components';
 import { color, device } from '../../globalStyles';
 
-type LinkProps = {
+interface StyledLinkProps extends LinkProps {
   readonly selected: string;
   isCollapsed?: boolean;
-};
+}
 
 const {
   bgPrimary,
@@ -69,7 +69,9 @@ export const ToolbarWrapper = styled.div`
   position: relative;
 `;
 
-export const ToolbarLink = styled(Link)<LinkProps>`
+export const ToolbarLink = styled(
+  ({ isCollapsed, ...otherProps }: StyledLinkProps) => <Link {...otherProps} />
+)`
   display: flex;
   align-items: center;
   color: ${(props) =>
@@ -92,6 +94,30 @@ export const ToolbarLink = styled(Link)<LinkProps>`
     background-color: ${bgSecondary};
   }
 `;
+
+/* export const ToolbarLink = styled(Link)<LinkProps>`
+  display: flex;
+  align-items: center;
+  color: ${(props) =>
+    props.selected === props.id ? bluePrimary : textPrimary};
+  background-color: ${(props) =>
+    props.selected === props.id ? bgSecondary : 'none'};
+  padding: 10px 15px;
+  width: 100%;
+  height: 50px;
+  text-decoration: none;
+  margin-bottom: 10px;
+  visibility: visible;
+  opacity: 1;
+  ${({ isCollapsed }) => isCollapsed && 'visibility: hidden; opacity: 0;'};
+
+  transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+
+  &:hover {
+    color: ${bluePrimary};
+    background-color: ${bgSecondary};
+  }
+`; */
 
 export const LinkTitle = styled.p`
   margin-left: 10px;
