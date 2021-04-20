@@ -268,7 +268,7 @@ export const Button = styled.button<{
   border-radius: 10px;
   padding: 0.5em 1em;
   font-weight: 500;
-  box-shadow: 0 1px 4.8px 0px #777777;
+  box-shadow: 0 1px 3.5px 0px #777777;
 
   ${({ primary, secondary, search }) => {
     if (primary) {
@@ -296,7 +296,7 @@ export const Button = styled.button<{
     }
     if (search) {
       return css`
-        box-shadow: 0 1px 4.8px 0px #777777;
+        box-shadow: 0 1px 3px 0px #777777;
         background-color: ${bluePrimary};
         color: white;
 

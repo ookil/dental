@@ -11,8 +11,8 @@ export const SELECTED_PATIENT = gql`
   }
 `;
 
-export const GET_FULL_PATIENT = gql`
-  query GetFullPatient($patientId: ID!) {
+export const GET_PATIENT_INFO = gql`
+  query GetPatientInfo($patientId: ID!) {
     patient(id: $patientId) {
       id
       name
@@ -30,7 +30,16 @@ export const GET_FULL_PATIENT = gql`
         country
       }
       active
+    }
+  }
+`;
+
+export const GET_PATIENT_APPOINTMENTS = gql`
+  query GetPatientAppointments($patientId: ID!) {
+    patient(id: $patientId) {
+      id
       appointments {
+        id
         treatment
         startAt
         endAt

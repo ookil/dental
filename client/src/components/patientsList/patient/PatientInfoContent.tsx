@@ -1,15 +1,20 @@
 import React, { useState } from 'react';
-import { GetFullPatient_patient } from '../../../graphql/queries/__generated__/GetFullPatient';
+import { GetPatientInfo_patient } from '../../../graphql/queries/__generated__/GetPatientInfo';
 import DayPickerInput from '../../dayPickerInput/DayPickerInput';
 import { Button } from '../../elements/Elements';
 import Input from '../../elements/Input';
 import Switcher from '../../elements/Switcher';
 import TextArea from '../../elements/TextArea';
 import { InfoBox } from '../../modals/Modals.elements';
-import { PatientContainer, Col, MutationButtons } from '../Patients.elements';
+import {
+  PatientContainer,
+  Col,
+  MutationButtons,
+  DeletePatientButton,
+} from '../Patients.elements';
 
 type PatientInfoProps = {
-  patient: GetFullPatient_patient | null;
+  patient: GetPatientInfo_patient;
 };
 
 const PatientInfoContent = ({ patient }: PatientInfoProps) => {
@@ -25,7 +30,8 @@ const PatientInfoContent = ({ patient }: PatientInfoProps) => {
     }));
   };
 
-  const handleSelectChange = (key: string, value: number | string) => {
+  const handleSelectChange = <T extends any>(key: string, value: T) => {
+    setIsUpdated(true);
     setChangedData((prevState) => ({
       ...prevState,
       [key]: value,
@@ -227,8 +233,24 @@ const PatientInfoContent = ({ patient }: PatientInfoProps) => {
               }
             />
           </InfoBox>
-          <TextArea label='Additional information' />
-          <Switcher isActive={true} />
+          <TextArea label='Additional Information' />
+
+          <InfoBox label='Patient Status'>
+            <Switcher
+              keyName='active'
+              trueLabel='Active'
+              falseLabel='Inactive'
+              handleSwitchChange={handleSelectChange}
+              isActive={
+                isUpdated
+                  ? changedData?.active !== undefined
+                    ? changedData.active
+                    : patient.active
+                  : patient.active
+              }
+            />
+            <DeletePatientButton>Delete Patient</DeletePatientButton>
+          </InfoBox>
         </Col>
       </PatientContainer>
       {isUpdated && (

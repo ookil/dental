@@ -3,6 +3,11 @@ import { color } from '../../globalStyles';
 
 const { greenConfirm, textSecondary } = color;
 
+export const SwitcherWrapper = styled.div`
+  display: flex;
+  align-items: center;
+`;
+
 export const SwitcherBackground = styled.div<{ isActive: boolean }>`
   width: 50px;
   height: 25px;
@@ -10,6 +15,7 @@ export const SwitcherBackground = styled.div<{ isActive: boolean }>`
   background-color: ${({ isActive }) =>
     isActive ? greenConfirm : textSecondary};
   position: relative;
+  transition: all cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.2s;
 `;
 
 export const SwitcherCircle = styled.div<{ isActive: boolean }>`
@@ -26,7 +32,13 @@ export const SwitcherCircle = styled.div<{ isActive: boolean }>`
   ${({ isActive }) =>
     isActive &&
     `
-    left: auto;
-    right: 3px;
+    left: calc(100% - 24px);
   `};
 `;
+
+export const SwitcherLabel = styled.p`
+  font-size: 0.9em;
+  margin-left: 5px;
+`;
+
+

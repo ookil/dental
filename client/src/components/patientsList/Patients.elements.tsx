@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 import { size, color } from '../../globalStyles';
+import { Button } from '../elements/Elements';
 
 const { bluePrimary, textSecondary } = color;
 
@@ -104,4 +105,9 @@ export const MutationButtons = styled.div`
   padding: 10px 20px;
   display: flex;
   justify-content: space-between;
+`;
+
+export const DeletePatientButton = styled(Button)`
+  font-size: 0.9em;
+  margin-top: 20px;
 `;
