@@ -112,32 +112,44 @@ model ActionCategory {
 }
 
 model SurfaceAction {
-  id         Int            @unique
-  type       ActionType
-  category   ActionCategory @relation(fields: [categoryId], references: [id])
-  categoryId Int
-  fillColor  String
+  id          Int            @unique
+  type        ActionType
+  category    ActionCategory @relation(fields: [categoryId], references: [id])
+  categoryId  Int
+  fillColor   String
+  surfaceFill SurfaceFill?
 
 }
 
 model SurfaceFill {
-  id       String        @unique
-  fill     String
-  action   SurfaceAction @relation(fields: [actionId], references: [id])
-  actionId Int
+  id               String        @unique
+  fill             String
+  action           SurfaceAction @relation(fields: [actionId], references: [id])
+  actionId         Int
+  buccalSurface    CrownSurface? @relation("buccalFill")
+  mesialSurface    CrownSurface? @relation("mesialFill")
+  distalSurface    CrownSurface? @relation("distalFill")
+  lingualSurface   CrownSurface? @relation("lingualFill")
+  occlusialSurface CrownSurface? @relation("occlusialFill")
 }
 
 model CrownSurface {
-  id        Int          @unique
-  tooth     Tooth        @relation(fields: [toothId], references: [id])
-  toothId   String
-  buccal    SurfaceFill? @relation("buccalFill")
-  mesial    SurfaceFill? @relation("mesialFill")
-  distal    SurfaceFill? @relation("distalFill")
-  lingual   SurfaceFill? @relation("lingualFill")
-  occlusial SurfaceFill? @relation("occlusialFill")
+  id          Int          @unique
+  tooth       Tooth        @relation(fields: [toothId], references: [id])
+  toothId     String
+  buccal      SurfaceFill? @relation("buccalFill", fields: [buccalId], references: [id])
+  buccalId    String?
+  mesial      SurfaceFill? @relation("mesialFill", fields: [mesialId], references: [id])
+  mesialId    String?
+  distal      SurfaceFill? @relation("distalFill", fields: [distalId], references: [id])
+  distalId    String?
+  lingual     SurfaceFill? @relation("lingualFill", fields: [lingualId], references: [id])
+  lingualId   String?
+  occlusial   SurfaceFill? @relation("occlusialFill", fields: [surfaceFillId], references: [id])
+  occlusialId String?
 
 
+  surfaceFillId String?
   @@id([toothId])
 }
 
@@ -148,9 +160,6 @@ model Tooth {
   quadrant    Int
   toothNumber Int
   crown       CrownSurface?
-  // surface     ToothSurface
-  // treatment   Treatment    @relation(fields: [treatmentId], references: [id])
-  treatmentId Int
   createdAt   DateTime
 
   @@id([id, patientId])
@@ -162,7 +171,6 @@ model ChartRecord {
   type        String
   description String
   tooth       String
-  surface     ToothSurface
   doctor      String
   status      TreatmentStatus
   patient     Patient?        @relation(fields: [patientId], references: [id])
@@ -204,7 +212,6 @@ model Treatment {
   name        String
   description String
   category    TreatmentCategory
-  // patientTeeth Tooth[]
 }
 
 enum ActionType {
@@ -234,12 +241,12 @@ enum TreatmentStatus {
   PLANNED
 }
 
+// cant remove it?
 enum ToothSurface {
-  buccal
-  lingual
-  distal
-  mesial
-  occlusial
-  root
-  crown
+  BUCCAL
+  LINGUAL
+  DISTAL
+  MESIAL
+  ROOT
+  CROWN
 }
