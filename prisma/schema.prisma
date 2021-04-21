@@ -91,7 +91,7 @@ model Patient {
   clinic       Clinic?         @relation(fields: [clinicId], references: [id])
   clinicId     Int?
   patientChart ChartRecord[]
-  patientTeeth Teeth[]
+  patientTeeth Tooth[]
 }
 
 model PatientAddress {
@@ -104,16 +104,56 @@ model PatientAddress {
   country   String?
 }
 
-model Teeth {
-  patient     Patient      @relation(fields: [patientId], references: [id])
+model ActionCategory {
+  id      Int             @id
+  name    String
+  actions SurfaceAction[]
+
+}
+
+model SurfaceAction {
+  id         Int            @unique
+  type       ActionType
+  category   ActionCategory @relation(fields: [categoryId], references: [id])
+  categoryId Int
+  fillColor  String
+
+}
+
+model SurfaceFill {
+  id       String        @unique
+  fill     String
+  action   SurfaceAction @relation(fields: [actionId], references: [id])
+  actionId Int
+}
+
+model CrownSurface {
+  id        Int          @unique
+  tooth     Tooth        @relation(fields: [toothId], references: [id])
+  toothId   String
+  buccal    SurfaceFill? @relation("buccalFill")
+  mesial    SurfaceFill? @relation("mesialFill")
+  distal    SurfaceFill? @relation("distalFill")
+  lingual   SurfaceFill? @relation("lingualFill")
+  occlusial SurfaceFill? @relation("occlusialFill")
+
+
+  @@id([toothId])
+}
+
+model Tooth {
+  patient     Patient       @relation(fields: [patientId], references: [id])
   patientId   Int
-  id          String
-  surface     ToothSurface
-  treatment   Treatment    @relation(fields: [treatmentId], references: [id])
+  id          String        @unique
+  quadrant    Int
+  toothNumber Int
+  crown       CrownSurface?
+  // surface     ToothSurface
+  // treatment   Treatment    @relation(fields: [treatmentId], references: [id])
   treatmentId Int
   createdAt   DateTime
 
-  @@id([id, surface, patientId])
+  @@id([id, patientId])
 }
 
 model ChartRecord {
@@ -160,11 +200,16 @@ enum AppointmentStatus {
 }
 
 model Treatment {
-  id           Int               @id @default(autoincrement())
-  name         String
-  description  String
-  category     TreatmentCategory
-  patientTeeth Teeth[]
+  id          Int               @id @default(autoincrement())
+  name        String
+  description String
+  category    TreatmentCategory
+  // patientTeeth Tooth[]
+}
+
+enum ActionType {
+  DIAGNOSTIC
+  PROCEDURE
 }
 
 enum TreatmentCategory {
@@ -190,10 +235,11 @@ enum TreatmentStatus {
 }
 
 enum ToothSurface {
-  BUCCAL
-  LINGUAL
-  DISTAL
-  MESIAL
-  ROOT
-  CROWN
+  buccal
+  lingual
+  distal
+  mesial
+  occlusial
+  root
+  crown
 }

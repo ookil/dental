@@ -1,52 +1,58 @@
 import React from 'react';
-import {
-  CrownSVG,
-  RootOneSVG,
-  RootThreeSVG,
-  RootTwoSVG,
-  StyledTooth,
-  ToothNumber,
-  ToothRoot,
-  ToothWrapper,
-} from './Teeth.elements';
+import { CrownSVG } from './CrownSVG';
+import { StyledTooth, ToothNumber, ToothWrapper } from './Teeth.elements';
+import ToothRoot from './ToothRoot';
 
 type ToothProps = {
   toothNumber: number;
   quadrant: number;
 };
 
-const getRoot = (quadrant: number, toothNumber: number) => {
-  if (
-    (quadrant === 1 && toothNumber === 4) ||
-    (quadrant === 2 && toothNumber === 4) ||
-    (quadrant === 3 && (toothNumber === 6 || toothNumber === 7)) ||
-    (quadrant === 4 && (toothNumber === 6 || toothNumber === 7))
-  ) {
-    return <RootTwoSVG />;
-  }
-  if (
-    (quadrant === 1 &&
-      (toothNumber === 6 || toothNumber === 7 || toothNumber === 8)) ||
-    (quadrant === 2 &&
-      (toothNumber === 6 || toothNumber === 7 || toothNumber === 8)) ||
-    (quadrant === 3 && toothNumber === 8) ||
-    (quadrant === 4 && toothNumber === 8)
-  ) {
-    return <RootThreeSVG />;
-  } else {
-    return <RootOneSVG />;
-  }
-};
+const patientTeeth = [
+  {
+    id: '13',
+    quadrant: 1,
+    toothNumber: 3,
+    crown: {
+      buccal: 'yellow',
+      mesial: 'skyblue',
+      occlusal: 'green',
+    },
+    root: {
+      rootOne: 'red',
+    },
+  },
+  {
+    id: '21',
+    quadrant: 2,
+    toothNumber: 1,
+    crown: {
+      buccal: 'red',
+      mesial: 'skyblue',
+    },
+    root: {},
+  },
+];
 
 const Tooth = ({ quadrant, toothNumber }: ToothProps) => {
+  /* const tooth = patientTeeth.quadrant[1].teeth.find(
+    (tooth) => tooth.id === toothNumber
+  ); */
+
+  const tooth = patientTeeth.find(
+    (tooth) => tooth.quadrant === quadrant && tooth.toothNumber === toothNumber
+  );
+
   if (quadrant === 1 || quadrant === 2) {
     return (
       <ToothWrapper>
-        <StyledTooth>
-          <ToothRoot quadrant={quadrant}>
-            {getRoot(quadrant, toothNumber)}
-          </ToothRoot>
-          <CrownSVG />
+        <StyledTooth quadrant={quadrant}>
+          <CrownSVG crown={tooth?.crown || {}} />
+          <ToothRoot
+            root={tooth?.root || {}}
+            quadrant={quadrant}
+            toothNumber={toothNumber}
+          />
         </StyledTooth>
         <ToothNumber>{toothNumber}</ToothNumber>
       </ToothWrapper>
@@ -56,11 +62,13 @@ const Tooth = ({ quadrant, toothNumber }: ToothProps) => {
   return (
     <ToothWrapper>
       <ToothNumber>{toothNumber}</ToothNumber>
-      <StyledTooth>
-        <CrownSVG />
-        <ToothRoot quadrant={quadrant}>
-          {getRoot(quadrant, toothNumber)}
-        </ToothRoot>
+      <StyledTooth quadrant={quadrant}>
+        <CrownSVG crown={tooth?.crown || {}} />
+        <ToothRoot
+          root={tooth?.root || {}}
+          quadrant={quadrant}
+          toothNumber={toothNumber}
+        />
       </StyledTooth>
     </ToothWrapper>
   );
