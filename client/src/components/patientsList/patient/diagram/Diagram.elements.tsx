@@ -1,16 +1,27 @@
 import styled from 'styled-components';
 import { color } from '../../../../globalStyles';
 
-export const DiagramBox = styled.div`
-  min-width: 990px;
-  height: 500px;
+export const DiagramOptionsWrapper = styled.div`
+  display: flex;
+  padding: 20px 25px;
+`;
+
+export const DiagramBoxRoot = styled.div`
+  padding-right: 30px;
+  margin-right: 20px;
   background-color: #f5f5f5;
+`;
+
+export const DiagramBox = styled.div`
+  /* min-width: 990px; */
+  height: 450px;
+
   display: grid;
   grid-template-columns: auto auto;
-  grid-template-rows: 225px 225px;
+  grid-template-rows: 200px 200px;
   grid-gap: 50px 25px;
-  padding: 0 10px;
   position: relative;
+  flex-grow: 1;
 `;
 
 export const DashedSeparator = styled.div<{

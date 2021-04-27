@@ -65,6 +65,11 @@ const Patient = () => {
       content: <PatientDiagramContent />,
     },
     {
+      tabName: 'tab5',
+      label: 'Chart',
+      content: <div>Chart</div>,
+    },
+    {
       tabName: 'tab4',
       label: 'Files',
       content: <div>Files</div>,
