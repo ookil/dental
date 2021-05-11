@@ -35,7 +35,6 @@ import {
   setHours,
   setMinutes,
 } from 'date-fns';
-import { prisma } from '../context';
 import { AppointmentPayload } from 'src/subsciptions/appointments.types';
 import { APPOINTMENTS, APPOINTMENTS_DELETED } from '../utils/defaults';
 
@@ -159,12 +158,12 @@ export class AppointmentResolver {
   @Authorized()
   @Query(() => [Appointment], { nullable: true })
   async patientAppointments(
-    @Arg('patientId', () => Int) patientId: number,
+    @Arg('patientId', () => ID) patientId: string,
     @Ctx() { prisma }: Context
   ) {
     return await prisma.appointment.findMany({
       where: {
-        patientId,
+        patientId: parseInt(patientId),
       },
     });
   }
@@ -315,6 +314,8 @@ export class AppointmentResolver {
   @Query(() => [WeeklyAppointments])
   async weeklyAppointments(
     @Arg('weeklyAppointmentsData', () => WeeklyAppointmentsInput)
+    @Ctx()
+    { prisma }: Context,
     data: WeeklyAppointmentsInput
   ) {
     if (typeof data.clinicId === 'string')

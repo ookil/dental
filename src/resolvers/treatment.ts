@@ -1,5 +1,5 @@
 import { Length } from 'class-validator';
-import { Context } from 'src/context';
+import { Context } from '../index';
 import { Treatment, TreatmentCategory } from '../typeDefs/Treatment';
 import {
   Arg,

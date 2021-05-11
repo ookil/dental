@@ -109,7 +109,14 @@ export const Cell = (props: ICell) => {
 
   const history = useHistory();
   if (column.name === 'appointments' && row.appointments.length > 0) {
-    return <VisitCell {...props} onClick={() => alert('vist')} />;
+    return (
+      <VisitCell
+        {...restProps}
+        column={column}
+        row={row}
+        onClick={() => alert('vist')}
+      />
+    );
   }
 
   return (

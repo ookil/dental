@@ -11,6 +11,50 @@ export const SELECTED_PATIENT = gql`
   }
 `;
 
+export const GET_PATIENT_INFO = gql`
+  query GetPatientInfo($patientId: ID!) {
+    patient(id: $patientId) {
+      id
+      name
+      surname
+      nationalId
+      bday
+      email
+      mobile
+      phone
+      address {
+        street
+        houseNum
+        city
+        zipCode
+        country
+      }
+      active
+    }
+  }
+`;
+
+export const GET_PATIENT_APPOINTMENTS = gql`
+  query GetPatientAppointments($patientId: ID!) {
+    patient(id: $patientId) {
+      id
+      appointments {
+        id
+        treatment
+        startAt
+        endAt
+        createdAt
+        status
+        dentist {
+          id
+          name
+          surname
+        }
+      }
+    }
+  }
+`;
+
 export const GET_CLINIC_PATIENTS = gql`
   query GetPatients($clinicId: ID!) {
     clinicPatients(id: $clinicId) {

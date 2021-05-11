@@ -1,7 +1,6 @@
 import { Length } from 'class-validator';
 import { ObjectType, Field, ID } from 'type-graphql';
 import { Patient } from './Patient';
-import { ToothSurface } from './Teeth';
 import { TreatmentStatus } from './Treatment';
 
 @ObjectType()
@@ -23,9 +22,6 @@ export class ChartRecord {
   @Field()
   @Length(2, 3)
   tooth: string;
-
-  @Field(() => ToothSurface)
-  surface: ToothSurface;
 
   @Field()
   doctor: String;

@@ -10,14 +10,11 @@ interface PatientFormProps
   > {
   handleChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSelectChange: (key: string, value: string | number) => void;
-  options?: any[];
-  errors?: string[];
 }
 
 export const PatientFormContent = ({
   handleChange,
   handleSelectChange,
-  errors,
 }: PatientFormProps) => (
   <>
     <InfoBox label='Personal information'>
@@ -27,8 +24,6 @@ export const PatientFormContent = ({
         type='text'
         minLength={3}
         maxLength={30}
-        isError={errors?.includes('name')}
-        errorMsg='Please provide name shorther than or equal 30 characters'
         onChange={(e) => handleChange(e)}
         layout='primary'
       />
@@ -38,8 +33,6 @@ export const PatientFormContent = ({
         type='text'
         minLength={3}
         maxLength={30}
-        isError={errors?.includes('surname')}
-        errorMsg='Please provide surname shorther than or equal 30 characters'
         onChange={(e) => handleChange(e)}
         layout='primary'
       />
@@ -50,8 +43,6 @@ export const PatientFormContent = ({
         pattern='[0-9]*'
         minLength={3}
         maxLength={30}
-        isError={errors?.includes('nationalId')}
-        errorMsg='Please provide ID number shorther than or equal 30 characters'
         onChange={(e) => handleChange(e)}
         layout='primary'
       />
@@ -86,8 +77,6 @@ export const PatientFormContent = ({
         type='email'
         minLength={3}
         maxLength={30}
-        isError={errors?.includes('email')}
-        errorMsg='Must be a valid email adress'
         onChange={(e) => handleChange(e)}
         layout='primary'
       />

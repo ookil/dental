@@ -1,4 +1,3 @@
-import { Context } from '../context';
 import {
   Arg,
   Authorized,
@@ -17,7 +16,7 @@ import { Patient } from '../typeDefs/Patient';
 import { Length } from 'class-validator';
 import { ChartRecord } from '../typeDefs/ChartRecord';
 import { TreatmentStatus } from '../typeDefs/Treatment';
-import { ToothSurface } from '../typeDefs/Teeth';
+import { Context } from '../index';
 
 @InputType({ description: 'New patient chart data' })
 export class CreateChartRecordInput implements Partial<ChartRecord> {
@@ -32,9 +31,6 @@ export class CreateChartRecordInput implements Partial<ChartRecord> {
   @Field()
   @Length(2, 3)
   tooth: string;
-
-  @Field(() => ToothSurface)
-  surface: ToothSurface;
 
   @Field()
   @Length(3, 10)
@@ -60,9 +56,6 @@ export class UpdateChartRecordInput implements Partial<ChartRecord> {
   @Field({ nullable: true })
   @Length(2, 3)
   tooth?: string;
-
-  @Field(() => ToothSurface, { nullable: true })
-  surface?: ToothSurface;
 
   @Field({ nullable: true })
   @Length(3, 10)
@@ -114,7 +107,6 @@ export class ChartRecordResolver {
         type: chartRecordData.type,
         description: chartRecordData.description,
         tooth: chartRecordData.tooth,
-        surface: chartRecordData.surface,
         doctor: chartRecordData.doctor,
         status: chartRecordData.status,
         patient: {

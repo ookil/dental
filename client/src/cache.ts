@@ -1,5 +1,8 @@
 import { InMemoryCache, makeVar, ReactiveVar } from '@apollo/client';
+import { format } from 'date-fns';
+import { Role } from '../__generated__/globalTypes';
 import { GetAppointmentsList_appointmentsList } from './graphql/queries/__generated__/GetAppointmentsList';
+import { GetUserProfile_getUserProfile } from './graphql/queries/__generated__/GetUserProfile';
 
 export const cache = new InMemoryCache({
   typePolicies: {
@@ -108,3 +111,12 @@ export const cache = new InMemoryCache({
 });
 
 export const clinicIdVar: ReactiveVar<string> = makeVar<string>('');
+
+type UserInfoType = {
+  id: string;
+  roles: Role[];
+  occupation: Role;
+  profile: GetUserProfile_getUserProfile | null;
+};
+
+export const userInfoVar = makeVar<UserInfoType | null>(null);

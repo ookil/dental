@@ -8,12 +8,16 @@ import { DentistResolver } from './resolvers/dentist';
 import { AssistantResolver } from './resolvers/assistant';
 import { PatientResolver } from './resolvers/patient';
 import { AppointmentResolver } from './resolvers/appointment';
-import { ChartRecordResolver } from './resolvers/chart';
-import { TeethResolver } from './resolvers/teeth';
+import { TeethResolver } from './resolvers/tooth';
 import { TreatmentResolver } from './resolvers/treatment';
 import { getUser, User } from './utils/utils';
 import { UserResolver } from './resolvers/user';
 import { createServer } from 'http';
+import { CrownResolver } from './resolvers/crownSurface';
+import { SurfaceFillResolver } from './resolvers/surfaceFill';
+import { RootResolver } from './resolvers/rootSurface';
+import { ActionCategoryResolver } from './resolvers/actionCategory';
+import { ActionTypeCategoryResolver } from './resolvers/actionTypeCategories';
 
 export type Context = {
   prisma: PrismaClient;
@@ -31,9 +35,13 @@ const main = async () => {
       AssistantResolver,
       PatientResolver,
       AppointmentResolver,
-      ChartRecordResolver,
+      CrownResolver,
+      RootResolver,
+      SurfaceFillResolver,
       TeethResolver,
       TreatmentResolver,
+      ActionCategoryResolver,
+      ActionTypeCategoryResolver,
     ],
     authChecker: ({ context: { user } }: { context: Context }, roles) => {
       // if `@Authorized()`, check only if user exists

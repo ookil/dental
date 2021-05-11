@@ -7,10 +7,22 @@
 // START Enums and Input Objects
 //==============================================================
 
+export enum ActionType {
+  DIAGNOSTIC = "DIAGNOSTIC",
+  PROCEDURE = "PROCEDURE",
+}
+
 export enum AppointmentStatus {
   CANCELED = "CANCELED",
   CONFIRMED = "CONFIRMED",
   REGISTERED = "REGISTERED",
+}
+
+export enum Role {
+  ADMIN = "ADMIN",
+  ASSISTANT = "ASSISTANT",
+  DENTIST = "DENTIST",
+  REGULAR = "REGULAR",
 }
 
 export enum TreatmentCategory {

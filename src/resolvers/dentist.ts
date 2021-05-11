@@ -34,7 +34,7 @@ export class UpdateDentistInput implements Partial<Dentist> {
 @Resolver(Dentist)
 export class DentistResolver {
   @Authorized()
-  @Query(() => Dentist, { nullable: true })
+  @Query(() => Dentist)
   async dentist(@Arg('id', () => ID) id: string, @Ctx() { prisma }: Context) {
     return await prisma.dentist.findUnique({
       where: {

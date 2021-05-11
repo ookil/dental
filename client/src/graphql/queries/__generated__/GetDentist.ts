@@ -29,7 +29,7 @@ export interface GetDentist_dentist {
 }
 
 export interface GetDentist {
-  dentist: GetDentist_dentist | null;
+  dentist: GetDentist_dentist;
 }
 
 export interface GetDentistVariables {

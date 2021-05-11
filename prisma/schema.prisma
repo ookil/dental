@@ -8,18 +8,21 @@ generator client {
 }
 
 model Clinic {
-  id           Int             @id @default(autoincrement())
-  name         String
-  address      String
-  admin        User            @relation(fields: [adminId], references: [id])
-  adminId      Int
-  dentists     Dentist[]
-  assistants   Assistant[]
-  patients     Patient[]
-  registeredAt DateTime        @default(now())
-  users        UserInClinic[]
-  appointments Appointment[]
-  settings     ClinicSettings?
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  address              String
+  admin                User                  @relation(fields: [adminId], references: [id])
+  adminId              Int
+  dentists             Dentist[]
+  assistants           Assistant[]
+  patients             Patient[]
+  registeredAt         DateTime              @default(now())
+  users                UserInClinic[]
+  appointments         Appointment[]
+  settings             ClinicSettings?
+  aurfaceAction        SurfaceAction[]
+  actionCategory       ActionCategory[]
+  actionTypeCategories ActionTypeCategories?
 }
 
 model ClinicSettings {
@@ -39,6 +42,7 @@ model User {
   email         String        @unique
   password      String
   roles         Role[]
+  occupation    Role          @default(REGULAR)
   registeredAt  DateTime      @default(now())
   owningClinics Clinic[]
   userInClinic  UserInClinic?
@@ -91,7 +95,7 @@ model Patient {
   clinic       Clinic?         @relation(fields: [clinicId], references: [id])
   clinicId     Int?
   patientChart ChartRecord[]
-  patientTeeth Teeth[]
+  patientTeeth Tooth[]
 }
 
 model PatientAddress {
@@ -104,16 +108,103 @@ model PatientAddress {
   country   String?
 }
 
-model Teeth {
-  patient     Patient      @relation(fields: [patientId], references: [id])
+model Icon {
+  id            Int            @id @default(autoincrement())
+  alt           String
+  SurfaceAction SurfaceAction?
+}
+
+model ActionTypeCategories {
+  id         Int              @id @default(autoincrement())
+  clinic     Clinic           @relation(fields: [clinicId], references: [id])
+  clinicId   Int
+  diagnostic ActionCategory[] @relation("diagnosticCategories")
+  procedures ActionCategory[] @relation("proceduresCategories")
+}
+
+model ActionCategory {
+  id                     Int                   @id @default(autoincrement())
+  name                   String
+  diagnosticCategory     ActionTypeCategories? @relation("diagnosticCategories", fields: [diagnosticCategoryId], references: [id])
+  diagnosticCategoryId   Int?
+  proceduresCategory     ActionTypeCategories? @relation("proceduresCategories", fields: [actionTypeCategoriesId], references: [id])
+  actionTypeCategoriesId Int?
+  actions                SurfaceAction[]
+  clinic                 Clinic                @relation(fields: [clinicId], references: [id])
+  clinicId               Int
+}
+
+model SurfaceAction {
+  id          Int              @id @default(autoincrement())
+  name        String
+  type        ActionType // DIAGNOSTIC or PROCEDURE
+  categories  ActionCategory[]
+  fillColor   String
+  icon        Icon?            @relation(fields: [iconId], references: [id])
+  iconId      Int?
+  rootAction  Boolean
+  crownAction Boolean
+  surfaceFill SurfaceFill[]
+  clinic      Clinic           @relation(fields: [clinicId], references: [id])
+  clinicId    Int
+
+}
+
+model SurfaceFill {
+  id               Int           @id @default(autoincrement())
+  action           SurfaceAction @relation(fields: [actionId], references: [id])
+  actionId         Int
+  buccalSurface    CrownSurface? @relation("buccalFill")
+  mesialSurface    CrownSurface? @relation("mesialFill")
+  distalSurface    CrownSurface? @relation("distalFill")
+  lingualSurface   CrownSurface? @relation("lingualFill")
+  occlusialSurface CrownSurface? @relation("occlusialFill")
+  rootOneSurface   RootSurface?  @relation("rootOneFill")
+  rootTwoSurface   RootSurface?  @relation("rootTwoFill")
+  rootThreeSurface RootSurface?  @relation("rootThreeFill")
+}
+
+model CrownSurface {
+  id          Int          @id @default(autoincrement())
+  tooth       Tooth        @relation(fields: [toothId], references: [id])
+  toothId     Int
+  buccal      SurfaceFill? @relation("buccalFill", fields: [buccalId], references: [id])
+  buccalId    Int?
+  mesial      SurfaceFill? @relation("mesialFill", fields: [mesialId], references: [id])
+  mesialId    Int?
+  distal      SurfaceFill? @relation("distalFill", fields: [distalId], references: [id])
+  distalId    Int?
+  lingual     SurfaceFill? @relation("lingualFill", fields: [lingualId], references: [id])
+  lingualId   Int?
+  occlusial   SurfaceFill? @relation("occlusialFill", fields: [occlusialId], references: [id])
+  occlusialId Int?
+}
+
+model RootSurface {
+  id          Int          @id @default(autoincrement())
+  tooth       Tooth        @relation(fields: [toothId], references: [id])
+  toothId     Int
+  rootOne     SurfaceFill? @relation("rootOneFill", fields: [rootOneId], references: [id])
+  rootOneId   Int?
+  rootTwo     SurfaceFill? @relation("rootTwoFill", fields: [rootTwoId], references: [id])
+  rootTwoId   Int?
+  rootThree   SurfaceFill? @relation("rootThreeFill", fields: [rootThreeId], references: [id])
+  rootThreeId Int?
+}
+
+model Tooth {
+  id          Int           @id @default(autoincrement())
+  patient     Patient       @relation(fields: [patientId], references: [id])
   patientId   Int
-  id          String
-  surface     ToothSurface
-  treatment   Treatment    @relation(fields: [treatmentId], references: [id])
-  treatmentId Int
+  position    String
+  primary     Boolean?      @default(false)
+  quadrant    Int
+  toothNumber Int
+  crown       CrownSurface?
+  root        RootSurface?
   createdAt   DateTime
 
-  @@id([id, surface, patientId])
+  @@unique([patientId, position])
 }
 
 model ChartRecord {
@@ -122,7 +213,6 @@ model ChartRecord {
   type        String
   description String
   tooth       String
-  surface     ToothSurface
   doctor      String
   status      TreatmentStatus
   patient     Patient?        @relation(fields: [patientId], references: [id])
@@ -160,11 +250,15 @@ enum AppointmentStatus {
 }
 
 model Treatment {
-  id           Int               @id @default(autoincrement())
-  name         String
-  description  String
-  category     TreatmentCategory
-  patientTeeth Teeth[]
+  id          Int               @id @default(autoincrement())
+  name        String
+  description String
+  category    TreatmentCategory
+}
+
+enum ActionType {
+  DIAGNOSTIC
+  PROCEDURE
 }
 
 enum TreatmentCategory {
@@ -189,6 +283,7 @@ enum TreatmentStatus {
   PLANNED
 }
 
+// cant remove it?
 enum ToothSurface {
   BUCCAL
   LINGUAL
