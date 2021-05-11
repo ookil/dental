@@ -25,7 +25,7 @@ const wsLink = new WebSocketLink({
     connectionParams: {
       authorization:
         sessionStorage.getItem('token') ||
-        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJyb2xlcyI6WyJBRE1JTiJdfSwiaWF0IjoxNjE5NDQyNDg3fQ.OVUIxPUXkzRCgE1ICaNS0CSCWe2dwWiOtnhZIbEnc-A',
+        'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjozLCJyb2xlcyI6WyJERU5USVNUIl19LCJpYXQiOjE2MjA3NDIzNzJ9.-SALmLfFFRKXpzk_kLMd5Fq5SA8r_fQYoxj6q-g9aTw',
     },
   },
 });
@@ -39,11 +39,10 @@ const authLink = setContext((_, { headers }) => {
       ...headers,
       authorization: token
         ? `Bearer ${token}`
-        : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjoxLCJyb2xlcyI6WyJBRE1JTiJdfSwiaWF0IjoxNjE5NDQyNDg3fQ.OVUIxPUXkzRCgE1ICaNS0CSCWe2dwWiOtnhZIbEnc-A', //placeholder token
+        : 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyIjp7ImlkIjozLCJyb2xlcyI6WyJERU5USVNUIl19LCJpYXQiOjE2MjA3NDIzNzJ9.-SALmLfFFRKXpzk_kLMd5Fq5SA8r_fQYoxj6q-g9aTw', //placeholder token
     },
   };
 });
-
 
 const authHttpLink = authLink.concat(httpLink);
 

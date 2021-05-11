@@ -8,20 +8,21 @@ generator client {
 }
 
 model Clinic {
-  id             Int              @id @default(autoincrement())
-  name           String
-  address        String
-  admin          User             @relation(fields: [adminId], references: [id])
-  adminId        Int
-  dentists       Dentist[]
-  assistants     Assistant[]
-  patients       Patient[]
-  registeredAt   DateTime         @default(now())
-  users          UserInClinic[]
-  appointments   Appointment[]
-  settings       ClinicSettings?
-  SurfaceAction  SurfaceAction[]
-  ActionCategory ActionCategory[]
+  id                   Int                   @id @default(autoincrement())
+  name                 String
+  address              String
+  admin                User                  @relation(fields: [adminId], references: [id])
+  adminId              Int
+  dentists             Dentist[]
+  assistants           Assistant[]
+  patients             Patient[]
+  registeredAt         DateTime              @default(now())
+  users                UserInClinic[]
+  appointments         Appointment[]
+  settings             ClinicSettings?
+  aurfaceAction        SurfaceAction[]
+  actionCategory       ActionCategory[]
+  actionTypeCategories ActionTypeCategories?
 }
 
 model ClinicSettings {
@@ -41,6 +42,7 @@ model User {
   email         String        @unique
   password      String
   roles         Role[]
+  occupation    Role          @default(REGULAR)
   registeredAt  DateTime      @default(now())
   owningClinics Clinic[]
   userInClinic  UserInClinic?
@@ -112,12 +114,24 @@ model Icon {
   SurfaceAction SurfaceAction?
 }
 
+model ActionTypeCategories {
+  id         Int              @id @default(autoincrement())
+  clinic     Clinic           @relation(fields: [clinicId], references: [id])
+  clinicId   Int
+  diagnostic ActionCategory[] @relation("diagnosticCategories")
+  procedures ActionCategory[] @relation("proceduresCategories")
+}
+
 model ActionCategory {
-  id       Int             @id @default(autoincrement())
-  name     String
-  actions  SurfaceAction[]
-  clinic   Clinic          @relation(fields: [clinicId], references: [id])
-  clinicId Int
+  id                     Int                   @id @default(autoincrement())
+  name                   String
+  diagnosticCategory     ActionTypeCategories? @relation("diagnosticCategories", fields: [diagnosticCategoryId], references: [id])
+  diagnosticCategoryId   Int?
+  proceduresCategory     ActionTypeCategories? @relation("proceduresCategories", fields: [actionTypeCategoriesId], references: [id])
+  actionTypeCategoriesId Int?
+  actions                SurfaceAction[]
+  clinic                 Clinic                @relation(fields: [clinicId], references: [id])
+  clinicId               Int
 }
 
 model SurfaceAction {

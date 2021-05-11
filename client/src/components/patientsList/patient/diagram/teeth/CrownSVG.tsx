@@ -1,32 +1,28 @@
-import React, { useState } from 'react';
+import React from 'react';
+import styled from 'styled-components';
+import { GetPatientTeeth_patientTeeth_crown } from '../../../../../graphql/queries/__generated__/GetPatientTeeth';
 import { PathFill } from './Teeth.elements';
 
-type CrownFill = {
-  distal?: string;
-  mesial?: string;
-  buccal?: string;
-  lingual?: string;
-  occlusal?: string;
-};
+export const SVG = styled.svg`
+  width: 100%;
+  height: 100%;
+`;
 
 type CrownSVGProps = {
-  crown: CrownFill;
+  crown: GetPatientTeeth_patientTeeth_crown | null | undefined;
+  handleSurfaceSelection: (surfaceId: string) => void;
   selectedColor?: string;
+  isTarget?: boolean;
 };
 
-export const CrownSVG = ({ crown, selectedColor }: CrownSVGProps) => {
-  const [crownFill, setCrownFill] = useState({
-    distal: crown.distal || 'white',
-    mesial: crown.mesial || 'white',
-    buccal: crown.buccal || 'white',
-    lingual: crown.lingual || 'white',
-    occlusal: crown.occlusal || 'white',
-  });
-
-  const handleHover = () => {};
-
+export const CrownSVG = ({
+  crown,
+  selectedColor,
+  isTarget,
+  handleSurfaceSelection,
+}: CrownSVGProps) => {
   return (
-    <svg
+    <SVG
       width='36'
       height='36'
       viewBox='0 0 36 36'
@@ -36,27 +32,42 @@ export const CrownSVG = ({ crown, selectedColor }: CrownSVGProps) => {
       <PathFill
         id='buccal'
         d='M25 25H11L1 35.5652C1 35.5652 1.50002 36 2.00002 36H2.50002H3.00002H33H34C34.5 36 35 35.5652 35 35.5652L25 25Z'
-        fill={crownFill.buccal}
+        fill={crown?.buccal?.action.fillColor || 'white'}
+        selectedColor={selectedColor}
+        isTarget={isTarget}
+        onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
       />
       <PathFill
         id='lingual'
         d='M11 10.5L25 10.5L35 0.434783C35 0.434783 34.5 0 34 0L33.5 0L33 0L3 0L2 0C1.5 0 1 0.434783 1 0.434783L11 10.5Z'
-        fill={crownFill.lingual}
+        fill={crown?.lingual?.action.fillColor || 'white'}
+        selectedColor={selectedColor}
+        isTarget={isTarget}
+        onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
       />
       <PathFill
         id='distal'
         d='M10.5 11V25L0.434783 35C0.434783 35 0 34.5 0 34V33.5V33V3V2C0 1.5 0.434783 1 0.434783 1L10.5 11Z'
-        fill={crownFill.distal}
+        fill={crown?.distal?.action.fillColor || 'white'}
+        selectedColor={selectedColor}
+        isTarget={isTarget}
+        onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
       />
       <PathFill
         id='mesial'
         d='M25.5 11.5V25L35.5652 35C35.5652 35 36 34.5 36 34V33.5V33V3V2C36 1.5 35.5652 1 35.5652 1L25.5 11.5Z'
-        fill={crownFill.mesial}
+        fill={crown?.mesial?.action.fillColor || 'white'}
+        selectedColor={selectedColor}
+        isTarget={isTarget}
+        onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
       />
       <PathFill
-        id='occlusal'
+        id='occlusial'
         d='M11 25V11H25V25H11Z'
-        fill={crownFill.occlusal}
+        fill={crown?.occlusial?.action.fillColor || 'white'}
+        selectedColor={selectedColor}
+        isTarget={isTarget}
+        onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
       />
       <g id='Vector'>
         <mask id='path-6-inside-1' fill='white'>
@@ -74,6 +85,6 @@ export const CrownSVG = ({ crown, selectedColor }: CrownSVGProps) => {
         stroke='#333333'
         strokeWidth='1.5'
       />
-    </svg>
+    </SVG>
   );
 };

@@ -260,6 +260,7 @@ export const Button = styled.button<{
   search?: boolean;
   primary?: boolean;
   secondary?: boolean;
+  deleteBtn?: boolean;
   width?: string;
 }>`
   width: ${({ width }) => (width ? width : 'auto')};
@@ -270,7 +271,7 @@ export const Button = styled.button<{
   font-weight: 500;
   box-shadow: 0 1px 3.5px 0px #777777;
 
-  ${({ primary, secondary, search }) => {
+  ${({ primary, secondary, deleteBtn, search }) => {
     if (primary) {
       return css`
         background-color: ${bluePrimary};
@@ -291,6 +292,17 @@ export const Button = styled.button<{
         &:hover {
           background-color: white;
           color: ${bluePrimary};
+        }
+      `;
+    }
+    if (deleteBtn) {
+      return css`
+        background-color: ${bgSecondary};
+        color: ${pinkCancel};
+
+        &:hover {
+          background-color: ${pinkCancel};
+          color: white;
         }
       `;
     }

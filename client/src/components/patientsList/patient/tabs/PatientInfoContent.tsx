@@ -1,17 +1,17 @@
 import React, { useState } from 'react';
-import { GetPatientInfo_patient } from '../../../graphql/queries/__generated__/GetPatientInfo';
-import DayPickerInput from '../../dayPickerInput/DayPickerInput';
-import { Button } from '../../elements/Elements';
-import Input from '../../elements/Input';
-import Switcher from '../../elements/Switcher';
-import TextArea from '../../elements/TextArea';
-import { InfoBox } from '../../modals/Modals.elements';
+import { GetPatientInfo_patient } from '../../../../graphql/queries/__generated__/GetPatientInfo';
+import DayPickerInput from '../../../dayPickerInput/DayPickerInput';
+import { Button } from '../../../elements/Elements';
+import Input from '../../../elements/Input';
+import Switcher from '../../../elements/Switcher';
+import TextArea from '../../../elements/TextArea';
+import { InfoBox } from '../../../modals/Modals.elements';
 import {
   PatientContainer,
   Col,
   MutationButtons,
   DeletePatientButton,
-} from '../Patients.elements';
+} from '../../Patients.elements';
 
 type PatientInfoProps = {
   patient: GetPatientInfo_patient;

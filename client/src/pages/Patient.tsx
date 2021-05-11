@@ -10,26 +10,26 @@ import {
   Separator,
   TabWrapper,
 } from '../components/patientsList/Patients.elements';
-import completedGif from '../images/completed.gif';
-import PatientInfoContent from '../components/patientsList/patient/PatientInfoContent';
+import loadingGif from '../images/loading.gif';
 import { GET_PATIENT_INFO } from '../graphql/queries/patient';
 import {
   GetPatientInfo,
   GetPatientInfoVariables,
 } from '../graphql/queries/__generated__/GetPatientInfo';
-import PatientAppointmentsContent from '../components/patientsList/patient/PatientAppointmentsContent';
-import PatientDiagramContent from '../components/patientsList/patient/PatientDiagramContent';
+import PatientAppointmentsContent from '../components/patientsList/patient/tabs/PatientAppointmentsContent';
+import PatientInfoContent from '../components/patientsList/patient/tabs/PatientInfoContent';
+import PatientDiagramContent from '../components/patientsList/patient/tabs/PatientDiagramContent';
 
 const Patient = () => {
   const [currentTab, setCurrentTab] = useState('tab1');
 
-  const { id } = useParams<{ id: string }>();
+  const { patientId } = useParams<{ patientId: string }>();
 
   const { data, loading } = useQuery<GetPatientInfo, GetPatientInfoVariables>(
     GET_PATIENT_INFO,
     {
       variables: {
-        patientId: id,
+        patientId,
       },
     }
   );
@@ -37,7 +37,7 @@ const Patient = () => {
   if (loading) {
     return (
       <GifWrapper>
-        <Gif src={completedGif} />
+        <Gif src={loadingGif} />
       </GifWrapper>
     );
   }
@@ -62,7 +62,7 @@ const Patient = () => {
     {
       tabName: 'tab3',
       label: 'Diagram',
-      content: <PatientDiagramContent />,
+      content: <PatientDiagramContent patientId={patientId} />,
     },
     {
       tabName: 'tab5',
@@ -79,7 +79,7 @@ const Patient = () => {
   return (
     <div style={{ height: '100%' }}>
       <Header>
-        <TitlePatient to={`/patient/${id}`}>
+        <TitlePatient to={`/patient/${patientId}`}>
           {patient?.name + ' ' + patient?.surname}
         </TitlePatient>
         <Separator />

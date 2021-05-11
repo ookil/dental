@@ -16,6 +16,8 @@ import { createServer } from 'http';
 import { CrownResolver } from './resolvers/crownSurface';
 import { SurfaceFillResolver } from './resolvers/surfaceFill';
 import { RootResolver } from './resolvers/rootSurface';
+import { ActionCategoryResolver } from './resolvers/actionCategory';
+import { ActionTypeCategoryResolver } from './resolvers/actionTypeCategories';
 
 export type Context = {
   prisma: PrismaClient;
@@ -38,6 +40,8 @@ const main = async () => {
       SurfaceFillResolver,
       TeethResolver,
       TreatmentResolver,
+      ActionCategoryResolver,
+      ActionTypeCategoryResolver,
     ],
     authChecker: ({ context: { user } }: { context: Context }, roles) => {
       // if `@Authorized()`, check only if user exists

@@ -1,25 +1,39 @@
+import React from 'react';
 import styled, { css } from 'styled-components';
+import { GetPatientTeeth_patientTeeth_root } from '../../../../../graphql/queries/__generated__/GetPatientTeeth';
+import { SVG } from './CrownSVG';
 
-export const PathFill = styled.path<{ selectedColor?: string }>`
-  cursor: pointer;
-
-  &:hover {
-    fill: ${({ selectedColor }) => selectedColor && selectedColor};
-  }
+export const PathFill = styled.path<{
+  selectedColor?: string;
+  isTarget?: boolean;
+}>`
+  ${({ selectedColor, isTarget }) => {
+    if (isTarget) {
+      return css`
+        &:hover {
+          cursor: pointer;
+          fill: ${selectedColor && selectedColor}
+          };
+        }
+      `;
+    }
+  }}
 `;
 
-export type RootFill = {
-  rootOne?: string;
-  rootTwo?: string;
-  rootThree?: string;
-};
-
 type RootProps = {
-  root: RootFill;
+  root: GetPatientTeeth_patientTeeth_root | null | undefined;
+  isTarget?: boolean;
+  selectedColor?: string;
+  handleSurfaceSelection: (surfaceId: string) => void;
 };
 
-export const RootOneSVG = ({ root }: RootProps) => (
-  <svg
+export const RootOneSVG = ({
+  root,
+  isTarget,
+  selectedColor,
+  handleSurfaceSelection,
+}: RootProps) => (
+  <SVG
     width='36'
     height='36'
     viewBox='0 0 36 36'
@@ -27,10 +41,13 @@ export const RootOneSVG = ({ root }: RootProps) => (
     xmlns='http://www.w3.org/2000/svg'
   >
     <g id='Group 89'>
-      <path
+      <PathFill
         id='rootOne'
         d='M7 0.996338H30C30 0.996338 27 13.9962 25 17.9962C23 21.9962 20.8059 35.1305 18.5 35.3423C16.1174 35.1178 11.5 20.9962 9.5 16.4962C7.5 11.9962 7 0.996338 7 0.996338Z'
-        fill={root.rootOne || 'white'}
+        fill={root?.rootOne?.action.fillColor || 'white'}
+        selectedColor={selectedColor}
+        isTarget={isTarget}
+        onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
       />
       <path
         id='Vector 15'
@@ -41,26 +58,37 @@ export const RootOneSVG = ({ root }: RootProps) => (
         strokeLinejoin='round'
       />
     </g>
-  </svg>
+  </SVG>
 );
 
-export const RootTwoSVG = ({ root }: RootProps) => (
-  <svg
+export const RootTwoSVG = ({
+  root,
+  isTarget,
+  selectedColor,
+  handleSurfaceSelection,
+}: RootProps) => (
+  <SVG
     width='36'
     height='37'
     viewBox='0 0 36 37'
     fill='none'
-    xmlns='http://www.w3.org/2000/svg'
+    xmlns='http://www.w3.org/2000/SVG'
   >
-    <path
+    <PathFill
       id='rootTwo'
       d='M19.4999 1.51749C23.4999 0.538539 28.4999 1.24903 31.0001 1.24903C33.5003 1.24903 26.3052 33.0005 23.0001 36.2704C21 33.5 21.5 31.8632 21 25.5C20.5 19.1368 16.2989 2.30092 19.4999 1.51749Z'
-      fill={root.rootTwo || 'white'}
+      fill={root?.rootTwo?.action.fillColor || 'white'}
+      selectedColor={selectedColor}
+      isTarget={isTarget}
+      onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
     />
-    <path
+    <PathFill
       id='rootOne'
       d='M4.713 1.24556C7.25496 1.9682 17 0.266599 18.9999 1.51749C20.9999 2.76838 8.66751 33.9844 7.99991 35.2915C7.33232 36.5986 6.5 35.2915 6.5 35.2915C5.5001 26.7915 2.17103 0.522911 4.713 1.24556Z'
-      fill={root.rootOne || 'white'}
+      fill={root?.rootOne?.action.fillColor || 'white'}
+      selectedColor={selectedColor}
+      isTarget={isTarget}
+      onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
     />
     <path
       id='Vector 18'
@@ -78,11 +106,16 @@ export const RootTwoSVG = ({ root }: RootProps) => (
       strokeLinecap='round'
       strokeLinejoin='round'
     />
-  </svg>
+  </SVG>
 );
 
-export const RootThreeSVG = ({ root }: RootProps) => (
-  <svg
+export const RootThreeSVG = ({
+  root,
+  isTarget,
+  selectedColor,
+  handleSurfaceSelection,
+}: RootProps) => (
+  <SVG
     width='36'
     height='37'
     viewBox='0 0 36 37'
@@ -92,7 +125,10 @@ export const RootThreeSVG = ({ root }: RootProps) => (
     <PathFill
       id='rootThree'
       d='M22.5 9.16394L11 10.1577C11 10.1577 13 14.9069 14 21.3666C15 27.8262 17.4673 35.7766 18 35.7766C19 35.7766 21.5 22.3604 22.5 20.8697C23.5 19.379 22.5 9.16394 22.5 9.16394Z'
-      fill={root.rootThree || 'white'}
+      fill={root?.rootThree?.action.fillColor || 'white'}
+      selectedColor={selectedColor}
+      isTarget={isTarget}
+      onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
     />
     <path
       id='canal-3'
@@ -105,12 +141,18 @@ export const RootThreeSVG = ({ root }: RootProps) => (
     <PathFill
       id='rootTwo'
       d='M19.1394 1C20.1279 1 30.0171 1.5 31.5 1.5C32.9829 1.5 30.4541 31.6245 26.5 36C26.1635 32.6904 25.5647 29.4759 24.0819 24.3321C22.5991 19.1883 19.435 15.6764 18.6451 14.1227C17.1621 11.2057 18.6308 1 19.1394 1Z'
-      fill={root.rootTwo || 'white'}
+      fill={root?.rootTwo?.action.fillColor || 'white'}
+      selectedColor={selectedColor}
+      isTarget={isTarget}
+      onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
     />
     <PathFill
       id='rootOne'
       d='M4.82509 1.2152C6.02528 0.730984 18.9596 1.21525 18.9596 1.21525C18.9596 1.21525 19.4542 5.57211 16.9809 13.3196C11.5395 21.5513 9.06622 33.1725 8.07689 35.5945C7.08756 38.0164 4.61423 29.2996 4.11956 17.1942C3.6249 5.08874 4.82509 1.2152 4.82509 1.2152Z'
-      fill={root.rootOne || 'white'}
+      fill={root?.rootOne?.action.fillColor || 'white'}
+      selectedColor={selectedColor}
+      isTarget={isTarget}
+      onClick={(e) => handleSurfaceSelection(e.currentTarget.id)}
     />
     <path
       id='canal-2'
@@ -128,19 +170,21 @@ export const RootThreeSVG = ({ root }: RootProps) => (
       strokeLinecap='round'
       strokeLinejoin='round'
     />
-  </svg>
+  </SVG>
 );
 
-export const ToothNumber = styled.p`
+export const ToothNumber = styled.p<{ order: number }>`
   font-size: 0.8em;
   align-self: center;
+  order: ${({ order }) => order && order};
 `;
 
-export const StyledTooth = styled.div<{ quadrant: number }>`
+export const StyledTooth = styled.div<{ quadrant: number; order: number }>`
   display: flex;
   flex-direction: column;
   height: 90px;
   justify-content: space-between;
+  order: ${({ order }) => order && order};
 
   transform: ${({ quadrant }) => {
     if (quadrant === 1) {
@@ -155,7 +199,7 @@ export const StyledTooth = styled.div<{ quadrant: number }>`
   }};
 `;
 
-export const ToothQuadrant = styled.div<{ quadrant: number }>`
+export const ToothQuadrantBox = styled.div<{ quadrant: number }>`
   display: flex;
   ${({ quadrant }) => {
     if (quadrant === 1) {

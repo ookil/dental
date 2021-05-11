@@ -1,4 +1,4 @@
-import { Context, prisma } from '../context';
+import { Context } from '../index';
 import {
   Arg,
   Authorized,
@@ -173,7 +173,10 @@ export class PatientResolver {
 
   @Authorized()
   @Query(() => [Patient])
-  async searchPatients(@Arg('searchQuery') searchQuery: string) {
+  async searchPatients(
+    @Arg('searchQuery') searchQuery: string,
+    @Ctx() { prisma }: Context
+  ) {
     const searchWords = searchQuery.split(' ');
 
     let where: Prisma.PatientWhereInput | undefined;

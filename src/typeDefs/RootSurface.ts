@@ -10,12 +10,12 @@ export class RootSurface {
   @Field(() => Tooth)
   tooth: Tooth;
 
-  @Field(() => SurfaceFill)
+  @Field(() => SurfaceFill, { nullable: true })
   rootOne: SurfaceFill;
 
-  @Field(() => SurfaceFill)
+  @Field(() => SurfaceFill, { nullable: true })
   rootTwo: SurfaceFill;
 
-  @Field(() => SurfaceFill)
+  @Field(() => SurfaceFill, { nullable: true })
   rootThree: SurfaceFill;
 }

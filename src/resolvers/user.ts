@@ -20,6 +20,25 @@ import { Role } from '../typeDefs/Clinic';
 import { IsEmail, Length } from 'class-validator';
 import { AuthToken, User } from '../typeDefs/User';
 import { ForbiddenError, UserInputError } from 'apollo-server-express';
+import { createUnionType } from 'type-graphql';
+import { Dentist } from '../typeDefs/Dentist';
+import { Assistant } from '../typeDefs/Assistant';
+
+const RoleResultUnion = createUnionType({
+  name: 'RoleResultUnion', // the name of the GraphQL union
+  types: () => [Dentist, Assistant] as const, // function that returns tuple of object types classes
+  resolveType: (value) => {
+    if ('patients' in value) {
+      return Dentist; // we can return object type class (the one with `@ObjectType()`)
+    }
+
+    if ('worksWith' in value) {
+      return Assistant; // we can return object type class (the one with `@ObjectType()`)
+    }
+
+    return undefined;
+  },
+});
 
 @InputType({ description: 'Login  user' })
 export class DeleteUserInput implements Partial<User> {
@@ -108,6 +127,36 @@ export class UserResolver {
   }
 
   @Authorized()
+  @Query(() => RoleResultUnion, { nullable: true })
+  async getUserProfile(
+    @Arg('userId', () => ID) userId: string,
+    @Arg('occupation') occupation: Role,
+    @Ctx() { prisma }: Context
+  ): Promise<typeof RoleResultUnion | null> {
+    let dentist;
+    let assistant;
+    if (occupation === Role.DENTIST) {
+      dentist = await prisma.dentist.findUnique({
+        where: { id: parseInt(userId) },
+        include: {
+          patients: true,
+        },
+      });
+    }
+
+    if (occupation === Role.ASSISTANT) {
+      assistant = await prisma.assistant.findUnique({
+        where: { id: parseInt(userId) },
+      });
+    }
+
+    if (dentist) return dentist;
+    if (assistant) return assistant;
+
+    return null;
+  }
+
+  @Authorized()
   @Query(() => User)
   async loggedUser(@Ctx() { prisma, user: loggedUser }: Context) {
     return await prisma.user.findUnique({
@@ -161,6 +210,7 @@ export class UserResolver {
         email: userData.email,
         password: password,
         roles: userRoles,
+        occupation: userData.role
       },
     });
 
